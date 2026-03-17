@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giochi — In Missione</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .giochi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.5px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 3.5rem;
+    }
+
+    .gioco-card {
+      background: var(--bg-card);
+      padding: 2rem 1.5rem;
+      text-decoration: none;
+      color: var(--ink);
+      transition: background 0.2s;
+      display: block;
+    }
+
+    .gioco-card:hover {
+      background: #fff;
+    }
+
+    .gioco-card:hover .gioco-title {
+      color: var(--accent);
+    }
+
+    .gioco-icon {
+      font-size: 2rem;
+      margin-bottom: 0.8rem;
+      line-height: 1;
+    }
+
+    .gioco-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+      transition: color 0.2s;
+    }
+
+    .gioco-desc {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      font-style: italic;
+      line-height: 1.5;
+      margin-bottom: 0.8rem;
+    }
+
+    .gioco-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .gioco-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border: 0.5px solid var(--border);
+      color: var(--ink-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="site-title">In <span>Missione</span></div>
+
+    <!-- SOTTOTITOLO HEADER: copialo uguale dagli altri file quando lo aggiungi. -->
+    <!-- <p class="site-desc">La tua descrizione qui</p> -->
+
+    <nav>
+      <a href="../index.html">Home</a>
+      <a href="../frammenti/index.html">Frammenti</a>
+      <a href="../viaggi/index.html">Viaggi</a>
+      <a href="../racconti/index.html">Racconti</a>
+      <a href="index.html" class="active">Giochi</a>
+    </nav>
+  </header>
+
+  <main>
+
+    <div class="section-index-header">
+      <h1>Giochi</h1>
+      <!-- DESCRIZIONE SEZIONE GIOCHI: la riga in corsivo sotto il titolo.
+           Esempio: <p>Giochi da tavolo digitali, esperimenti interattivi.</p> -->
+      <!-- <p>La tua descrizione qui</p> -->
+    </div>
+
+    <div class="giochi-grid">
+
+      <!-- LISTA GIOCHI: aggiungi un blocco .gioco-card per ogni gioco.
+           Copia il modello qui sotto, rimuovi i trattini del commento e compila.
+
+      <a href="nome-del-gioco.html" class="gioco-card">
+        <div class="gioco-icon">🎮</div>
+        <div class="gioco-title">Nome del gioco</div>
+        <p class="gioco-desc">Breve descrizione del gioco.</p>
+        <div class="gioco-tags">
+          <span class="gioco-tag">tag</span>
+        </div>
+      </a>
+      -->
+
+      <a href="lupo-mannaro.html" class="gioco-card">
+        <div class="gioco-icon">🐺</div>
+        <div class="gioco-title">Lupo Mannaro</div>
+        <p class="gioco-desc">Il classico gioco di deduzione sociale. Un narratore, un villaggio, e qualcuno che mente.</p>
+        <div class="gioco-tags">
+          <span class="gioco-tag">multiplayer</span>
+          <span class="gioco-tag">dal vivo</span>
+          <span class="gioco-tag">mobile</span>
+        </div>
+      </a>
+
+    </div>
+
+  </main>
+
+  <footer>
+    <!-- FOOTER: stesso testo dell'index.html principale. -->
+    <!-- La tua firma qui -->
+  </footer>
+
+</body>
+</html>

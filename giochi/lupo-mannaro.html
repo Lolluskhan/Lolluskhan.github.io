@@ -1,0 +1,1855 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Lupo Mannaro</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0805;
+  --bg2: #120f0a;
+  --surface: #1a1510;
+  --surface2: #221c14;
+  --border: #3a2e1e;
+  --border2: #4a3c28;
+  --gold: #c9a84c;
+  --gold2: #e8c96a;
+  --blood: #8b1a1a;
+  --blood2: #c42b2b;
+  --text: #f0e6d0;
+  --muted: #7a6a50;
+  --muted2: #9a8a6a;
+  --village: #4a7c59;
+  --village2: #6ab87a;
+  --wolf: #8b1a1a;
+  --wolf2: #c42b2b;
+  --neutral: #6a4a8b;
+  --neutral2: #9a6ab8;
+  --success: #4a9a6a;
+  --night: #0a0a14;
+  --night2: #12122a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Crimson Text', serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Parchment texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(139,26,26,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 24px 18px 32px;
+  min-height: 100dvh;
+  position: relative;
+  z-index: 1;
+  animation: fadeUp 0.35s ease;
+}
+.screen.active { display: flex; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── LOGO ── */
+.logo-wrap { text-align: center; margin-bottom: 6px; }
+.logo-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.logo {
+  font-family: 'Cinzel', serif;
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  line-height: 1;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(201,168,76,0.3);
+}
+.logo span { color: var(--blood2); }
+.logo-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: var(--border2);
+  font-size: 12px;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border2), transparent);
+}
+
+/* ── BUTTONS ── */
+.btn {
+  width: 100%;
+  padding: 15px 24px;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  position: relative;
+}
+.btn:active { transform: scale(0.97); }
+.btn + .btn { margin-top: 10px; }
+
+.btn-primary {
+  background: linear-gradient(135deg, #8b1a1a, #c42b2b);
+  color: var(--text);
+  border: 1px solid var(--blood2);
+  box-shadow: 0 4px 20px rgba(139,26,26,0.3);
+}
+.btn-primary:hover { box-shadow: 0 4px 30px rgba(196,43,43,0.5); }
+
+.btn-gold {
+  background: linear-gradient(135deg, #7a5a20, #c9a84c);
+  color: #0a0805;
+  border: 1px solid var(--gold);
+  box-shadow: 0 4px 20px rgba(201,168,76,0.2);
+}
+
+.btn-surface {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border2);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted2);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  padding: 12px;
+}
+
+.btn-night {
+  background: linear-gradient(135deg, #0a0a14, #12122a);
+  color: #8888cc;
+  border: 1px solid #2a2a4a;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--blood2);
+  border: 1px solid var(--blood);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── INPUTS ── */
+.input-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.input-row { display: flex; gap: 8px; align-items: center; width: 100%; margin-bottom: 10px; }
+
+input[type="text"], input[type="number"], select {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 13px 16px;
+  color: var(--text);
+  font-family: 'Crimson Text', serif;
+  font-size: 17px;
+  flex: 1;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus { border-color: var(--gold); }
+input[type="number"] { width: 70px; flex: none; text-align: center; }
+select { cursor: pointer; }
+select option { background: var(--surface2); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 20px;
+  width: 100%;
+  margin-bottom: 14px;
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.02), transparent);
+  pointer-events: none;
+}
+
+/* ── PLAYER LIST ── */
+.player-list { width: 100%; display: flex; flex-direction: column; gap: 6px; }
+.player-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 11px 14px;
+  animation: slideIn 0.2s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.player-num {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: var(--muted);
+  width: 24px;
+  flex-shrink: 0;
+}
+.player-name { font-size: 17px; flex: 1; }
+.player-role-badge {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 2px;
+  margin-right: 8px;
+}
+.remove-btn {
+  background: none; border: none; color: var(--muted); cursor: pointer;
+  font-size: 18px; padding: 4px; line-height: 1; transition: color 0.2s;
+}
+.remove-btn:hover { color: var(--blood2); }
+
+/* ── ROLE CARD REVEAL ── */
+.reveal-outer { width: 100%; perspective: 1000px; margin: 16px 0; }
+.reveal-card {
+  width: 100%; min-height: 240px;
+  position: relative; transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4,0,0.2,1);
+  cursor: pointer; border-radius: 8px;
+}
+.reveal-card.flipped { transform: rotateY(180deg); }
+.card-face {
+  position: absolute; inset: 0; border-radius: 8px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; padding: 28px;
+}
+.card-back {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  overflow: hidden;
+}
+.card-back-bg {
+  position: absolute; inset: 0; border-radius: 8px; overflow: hidden; opacity: 0.08;
+}
+.card-front { transform: rotateY(180deg); }
+
+.role-village { background: linear-gradient(135deg, #0a1a0f, #0f2a18); border: 2px solid var(--village); }
+.role-wolf    { background: linear-gradient(135deg, #1a0505, #2a0808); border: 2px solid var(--wolf2); }
+.role-neutral { background: linear-gradient(135deg, #100a1a, #1a1028); border: 2px solid var(--neutral); }
+
+.role-icon { font-size: 56px; margin-bottom: 12px; }
+.role-name {
+  font-family: 'Cinzel', serif;
+  font-size: 26px; font-weight: 700; letter-spacing: 3px; text-align: center;
+}
+.role-village .role-name { color: var(--village2); }
+.role-wolf    .role-name { color: var(--blood2); }
+.role-neutral .role-name { color: var(--neutral2); }
+.role-ability {
+  font-size: 14px; color: var(--muted2); text-align: center;
+  margin-top: 10px; line-height: 1.6; font-style: italic;
+}
+.tap-hint {
+  font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: 3px; color: var(--muted);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+
+/* ── PHASE HEADER ── */
+.phase-header {
+  width: 100%; text-align: center;
+  padding: 20px 0 16px;
+}
+.phase-icon { font-size: 52px; margin-bottom: 8px; }
+.phase-title {
+  font-family: 'Cinzel', serif;
+  font-size: 22px; font-weight: 700; letter-spacing: 3px;
+  color: var(--gold);
+}
+.phase-sub { font-size: 15px; color: var(--muted2); margin-top: 6px; font-style: italic; }
+
+/* ── NIGHT PHASE ── */
+.night-bg {
+  background: linear-gradient(to bottom, var(--night), var(--night2)) !important;
+}
+.night-screen { background: linear-gradient(180deg, #050510 0%, #0a0a20 100%); }
+
+.moderator-instruction {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+.mod-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 8px;
+}
+.mod-text { font-size: 17px; line-height: 1.7; color: var(--text); }
+.mod-text b { color: var(--gold2); }
+.mod-text em { color: var(--muted2); font-style: italic; }
+
+.action-box {
+  width: 100%;
+  background: rgba(201,168,76,0.05);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+.action-label {
+  font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 3px; color: var(--gold); margin-bottom: 10px;
+}
+
+/* ── PLAYER SELECT ── */
+.player-select-list {
+  width: 100%; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;
+}
+.player-select-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 16px;
+}
+.player-select-item:hover { border-color: var(--border2); }
+.player-select-item.selected { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+.player-select-item.selected-wolf { border-color: var(--blood2); background: rgba(139,26,26,0.1); }
+.player-select-item.dead { opacity: 0.35; pointer-events: none; text-decoration: line-through; }
+.player-select-item.protected { border-color: var(--village2); }
+.sel-indicator { font-size: 16px; }
+
+/* ── VOTE ── */
+.vote-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 6px;
+  font-size: 16px;
+}
+.vote-item:hover { border-color: var(--border2); }
+.vote-item.nominated { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+.vote-item.eliminated-final { border-color: var(--blood2); background: rgba(139,26,26,0.1); }
+
+/* ── TALLY ── */
+.tally-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+.tally-name { width: 100px; font-size: 15px; flex-shrink: 0; }
+.tally-bg { flex: 1; height: 26px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.tally-fill {
+  height: 100%; border-radius: 3px;
+  background: linear-gradient(to right, var(--blood), var(--blood2));
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 8px; font-size: 13px; font-weight: 600;
+  min-width: 26px; transition: width 0.6s ease;
+  font-family: 'Cinzel', serif;
+}
+
+/* ── STATUS CHIPS ── */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; width: 100%; }
+.chip {
+  padding: 5px 12px; border-radius: 3px;
+  font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px;
+}
+.chip-village { background: rgba(74,124,89,0.15); border: 1px solid rgba(74,124,89,0.4); color: var(--village2); }
+.chip-wolf    { background: rgba(139,26,26,0.15); border: 1px solid rgba(139,26,26,0.4); color: var(--blood2); }
+.chip-neutral { background: rgba(106,74,139,0.15); border: 1px solid rgba(106,74,139,0.4); color: var(--neutral2); }
+.chip-gold    { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); color: var(--gold); }
+
+/* ── SECTION TITLE ── */
+.sec-title {
+  font-family: 'Cinzel', serif;
+  font-size: 20px; font-weight: 700; letter-spacing: 2px;
+  color: var(--gold); width: 100%; margin-bottom: 4px;
+}
+.sec-sub { font-size: 15px; color: var(--muted2); font-style: italic; width: 100%; margin-bottom: 18px; }
+
+/* ── RESULT ── */
+.result-big {
+  font-family: 'Cinzel', serif;
+  font-size: 36px; font-weight: 900; letter-spacing: 3px;
+  text-align: center; margin: 12px 0;
+}
+.result-village { color: var(--village2); }
+.result-wolf { color: var(--blood2); }
+.result-neutral { color: var(--neutral2); }
+
+/* ── PROGRESS ── */
+.progress { width: 100%; height: 3px; background: var(--surface2); border-radius: 2px; margin-bottom: 24px; }
+.progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.3s; }
+
+/* ── SPACER ── */
+.spacer { flex: 1; }
+
+/* ── ALERT ── */
+.alert {
+  width: 100%; padding: 12px 16px; border-radius: 4px;
+  font-size: 15px; margin-bottom: 14px; line-height: 1.6;
+}
+.alert-gold { background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.25); color: var(--gold2); }
+.alert-blood { background: rgba(139,26,26,0.1); border: 1px solid rgba(139,26,26,0.3); color: #e06060; }
+.alert-village { background: rgba(74,124,89,0.1); border: 1px solid rgba(74,124,89,0.3); color: var(--village2); }
+
+/* ── TIMER ── */
+.timer-big {
+  font-family: 'Cinzel', serif; font-size: 64px; font-weight: 700;
+  letter-spacing: 4px; line-height: 1; margin: 12px 0; text-align: center;
+  color: var(--text);
+}
+.timer-big.warn { color: var(--gold); }
+.timer-big.danger { color: var(--blood2); animation: blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* ── ROLES LEGEND ── */
+.roles-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  width: 100%; margin-bottom: 14px;
+}
+.role-card-mini {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 4px; padding: 10px 12px;
+}
+.role-card-mini .rname {
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.role-card-mini .rdesc { font-size: 12px; color: var(--muted2); line-height: 1.4; font-style: italic; }
+.rname.rv { color: var(--village2); }
+.rname.rw { color: var(--blood2); }
+.rname.rn { color: var(--neutral2); }
+
+/* ── GHOST BANNER ── */
+.ghost-banner {
+  width: 100%; padding: 12px 16px;
+  background: rgba(0,0,0,0.4); border: 1px dashed var(--border2);
+  border-radius: 4px; text-align: center; margin-bottom: 8px;
+}
+
+/* ── NIGHT INDICATOR ── */
+.night-indicator {
+  width: 100%; text-align: center;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
+  color: #4444aa; text-transform: uppercase; margin-bottom: 20px;
+  padding: 8px;
+  background: rgba(10,10,20,0.6);
+  border: 1px solid #1a1a3a;
+  border-radius: 4px;
+}
+
+/* ── SCROLLABLE AREA ── */
+.scroll-area { width: 100%; overflow-y: auto; }
+
+/* ── DEAD PLAYERS ── */
+.dead-list {
+  width: 100%; display: flex; flex-direction: column; gap: 5px; margin-top: 10px;
+}
+.dead-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border-radius: 4px;
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+  font-size: 14px; opacity: 0.7;
+}
+
+/* nomination badge */
+.nom-badge {
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 1px;
+  padding: 2px 8px; border-radius: 2px;
+  background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+}
+
+/* ── PLAYER COUNT SELECT ── */
+.role-count-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.role-count-row:last-child { border-bottom: none; }
+.rc-name { font-size: 16px; }
+.rc-controls { display: flex; align-items: center; gap: 12px; }
+.rc-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.rc-btn:hover { border-color: var(--gold); color: var(--gold); }
+.rc-count { font-family: 'Cinzel', serif; font-size: 18px; width: 28px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: HOME
+══════════════════════════════════════════════ -->
+<div id="s-home" class="screen active">
+  <div class="logo-wrap" style="margin-top:20px; margin-bottom: 30px;">
+    <div class="logo-eyebrow">Il gioco del villaggio</div>
+    <div class="logo">🐺 <span>Lupo</span> Mannaro</div>
+    <div class="logo-sub">Scopri il traditore tra voi</div>
+  </div>
+
+  <div class="card" style="text-align:center; padding: 28px;">
+    <div style="font-size: 15px; color: var(--muted2); line-height: 1.8; font-style: italic;">
+      In un villaggio medievale si celano creature della notte.<br>
+      Di giorno il popolo delibera. Di notte i lupi cacciano.<br>
+      Chi sopravviverà all'alba?
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="goTo('s-setup')">⚔ Nuova Partita</button>
+  <button class="btn btn-surface" onclick="goTo('s-roles-list')">📜 Ruoli</button>
+  <button class="btn btn-ghost" onclick="goTo('s-rules')">Regole del Gioco</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: ROLES LIST
+══════════════════════════════════════════════ -->
+<div id="s-roles-list" class="screen">
+  <div class="sec-title">📜 I Ruoli</div>
+  <div class="sec-sub">Personaggi del villaggio</div>
+  <div class="roles-grid">
+    <div class="role-card-mini"><div class="rname rv">🌾 Contadino</div><div class="rdesc">Nessuna abilità. Vince col Villaggio.</div></div>
+    <div class="role-card-mini"><div class="rname rw">🐺 Lupo</div><div class="rdesc">Ogni notte elimina un abitante.</div></div>
+    <div class="role-card-mini"><div class="rname rv">🔮 Veggente</div><div class="rdesc">Scopre di notte se un giocatore è Lupo.</div></div>
+    <div class="role-card-mini"><div class="rname rv">🛡 Cavaliere</div><div class="rdesc">Protegge ogni notte un giocatore.</div></div>
+    <div class="role-card-mini"><div class="rname rv">💀 Medium</div><div class="rdesc">Scopre se l'eliminato della notte era Lupo.</div></div>
+    <div class="role-card-mini"><div class="rname rw">🕯 Eretico</div><div class="rdesc">Umano che vince coi Lupi. Non sa chi sono.</div></div>
+    <div class="role-card-mini"><div class="rname rv">🤝 Confraternita</div><div class="rdesc">Due umani che si conoscono a vicenda.</div></div>
+    <div class="role-card-mini"><div class="rname rn">⚡ Stregone</div><div class="rdesc">I Lupi non possono ucciderlo. Vince da solo se è l'ultimo.</div></div>
+    <div class="role-card-mini"><div class="rname rv">🦅 Corvo</div><div class="rdesc">Manda un sospettato direttamente al ballottaggio.</div></div>
+    <div class="role-card-mini"><div class="rname rv">🏹 Arciere</div><div class="rdesc">Quando muore, può eliminare un altro giocatore.</div></div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn btn-ghost" onclick="goTo('s-home')">← Indietro</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: RULES
+══════════════════════════════════════════════ -->
+<div id="s-rules" class="screen">
+  <div class="sec-title">⚖ Regole</div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.7;">
+      <div><b style="color:var(--gold);font-family:'Cinzel',serif;">Il Moderatore</b><br>
+        <span style="color:var(--muted2);">Tiene il telefono per tutta la partita. Non gioca. Segue le istruzioni sullo schermo.</span></div>
+      <div style="height:1px;background:var(--border)"></div>
+      <div><b style="color:var(--gold);font-family:'Cinzel',serif;">🌙 La Notte</b><br>
+        <span style="color:var(--muted2);">Tutti chiudono gli occhi. Il moderatore risveglia i ruoli speciali uno alla volta. I Lupi scelgono la vittima.</span></div>
+      <div style="height:1px;background:var(--border)"></div>
+      <div><b style="color:var(--gold);font-family:'Cinzel',serif;">☀ Il Giorno</b><br>
+        <span style="color:var(--muted2);">Si annuncia chi è morto. Si discute (3 min). Si vota: i 2 con più voti fanno un'arringa, poi voto finale.</span></div>
+      <div style="height:1px;background:var(--border)"></div>
+      <div><b style="color:var(--gold);font-family:'Cinzel',serif;">🏆 Vittorie</b><br>
+        <span style="color:var(--village2);">Villaggio</span>: elimina tutti i Lupi.<br>
+        <span style="color:var(--blood2);">Lupi</span>: raggiungono parità con gli umani.<br>
+        <span style="color:var(--neutral2);">Stregone</span>: sopravvive fino alla fine.</div>
+      <div style="height:1px;background:var(--border)"></div>
+      <div><b style="color:var(--gold);font-family:'Cinzel',serif;">👻 Fantasmi</b><br>
+        <span style="color:var(--muted2);">I morti restano seduti ma non parlano e non rivelano il proprio ruolo.</span></div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn btn-ghost" onclick="goTo('s-home')">← Indietro</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: SETUP — GIOCATORI
+══════════════════════════════════════════════ -->
+<div id="s-setup" class="screen">
+  <div class="sec-title">⚔ Nuova Partita</div>
+  <div class="sec-sub">Aggiungi i giocatori (min. 6)</div>
+
+  <label class="input-label">Nome giocatore</label>
+  <div class="input-row">
+    <input type="text" id="player-input" placeholder="Nome..." maxlength="20" onkeydown="if(event.key==='Enter')addPlayer()">
+    <button class="btn btn-gold" style="width:auto;padding:13px 18px;" onclick="addPlayer()">+</button>
+  </div>
+
+  <div id="player-list" class="player-list" style="margin-bottom:14px;"></div>
+  <div id="setup-chips" class="chips" style="display:none;"></div>
+
+  <div class="spacer"></div>
+  <div class="divider">⚙ Impostazioni</div>
+
+  <label class="input-label">Timer discussione (minuti, 0 = libero)</label>
+  <input type="number" id="timer-input" value="3" min="0" max="15" style="width:100%;margin-bottom:14px;">
+
+  <button class="btn btn-primary" id="setup-start-btn" onclick="goTo('s-roles-config')" disabled>Configura Ruoli →</button>
+  <button class="btn btn-ghost" onclick="goTo('s-home')" style="margin-top:10px;">← Indietro</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: SETUP — RUOLI
+══════════════════════════════════════════════ -->
+<div id="s-roles-config" class="screen">
+  <div class="sec-title">🃏 Configura Ruoli</div>
+  <div class="sec-sub" id="roles-config-sub">Distribuisci i ruoli tra i giocatori</div>
+
+  <div class="card">
+    <div id="roles-counters"></div>
+  </div>
+
+  <div id="roles-alert" class="alert alert-blood" style="display:none;"></div>
+  <div id="roles-ok" class="alert alert-village" style="display:none;">✓ Distribuzione valida. Puoi iniziare!</div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-primary" id="roles-start-btn" onclick="startGame()" disabled>Inizia la Partita ⚔</button>
+  <button class="btn btn-ghost" onclick="goTo('s-setup')" style="margin-top:10px;">← Indietro</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: COVER (passa il telefono)
+══════════════════════════════════════════════ -->
+<div id="s-cover" class="screen" style="justify-content:center;text-align:center;">
+  <div style="font-size:72px;margin-bottom:20px;">🙈</div>
+  <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--gold);margin-bottom:8px;" id="cover-name">—</div>
+  <div style="font-size:16px;color:var(--muted2);line-height:1.7;margin-bottom:40px;font-style:italic;" id="cover-text">
+    Passa il telefono a questa persona.<br>Gli altri guardino altrove.
+  </div>
+  <button class="btn btn-primary" id="cover-btn">Sono pronto →</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: ROLE REVEAL
+══════════════════════════════════════════════ -->
+<div id="s-role" class="screen">
+  <div class="progress"><div class="progress-fill" id="role-prog"></div></div>
+  <div class="sec-title" id="role-pname">—</div>
+  <div class="sec-sub">Tocca la carta per scoprire il tuo ruolo</div>
+
+  <div class="reveal-outer">
+    <div class="reveal-card" id="reveal-card" onclick="flipCard()">
+      <div class="card-face card-back">
+        <div class="card-back-bg">
+          <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+            <defs><pattern id="g" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0L0 0 0 20" fill="none" stroke="white" stroke-width="0.4"/></pattern></defs>
+            <rect width="300" height="200" fill="url(#g)"/>
+          </svg>
+        </div>
+        <div style="font-size:44px;margin-bottom:10px;">🎭</div>
+        <div style="font-family:'Cinzel',serif;font-size:16px;letter-spacing:4px;color:var(--muted);">IL TUO RUOLO</div>
+        <div class="tap-hint" style="margin-top:14px;">↓ Tocca per scoprire ↓</div>
+      </div>
+      <div class="card-face card-front" id="role-card-front">
+        <div class="role-icon" id="role-icon">🌾</div>
+        <div class="role-name" id="role-name-text">CONTADINO</div>
+        <div class="role-ability" id="role-ability-text">Vinci con il villaggio.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Extra info for special roles shown after flip -->
+  <div id="role-extra" style="display:none;width:100%;">
+    <div class="alert alert-gold" id="role-extra-text"></div>
+  </div>
+
+  <div id="role-actions" style="display:none;width:100%;">
+    <button class="btn btn-surface" onclick="nextRolePlayer()">Ho memorizzato il mio ruolo ✓</button>
+    <div style="font-size:13px;color:var(--muted);text-align:center;margin-top:8px;font-style:italic;">Copri lo schermo subito dopo aver letto!</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: NIGHT — MODERATOR VIEW
+══════════════════════════════════════════════ -->
+<div id="s-night" class="screen">
+  <div class="night-indicator" id="night-label">🌙 NOTTE 1</div>
+
+  <div class="phase-header">
+    <div class="phase-icon" id="night-phase-icon">🌙</div>
+    <div class="phase-title" id="night-phase-title">LA NOTTE CADE</div>
+    <div class="phase-sub" id="night-phase-sub">Il villaggio si addormenta</div>
+  </div>
+
+  <div class="moderator-instruction" id="night-instruction">
+    <div class="mod-label">📋 Istruzione Moderatore</div>
+    <div class="mod-text" id="night-instruction-text">—</div>
+  </div>
+
+  <div id="night-action-area"></div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-night" id="night-next-btn" onclick="nightNextStep()">Avanti →</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: DAY — ANNOUNCEMENT
+══════════════════════════════════════════════ -->
+<div id="s-day-announce" class="screen">
+  <div class="phase-header">
+    <div class="phase-icon">☀️</div>
+    <div class="phase-title" style="color:var(--gold);">L'ALBA</div>
+    <div class="phase-sub" id="day-announce-sub">Il villaggio si sveglia</div>
+  </div>
+
+  <div id="day-announce-content" class="card" style="text-align:center;padding:28px;"></div>
+
+  <!-- Arciere death shot -->
+  <div id="arciere-area" style="display:none;width:100%;">
+    <div class="alert alert-blood">🏹 <b>L'Arciere</b> è stato eliminato! Può scoccare una freccia contro un altro giocatore.</div>
+    <div class="action-box">
+      <div class="action-label">L'Arciere sceglie la sua vittima</div>
+      <div id="arciere-list" class="player-select-list"></div>
+      <button class="btn btn-danger" onclick="confirmArrow()">Scocca la freccia 🏹</button>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-gold" onclick="goToDiscussion()">☀ Inizia il Giorno →</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: DISCUSSION
+══════════════════════════════════════════════ -->
+<div id="s-discussion" class="screen">
+  <div class="phase-header">
+    <div class="phase-icon">💬</div>
+    <div class="phase-title" style="color:var(--gold);">CONSIGLIO DEL VILLAGGIO</div>
+    <div class="phase-sub" id="disc-sub">Discutete chi potrebbe essere il Lupo</div>
+  </div>
+
+  <div id="disc-timer-area">
+    <div class="timer-big" id="disc-timer">03:00</div>
+    <div style="display:flex;gap:10px;width:100%;margin-bottom:14px;">
+      <button class="btn btn-surface" id="disc-toggle-btn" onclick="toggleDiscTimer()" style="flex:1;">▶ Avvia</button>
+      <button class="btn btn-ghost" onclick="skipDiscTimer()" style="flex:1;font-size:11px;">Salta →</button>
+    </div>
+  </div>
+  <div id="disc-free-area" style="display:none;">
+    <div class="alert alert-gold">Discutete liberamente. Procedete quando siete pronti.</div>
+  </div>
+
+  <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;">GIOCATORI VIVI</div>
+  <div id="disc-alive-list" class="player-list" style="margin-bottom:16px;"></div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-primary" onclick="goToVote()">🗳 Procedi al Voto</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: VOTE — NOMINATIONS
+══════════════════════════════════════════════ -->
+<div id="s-vote" class="screen">
+  <div class="phase-header">
+    <div class="phase-icon">🗳️</div>
+    <div class="phase-title" style="color:var(--gold);">VOTO POPOLARE</div>
+    <div class="phase-sub">Nominate i due sospettati</div>
+  </div>
+
+  <div class="alert alert-gold">Ogni giocatore dice ad alta voce chi vuole al rogo. I 2 con più voti vengono nominati. Il moderatore segna i voti qui.</div>
+
+  <div class="action-box">
+    <div class="action-label">🖊 Segna i voti (tocca per aggiungere/togliere)</div>
+    <div id="vote-tally-list"></div>
+  </div>
+
+  <div id="vote-tally-bars" style="width:100%;margin-bottom:14px;"></div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-primary" id="vote-proceed-btn" onclick="proceedToRunoff()">Procedi al Ballottaggio →</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: RUNOFF (arringhe + voto finale)
+══════════════════════════════════════════════ -->
+<div id="s-runoff" class="screen">
+  <div class="phase-header">
+    <div class="phase-icon">⚖️</div>
+    <div class="phase-title" style="color:var(--gold);">BALLOTTAGGIO</div>
+    <div class="phase-sub" id="runoff-sub">I due nominati si difendono</div>
+  </div>
+
+  <div class="alert alert-gold" id="runoff-nominees-alert"></div>
+
+  <div class="moderator-instruction">
+    <div class="mod-label">📋 Istruzione Moderatore</div>
+    <div class="mod-text">Dai la parola a ciascun nominato per una breve arringa. Poi i giocatori vivi (esclusi i nominati) votano in segreto.</div>
+  </div>
+
+  <div class="action-box">
+    <div class="action-label">🗳 Voto segreto finale — segna i voti</div>
+    <div id="runoff-vote-area"></div>
+  </div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-primary" onclick="resolveRunoff()">Risolvi il Ballottaggio →</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: ELIMINATION RESULT
+══════════════════════════════════════════════ -->
+<div id="s-elim" class="screen">
+  <div class="phase-header">
+    <div class="phase-icon" id="elim-icon">💀</div>
+    <div class="phase-title" id="elim-title" style="color:var(--gold);">ELIMINATO</div>
+    <div class="phase-sub" id="elim-sub">—</div>
+  </div>
+
+  <div class="card" style="text-align:center;padding:28px;" id="elim-card"></div>
+
+  <!-- Arciere special on day elimination -->
+  <div id="elim-arciere-area" style="display:none;width:100%;">
+    <div class="alert alert-blood">🏹 L'Arciere è stato linciato! Può scoccare un'ultima freccia.</div>
+    <div class="action-box">
+      <div class="action-label">L'Arciere sceglie la sua vittima</div>
+      <div id="elim-arciere-list" class="player-select-list"></div>
+      <button class="btn btn-danger" onclick="confirmArrowDay()">Scocca la freccia 🏹</button>
+    </div>
+  </div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-night" id="elim-continue-btn" onclick="checkWinAndContinue()">Continua verso la notte →</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SCREEN: GAME OVER
+══════════════════════════════════════════════ -->
+<div id="s-gameover" class="screen">
+  <div style="font-size:72px;text-align:center;margin:20px 0 8px;" id="go-icon">🏆</div>
+  <div class="result-big" id="go-title">IL VILLAGGIO VINCE</div>
+  <div style="font-size:15px;color:var(--muted2);text-align:center;font-style:italic;margin-bottom:20px;" id="go-text">—</div>
+
+  <div class="divider">Ruoli rivelati</div>
+
+  <div id="go-roles" style="width:100%;display:flex;flex-direction:column;gap:6px;margin-bottom:20px;"></div>
+
+  <div class="spacer"></div>
+  <button class="btn btn-primary" onclick="resetGame()">⚔ Nuova Partita</button>
+  <button class="btn btn-ghost" onclick="goTo('s-home')" style="margin-top:10px;">Menu Principale</button>
+</div>
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║                     GAME STATE                      ║
+// ╚══════════════════════════════════════════════════════╝
+const ROLES = {
+  contadino:     { name:'Contadino',    icon:'🌾', faction:'village', ability:'Nessuna abilità. Vinci col Villaggio.' },
+  lupo:          { name:'Lupo',         icon:'🐺', faction:'wolf',    ability:'Ogni notte elimina un abitante del villaggio.' },
+  veggente:      { name:'Veggente',     icon:'🔮', faction:'village', ability:'Di notte scopri se un giocatore è un Lupo.' },
+  cavaliere:     { name:'Cavaliere',    icon:'🛡',  faction:'village', ability:'Ogni notte proteggi una persona. Non puoi proteggere te stesso.' },
+  medium:        { name:'Medium',       icon:'💀', faction:'village', ability:'Dalla seconda notte: scopri se chi è morto stanotte era un Lupo.' },
+  eretico:       { name:'Eretico',      icon:'🕯',  faction:'wolf',   ability:'Sei umano ma vinci coi Lupi. Non sai chi sono i Lupi.' },
+  confraternita: { name:'Confraternita',icon:'🤝', faction:'village', ability:'Sei un membro della Confraternita. Conosci il tuo fratello/sorella.' },
+  stregone:      { name:'Stregone',     icon:'⚡', faction:'neutral', ability:'I Lupi non possono ucciderti. Vinci da solo se sei l\'ultimo sopravvissuto.' },
+  corvo:         { name:'Corvo',        icon:'🦅', faction:'village', ability:'Ogni notte manda un sospettato direttamente al ballottaggio del giorno.' },
+  arciere:       { name:'Arciere',      icon:'🏹', faction:'village', ability:'Quando vieni eliminato (di notte o linciato), puoi uccidere un altro giocatore.' },
+};
+
+let G = {};
+
+function freshState() {
+  return {
+    players: [],        // [{name, alive, role}]
+    round: 1,
+    roleIndex: 0,       // for role reveal
+    nightPhase: 0,      // step in night sequence
+    nightKill: null,    // name killed by wolves
+    nightProtect: null, // name protected by cavaliere
+    nightCorvo: null,   // name nominated by corvo
+    nightMediumInfo: null,
+    veggenteSaw: null,
+    nominations: {},    // name -> vote count (day vote)
+    runoffNominees: [], // [a, b]
+    runoffVotes: {},    // name -> vote count
+    discTimerInterval: null,
+    discTimerSecs: 0,
+    discTimerRunning: false,
+    discTimerMin: 3,
+    arciereTarget: null,
+    arciereContext: null, // 'night' | 'day'
+    cardFlipped: false,
+    confraternita: [],  // names of confraternita pair
+    _tieSelected: [],
+    _runoffTieChoice: null,
+  };
+}
+
+G = freshState();
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                    NAVIGATION                       ║
+// ╚══════════════════════════════════════════════════════╝
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                      SETUP                         ║
+// ╚══════════════════════════════════════════════════════╝
+function addPlayer() {
+  const inp = document.getElementById('player-input');
+  const name = inp.value.trim();
+  if (!name) return;
+  if (G.players.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+    inp.style.borderColor = 'var(--blood2)';
+    setTimeout(() => inp.style.borderColor = '', 800);
+    return;
+  }
+  G.players.push({ name, alive: true, role: null });
+  inp.value = ''; inp.focus();
+  renderSetup();
+}
+
+function removePlayer(i) {
+  G.players.splice(i, 1);
+  renderSetup();
+}
+
+function renderSetup() {
+  const list = document.getElementById('player-list');
+  list.innerHTML = G.players.map((p,i) => `
+    <div class="player-item">
+      <span class="player-num">${i+1}</span>
+      <span class="player-name">${p.name}</span>
+      <button class="remove-btn" onclick="removePlayer(${i})">×</button>
+    </div>`).join('');
+
+  const n = G.players.length;
+  const btn = document.getElementById('setup-start-btn');
+  btn.disabled = n < 6;
+
+  const chips = document.getElementById('setup-chips');
+  if (n >= 6) {
+    chips.style.display = 'flex';
+    const wolves = recommendedWolves(n);
+    chips.innerHTML = `<span class="chip chip-gold">${n} giocatori</span>
+      <span class="chip chip-wolf">Lupi consigliati: ${wolves}</span>`;
+  } else {
+    chips.style.display = 'none';
+  }
+}
+
+function recommendedWolves(n) {
+  if (n <= 8)  return 2;
+  if (n <= 12) return 3;
+  if (n <= 16) return 4;
+  return Math.ceil(n / 4);
+}
+
+// ── ROLES CONFIG ──
+let roleCounts = {};
+
+function initRolesConfig() {
+  const n = G.players.length;
+  const wolves = recommendedWolves(n);
+
+  roleCounts = {
+    contadino: n - wolves - 1, // fill rest with contadini
+    lupo: wolves,
+    veggente: 1,
+    cavaliere: 0,
+    medium: 0,
+    eretico: 0,
+    confraternita: 0,
+    stregone: 0,
+    corvo: 0,
+    arciere: 0,
+  };
+
+  document.getElementById('roles-config-sub').textContent = `${n} giocatori — distribuisci i ruoli`;
+  renderRolesConfig();
+}
+
+function renderRolesConfig() {
+  const n = G.players.length;
+  const total = Object.values(roleCounts).reduce((a,b) => a+b, 0);
+  const diff = total - n;
+
+  const container = document.getElementById('roles-counters');
+  const roleOrder = ['lupo','contadino','veggente','cavaliere','medium','eretico','confraternita','stregone','corvo','arciere'];
+
+  container.innerHTML = roleOrder.map(key => {
+    const r = ROLES[key];
+    const fClass = key === 'lupo' || key === 'eretico' ? 'rw' : key === 'stregone' ? 'rn' : 'rv';
+    return `
+    <div class="role-count-row">
+      <div class="rc-name"><span class="${fClass}" style="font-family:'Cinzel',serif;font-size:13px;">${r.icon} ${r.name}</span></div>
+      <div class="rc-controls">
+        <button class="rc-btn" onclick="changeCount('${key}',-1)">−</button>
+        <span class="rc-count">${roleCounts[key]}</span>
+        <button class="rc-btn" onclick="changeCount('${key}',1)">+</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Validate
+  const alert = document.getElementById('roles-alert');
+  const ok = document.getElementById('roles-ok');
+  const startBtn = document.getElementById('roles-start-btn');
+
+  const warnings = [];
+  if (diff !== 0) warnings.push(`Totale ruoli: ${total} (${diff > 0 ? '+'+diff : diff} rispetto ai ${n} giocatori)`);
+  if (roleCounts.confraternita % 2 !== 0) warnings.push('La Confraternita deve essere in numero pari');
+  if (roleCounts.lupo < 1) warnings.push('Ci deve essere almeno 1 Lupo');
+
+  if (warnings.length > 0) {
+    alert.style.display = 'block'; ok.style.display = 'none';
+    alert.innerHTML = warnings.map(w => `⚠ ${w}`).join('<br>');
+    startBtn.disabled = true;
+  } else {
+    alert.style.display = 'none'; ok.style.display = 'block';
+    startBtn.disabled = false;
+  }
+}
+
+function changeCount(role, delta) {
+  roleCounts[role] = Math.max(0, roleCounts[role] + delta);
+  renderRolesConfig();
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                   START GAME                       ║
+// ╚══════════════════════════════════════════════════════╝
+function startGame() {
+  G.discTimerMin = parseInt(document.getElementById('timer-input').value) || 0;
+  G.round = 1;
+
+  // Build role deck
+  const deck = [];
+  for (const [role, count] of Object.entries(roleCounts)) {
+    for (let i = 0; i < count; i++) deck.push(role);
+  }
+  shuffle(deck);
+
+  // Assign roles
+  G.players.forEach((p, i) => { p.role = deck[i]; p.alive = true; });
+
+  // Find confraternita pair
+  G.confraternita = G.players.filter(p => p.role === 'confraternita').map(p => p.name);
+
+  G.roleIndex = 0;
+  showCover(0, () => { showRoleReveal(); });
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                  ROLE REVEAL                       ║
+// ╚══════════════════════════════════════════════════════╝
+function showCover(index, callback) {
+  const player = G.players[index];
+  document.getElementById('cover-name').textContent = player.name;
+  document.getElementById('cover-text').innerHTML =
+    `Passa il telefono a <b>${player.name}</b>.<br>Gli altri guardino dall'altra parte.`;
+  const btn = document.getElementById('cover-btn');
+  btn.textContent = 'Sono pronto →';
+  btn.onclick = callback;
+  goTo('s-cover');
+}
+
+function showRoleReveal() {
+  const i = G.roleIndex;
+  const player = G.players[i];
+  const total = G.players.length;
+  const roleKey = player.role;
+  const role = ROLES[roleKey];
+
+  document.getElementById('role-prog').style.width = `${(i/total)*100}%`;
+  document.getElementById('role-pname').textContent = player.name;
+
+  // Card face
+  const front = document.getElementById('role-card-front');
+  const fClass = role.faction === 'wolf' ? 'role-wolf' : role.faction === 'neutral' ? 'role-neutral' : 'role-village';
+  front.className = `card-face card-front ${fClass}`;
+  document.getElementById('role-icon').textContent = role.icon;
+  document.getElementById('role-name-text').textContent = role.name.toUpperCase();
+  document.getElementById('role-ability-text').textContent = role.ability;
+
+  // Extra info
+  const extra = document.getElementById('role-extra');
+  const extraText = document.getElementById('role-extra-text');
+  if (roleKey === 'confraternita' && G.confraternita.length === 2) {
+    const partner = G.confraternita.find(n => n !== player.name);
+    if (partner) {
+      extra.style.display = 'block';
+      extraText.innerHTML = `🤝 Il tuo fratello nella Confraternita è: <b>${partner}</b>`;
+    } else {
+      extra.style.display = 'none';
+    }
+  } else {
+    extra.style.display = 'none';
+  }
+
+  // Reset flip
+  G.cardFlipped = false;
+  document.getElementById('reveal-card').classList.remove('flipped');
+  document.getElementById('role-actions').style.display = 'none';
+  goTo('s-role');
+}
+
+function flipCard() {
+  if (G.cardFlipped) return;
+  G.cardFlipped = true;
+  document.getElementById('reveal-card').classList.add('flipped');
+  setTimeout(() => { document.getElementById('role-actions').style.display = 'block'; }, 700);
+}
+
+function nextRolePlayer() {
+  G.roleIndex++;
+  if (G.roleIndex >= G.players.length) {
+    startNight();
+  } else {
+    showCover(G.roleIndex, showRoleReveal);
+  }
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                     NIGHT                          ║
+// ╚══════════════════════════════════════════════════════╝
+// Night sequence: array of step objects
+// Each step: { icon, title, sub, instruction, action }
+
+let nightSteps = [];
+let nightStepIndex = 0;
+
+function buildNightSteps() {
+  const alive = G.players.filter(p => p.alive);
+  const hasRole = (r) => alive.some(p => p.role === r);
+  const steps = [];
+
+  // 0. All close eyes
+  steps.push({
+    icon: '🌙', title: 'LA NOTTE CADE', sub: 'Tutti si addormentano',
+    instruction: 'Dì ad alta voce: <em>"È notte, chiudete tutti gli occhi."</em><br>Assicurati che tutti abbiano gli occhi chiusi.',
+    action: null
+  });
+
+  // 1. Veggente
+  if (hasRole('veggente')) {
+    steps.push({
+      icon: '🔮', title: 'IL VEGGENTE', sub: 'Si risveglia nell\'oscurità',
+      instruction: 'Dì: <em>"Il Veggente apre gli occhi e indica un giocatore."</em><br>Il Veggente apre gli occhi e indica qualcuno. Annuisci (✓ Lupo) o nega (✗ non è Lupo) con la testa. Poi dì: <em>"Il Veggente chiude gli occhi."</em>',
+      action: 'veggente'
+    });
+  }
+
+  // 2. Medium (from round 2+)
+  if (hasRole('medium') && G.round > 1 && G.nightKill !== null) {
+    steps.push({
+      icon: '💀', title: 'IL MEDIUM', sub: 'Interroga i defunti',
+      instruction: 'Dì: <em>"Il Medium apre gli occhi."</em><br>Annuisci (✓ era Lupo) o nega (✗ non era Lupo) riferendoti a chi è morto stanotte. Poi dì: <em>"Il Medium chiude gli occhi."</em>',
+      action: null
+    });
+  }
+
+  // 3. Cavaliere
+  if (hasRole('cavaliere')) {
+    steps.push({
+      icon: '🛡', title: 'IL CAVALIERE', sub: 'Sceglie chi proteggere',
+      instruction: 'Dì: <em>"Il Cavaliere apre gli occhi e indica chi vuole proteggere questa notte."</em><br>Il Cavaliere non può scegliere se stesso. Segna il nome qui sotto, poi dì: <em>"Il Cavaliere chiude gli occhi."</em>',
+      action: 'cavaliere'
+    });
+  }
+
+  // 4. Corvo
+  if (hasRole('corvo')) {
+    steps.push({
+      icon: '🦅', title: 'IL CORVO', sub: 'Nomina un sospettato',
+      instruction: 'Dì: <em>"Il Corvo apre gli occhi e indica un sospettato da mandare al rogo."</em><br>Segna il nome qui sotto, poi dì: <em>"Il Corvo chiude gli occhi."</em>',
+      action: 'corvo'
+    });
+  }
+
+  // 5. Lupi
+  steps.push({
+    icon: '🐺', title: 'I LUPI', sub: 'Scelgono la vittima',
+    instruction: 'Dì: <em>"I Lupi aprono gli occhi e si riconoscono."</em><br>I Lupi si guardano tra loro, poi indicano in silenzio chi sbranare. Non possono scegliere altri Lupi né lo Stregone. Segna il nome qui sotto, poi dì: <em>"I Lupi chiudono gli occhi."</em>',
+    action: 'lupi'
+  });
+
+  // 6. Wake up
+  steps.push({
+    icon: '☀️', title: 'L\'ALBA', sub: 'La notte è finita',
+    instruction: 'Dì: <em>"È giorno, aprite tutti gli occhi."</em><br>Ora annuncia cosa è successo stanotte.',
+    action: null
+  });
+
+  return steps;
+}
+
+function startNight() {
+  G.nightKill = null;
+  G.nightProtect = null;
+  G.nightCorvo = null;
+  G.veggenteSaw = null;
+
+  nightSteps = buildNightSteps();
+  nightStepIndex = 0;
+  document.getElementById('night-label').textContent = `🌙 NOTTE ${G.round}`;
+  renderNightStep();
+  goTo('s-night');
+}
+
+function renderNightStep() {
+  const step = nightSteps[nightStepIndex];
+  document.getElementById('night-phase-icon').textContent = step.icon;
+  document.getElementById('night-phase-title').textContent = step.title;
+  document.getElementById('night-phase-sub').textContent = step.sub;
+  document.getElementById('night-instruction-text').innerHTML = step.instruction;
+
+  const area = document.getElementById('night-action-area');
+  area.innerHTML = '';
+
+  if (step.action === 'lupi') {
+    // Select victim (exclude stregone, exclude dead)
+    area.innerHTML = buildPlayerSelectHTML('lupi-select', 'wolf', '🐺 Chi sbranano i Lupi stanotte?');
+  } else if (step.action === 'cavaliere') {
+    area.innerHTML = buildPlayerSelectHTML('cav-select', 'cav', '🛡 Chi protegge il Cavaliere?');
+  } else if (step.action === 'corvo') {
+    area.innerHTML = buildPlayerSelectHTML('corvo-select', 'default', '🦅 Chi nomina il Corvo?');
+  } else if (step.action === 'veggente') {
+    area.innerHTML = buildPlayerSelectHTML('vegg-select', 'default', '🔮 Chi ha indicato il Veggente? (solo per registro)');
+  }
+
+  // Next btn label
+  const nextBtn = document.getElementById('night-next-btn');
+  const isLast = nightStepIndex === nightSteps.length - 1;
+  if (isLast) {
+    nextBtn.textContent = 'Mostra Alba →';
+  } else {
+    nextBtn.textContent = 'Avanti →';
+  }
+}
+
+function buildPlayerSelectHTML(id, type, label) {
+  const alive = G.players.filter(p => p.alive);
+  const items = alive.map(p => {
+    const isExcluded = type === 'wolf' && (p.role === 'stregone' || p.role === 'lupo');
+    const disabled = isExcluded ? 'style="opacity:0.35;pointer-events:none;"' : '';
+    const tag = isExcluded ? `<span style="font-family:'Cinzel',serif;font-size:9px;letter-spacing:1px;color:var(--muted);margin-left:6px;">${p.role === 'lupo' ? '(Lupo)' : '(Stregone)'}</span>` : '';
+    return `<div class="player-select-item" id="${id}-${sanitize(p.name)}" onclick="selectNightTarget('${id}','${p.name}','${type}')" ${disabled}>
+      <span>${p.name}${tag}</span>
+      <span class="sel-indicator" id="${id}-ind-${sanitize(p.name)}">○</span>
+    </div>`;
+  }).join('');
+  return `<div class="action-box"><div class="action-label">${label}</div><div class="player-select-list">${items}</div></div>`;
+}
+
+let nightSelections = {};
+
+function selectNightTarget(id, name, type) {
+  // Deselect all in this group
+  document.querySelectorAll(`[id^="${id}-"]:not([id^="${id}-ind"])`).forEach(el => {
+    el.classList.remove('selected','selected-wolf');
+    const ind = document.getElementById(`${id}-ind-${sanitize(el.id.replace(id+'-',''))}`);
+    if (ind) ind.textContent = '○';
+  });
+
+  nightSelections[id] = name;
+  const el = document.getElementById(`${id}-${sanitize(name)}`);
+  if (el) {
+    el.classList.add(type === 'wolf' ? 'selected-wolf' : 'selected');
+    const ind = document.getElementById(`${id}-ind-${sanitize(name)}`);
+    if (ind) ind.textContent = type === 'wolf' ? '🐺' : '✓';
+  }
+}
+
+function nightNextStep() {
+  const step = nightSteps[nightStepIndex];
+
+  // Save selections
+  if (step.action === 'lupi') {
+    G.nightKill = nightSelections['lupi-select'] || null;
+  } else if (step.action === 'cavaliere') {
+    G.nightProtect = nightSelections['cav-select'] || null;
+  } else if (step.action === 'corvo') {
+    G.nightCorvo = nightSelections['corvo-select'] || null;
+  }
+
+  nightStepIndex++;
+
+  if (nightStepIndex >= nightSteps.length) {
+    showDayAnnounce();
+    return;
+  }
+
+  nightSelections = {};
+  renderNightStep();
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                   DAY ANNOUNCE                     ║
+// ╚══════════════════════════════════════════════════════╝
+function showDayAnnounce() {
+  // Resolve kill: check if protected
+  let killed = G.nightKill;
+  if (killed && killed === G.nightProtect) {
+    killed = null; // saved by cavaliere
+  }
+
+  const content = document.getElementById('day-announce-content');
+  const arciereArea = document.getElementById('arciere-area');
+  arciereArea.style.display = 'none';
+  G.arciereContext = null;
+
+  if (!killed) {
+    content.innerHTML = `
+      <div style="font-size:48px;margin-bottom:12px;">🛡</div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;font-weight:700;color:var(--village2);margin-bottom:8px;">NESSUNA VITTIMA</div>
+      <div style="font-size:15px;color:var(--muted2);font-style:italic;">Il Cavaliere ha protetto la vittima stanotte.<br>Tutti sono sopravvissuti!</div>`;
+    document.getElementById('day-announce-sub').textContent = 'Il villaggio si sveglia indenne';
+  } else {
+    const player = G.players.find(p => p.name === killed);
+    player.alive = false;
+    const role = ROLES[player.role];
+
+    content.innerHTML = `
+      <div style="font-size:48px;margin-bottom:12px;">💀</div>
+      <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--blood2);margin-bottom:8px;">${killed}</div>
+      <div style="font-size:15px;color:var(--muted2);font-style:italic;margin-bottom:12px;">è stato trovato senza vita all'alba</div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--muted);">IL SUO RUOLO ERA</div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;color:${role.faction==='wolf'?'var(--blood2)':role.faction==='neutral'?'var(--neutral2)':'var(--village2)'};margin-top:4px;">${role.icon} ${role.name}</div>`;
+
+    document.getElementById('day-announce-sub').textContent = `${killed} è caduto nella notte`;
+
+    // Arciere trigger
+    if (player.role === 'arciere') {
+      G.arciereContext = 'night';
+      arciereArea.style.display = 'block';
+      renderArciereList('arciere-list', killed);
+    }
+  }
+
+  if (checkWin()) return;
+  goTo('s-day-announce');
+}
+
+function renderArciereList(containerId, deadName) {
+  const targets = G.players.filter(p => p.alive && p.name !== deadName);
+  document.getElementById(containerId).innerHTML = targets.map(p => `
+    <div class="player-select-item" id="arc-${sanitize(p.name)}" onclick="selectArrow('${p.name}','${containerId}')">
+      <span>${p.name}</span>
+      <span class="sel-indicator" id="arc-ind-${sanitize(p.name)}">○</span>
+    </div>`).join('');
+  G.arciereTarget = null;
+}
+
+function selectArrow(name, containerId) {
+  document.querySelectorAll(`#${containerId} .player-select-item`).forEach(el => {
+    el.classList.remove('selected-wolf');
+  });
+  document.querySelectorAll(`[id^="arc-ind-"]`).forEach(el => el.textContent = '○');
+  G.arciereTarget = name;
+  const el = document.getElementById(`arc-${sanitize(name)}`);
+  if (el) { el.classList.add('selected-wolf'); }
+  document.getElementById(`arc-ind-${sanitize(name)}`).textContent = '🏹';
+}
+
+function confirmArrow() {
+  if (!G.arciereTarget) return;
+  const target = G.players.find(p => p.name === G.arciereTarget);
+  if (target) {
+    target.alive = false;
+    document.getElementById('arciere-area').style.display = 'none';
+    const content = document.getElementById('day-announce-content');
+    content.innerHTML += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+      <div style="color:var(--blood2);font-family:'Cinzel',serif;font-size:13px;">🏹 L'Arciere ha colpito <b>${G.arciereTarget}</b></div>
+    </div>`;
+  }
+  if (checkWin()) return;
+}
+
+function confirmArrowDay() {
+  if (!G.arciereTarget) return;
+  const target = G.players.find(p => p.name === G.arciereTarget);
+  if (target) {
+    target.alive = false;
+    document.getElementById('elim-arciere-area').style.display = 'none';
+    document.getElementById('elim-card').innerHTML += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+      <div style="color:var(--blood2);font-family:'Cinzel',serif;font-size:13px;">🏹 Ha colpito <b>${G.arciereTarget}</b></div>
+    </div>`;
+  }
+  if (checkWin()) return;
+}
+
+function goToDiscussion() {
+  if (checkWin()) return;
+
+  const alive = G.players.filter(p => p.alive);
+  document.getElementById('disc-sub').textContent = `${alive.length} giocatori vivi — Round ${G.round}`;
+
+  document.getElementById('disc-alive-list').innerHTML = alive.map(p => `
+    <div class="player-item">
+      <span class="player-name">${p.name}</span>
+      ${G.nightCorvo === p.name ? '<span class="nom-badge">🦅 Corvo</span>' : ''}
+    </div>`).join('');
+
+  clearInterval(G.discTimerInterval);
+  G.discTimerRunning = false;
+
+  if (G.discTimerMin > 0) {
+    document.getElementById('disc-timer-area').style.display = 'block';
+    document.getElementById('disc-free-area').style.display = 'none';
+    G.discTimerSecs = G.discTimerMin * 60;
+    updateDiscTimer();
+    document.getElementById('disc-toggle-btn').textContent = '▶ Avvia';
+  } else {
+    document.getElementById('disc-timer-area').style.display = 'none';
+    document.getElementById('disc-free-area').style.display = 'block';
+  }
+
+  goTo('s-discussion');
+}
+
+function toggleDiscTimer() {
+  if (G.discTimerRunning) {
+    clearInterval(G.discTimerInterval);
+    G.discTimerRunning = false;
+    document.getElementById('disc-toggle-btn').textContent = '▶ Riprendi';
+  } else {
+    G.discTimerRunning = true;
+    document.getElementById('disc-toggle-btn').textContent = '⏸ Pausa';
+    G.discTimerInterval = setInterval(() => {
+      G.discTimerSecs--;
+      updateDiscTimer();
+      if (G.discTimerSecs <= 0) {
+        clearInterval(G.discTimerInterval);
+        G.discTimerRunning = false;
+        document.getElementById('disc-timer').textContent = 'TEMPO!';
+        document.getElementById('disc-timer').className = 'timer-big danger';
+      }
+    }, 1000);
+  }
+}
+
+function updateDiscTimer() {
+  const m = Math.floor(G.discTimerSecs / 60);
+  const s = G.discTimerSecs % 60;
+  const el = document.getElementById('disc-timer');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = 'timer-big';
+  if (G.discTimerSecs <= 10) el.classList.add('danger');
+  else if (G.discTimerSecs <= 30) el.classList.add('warn');
+}
+
+function skipDiscTimer() {
+  clearInterval(G.discTimerInterval);
+  G.discTimerRunning = false;
+  goToVote();
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                      VOTE                          ║
+// ╚══════════════════════════════════════════════════════╝
+function goToVote() {
+  clearInterval(G.discTimerInterval);
+  G.nominations = {};
+  const alive = G.players.filter(p => p.alive);
+  alive.forEach(p => { G.nominations[p.name] = 0; });
+
+  // Corvo auto-nomination
+  if (G.nightCorvo && G.nominations[G.nightCorvo] !== undefined) {
+    G.nominations[G.nightCorvo] = 1; // starts with 1 vote from corvo
+  }
+
+  renderVoteTally();
+  goTo('s-vote');
+}
+
+function renderVoteTally() {
+  const entries = Object.entries(G.nominations).sort((a,b) => b[1]-a[1]);
+  const max = Math.max(...entries.map(e=>e[1]), 1);
+  const total = entries.reduce((s,e)=>s+e[1],0);
+
+  document.getElementById('vote-tally-list').innerHTML = entries.map(([name, votes]) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:16px;">${name} ${G.nightCorvo===name?'🦅':''}</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="rc-btn" onclick="changeNomination('${name}',-1)">−</button>
+        <span style="font-family:'Cinzel',serif;font-size:16px;width:24px;text-align:center;">${votes}</span>
+        <button class="rc-btn" onclick="changeNomination('${name}',1)">+</button>
+      </div>
+    </div>`).join('');
+
+  // Bars
+  document.getElementById('vote-tally-bars').innerHTML = entries.map(([name, votes]) => `
+    <div class="tally-row">
+      <span class="tally-name">${name}</span>
+      <div class="tally-bg"><div class="tally-fill" style="width:${total>0?(votes/total*100):0}%">${votes}</div></div>
+    </div>`).join('');
+}
+
+function changeNomination(name, delta) {
+  G.nominations[name] = Math.max(0, (G.nominations[name]||0) + delta);
+  renderVoteTally();
+}
+
+function proceedToRunoff() {
+  const entries = Object.entries(G.nominations).sort((a,b) => b[1]-a[1]);
+  if (entries.length < 2) return;
+
+  const top1votes = entries[0][1];
+  const top2votes = entries[1][1];
+
+  // Find all players tied at top positions
+  const tiedForFirst = entries.filter(e => e[1] === top1votes).map(e => e[0]);
+  const tiedForSecond = entries.filter(e => e[1] === top2votes && !tiedForFirst.includes(e[0])).map(e => e[0]);
+
+  // Check if there's ambiguity: more than 2 candidates tied at same level
+  const needsNarratorChoice =
+    tiedForFirst.length > 2 ||
+    (tiedForFirst.length === 2 && tiedForSecond.length > 0 && top1votes === top2votes) ||
+    (tiedForFirst.length === 1 && tiedForSecond.length > 1) ||
+    (tiedForFirst.length > 1 && tiedForSecond.length >= 1 && top1votes === top2votes);
+
+  if (needsNarratorChoice || tiedForFirst.length > 2 || (tiedForFirst.length === 1 && tiedForSecond.length > 1) || (top1votes === top2votes && tiedForFirst.length > 1)) {
+    // Narrator chooses among tied candidates
+    const tiedCandidates = entries.filter(e => e[1] === top1votes || e[1] === top2votes).map(e => e[0]);
+    showNarratorTiebreaker('vote', tiedCandidates, top1votes, top2votes);
+    return;
+  }
+
+  // Clear top 2 — no tie
+  G.runoffNominees = [entries[0][0], entries[1][0]];
+  setupRunoff();
+}
+
+function showNarratorTiebreaker(context, candidates, v1, v2) {
+  // Build a modal-style screen inline on s-vote
+  const area = document.getElementById('vote-tally-list');
+  const bars = document.getElementById('vote-tally-bars');
+  bars.innerHTML = '';
+
+  area.innerHTML = `
+    <div class="alert alert-blood" style="margin-bottom:14px;">
+      ⚖ <b>Pareggio!</b> Il Narratore sceglie i due giocatori da mandare al ballottaggio.
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;">SELEZIONA ESATTAMENTE 2 GIOCATORI</div>
+    <div id="tie-select-list">
+      ${candidates.map(name => `
+        <div class="vote-item" id="tie-${sanitize(name)}" onclick="toggleTieSelect('${name}')">
+          <span>${name} <span style="color:var(--muted);font-size:13px;">(${G.nominations[name]} voti)</span></span>
+          <span id="tie-ind-${sanitize(name)}">○</span>
+        </div>`).join('')}
+    </div>
+    <button class="btn btn-primary" id="tie-confirm-btn" onclick="confirmTiebreaker()" disabled style="margin-top:14px;">Conferma Ballottaggio →</button>
+  `;
+
+  G._tieSelected = [];
+}
+
+let _tieSelected = [];
+
+function toggleTieSelect(name) {
+  const idx = G._tieSelected.indexOf(name);
+  if (idx >= 0) {
+    G._tieSelected.splice(idx, 1);
+    document.getElementById(`tie-${sanitize(name)}`).classList.remove('nominated');
+    document.getElementById(`tie-ind-${sanitize(name)}`).textContent = '○';
+  } else {
+    if (G._tieSelected.length >= 2) return; // max 2
+    G._tieSelected.push(name);
+    document.getElementById(`tie-${sanitize(name)}`).classList.add('nominated');
+    document.getElementById(`tie-ind-${sanitize(name)}`).textContent = '✓';
+  }
+  document.getElementById('tie-confirm-btn').disabled = G._tieSelected.length !== 2;
+}
+
+function confirmTiebreaker() {
+  if (G._tieSelected.length !== 2) return;
+  G.runoffNominees = [...G._tieSelected];
+  G._tieSelected = [];
+  setupRunoff();
+}
+
+function setupRunoff() {
+  G.runoffVotes = {};
+  G.runoffVotes[G.runoffNominees[0]] = 0;
+  G.runoffVotes[G.runoffNominees[1]] = 0;
+
+  document.getElementById('runoff-nominees-alert').innerHTML =
+    `Al ballottaggio: <b>${G.runoffNominees[0]}</b> vs <b>${G.runoffNominees[1]}</b>. Ognuno fa la sua arringa, poi si vota in segreto.`;
+
+  renderRunoffVote();
+  goTo('s-runoff');
+}
+
+function renderRunoffVote() {
+  document.getElementById('runoff-vote-area').innerHTML = G.runoffNominees.map(name => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:16px;">${name}</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button class="rc-btn" onclick="changeRunoff('${name}',-1)">−</button>
+        <span style="font-family:'Cinzel',serif;font-size:16px;width:24px;text-align:center;">${G.runoffVotes[name]||0}</span>
+        <button class="rc-btn" onclick="changeRunoff('${name}',1)">+</button>
+      </div>
+    </div>`).join('');
+}
+
+function changeRunoff(name, delta) {
+  G.runoffVotes[name] = Math.max(0, (G.runoffVotes[name]||0) + delta);
+  renderRunoffVote();
+}
+
+function resolveRunoff() {
+  const [a, b] = G.runoffNominees;
+  const va = G.runoffVotes[a] || 0;
+  const vb = G.runoffVotes[b] || 0;
+
+  if (va === vb) {
+    // Tie — narrator chooses
+    showRunoffTiebreaker(a, b);
+    return;
+  }
+
+  const eliminated = va > vb ? a : b;
+  const player = G.players.find(p => p.name === eliminated);
+  player.alive = false;
+  showEliminationResult(eliminated, false);
+}
+
+function showRunoffTiebreaker(a, b) {
+  const area = document.getElementById('runoff-vote-area');
+  area.innerHTML = `
+    <div class="alert alert-blood" style="margin-bottom:14px;">
+      ⚖ <b>Pareggio!</b> Il Narratore decide chi viene eliminato.
+    </div>
+    <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:3px;color:var(--gold);margin-bottom:10px;">SCEGLI CHI ELIMINARE</div>
+    ${[a, b].map(name => `
+      <div class="vote-item" id="rtie-${sanitize(name)}" onclick="selectRunoffTie('${name}','${a}','${b}')">
+        <span style="font-size:16px;">${name}</span>
+        <span id="rtie-ind-${sanitize(name)}">○</span>
+      </div>`).join('')}
+    <button class="btn btn-primary" id="rtie-confirm-btn" onclick="confirmRunoffTie()" disabled style="margin-top:14px;">🔥 Elimina →</button>
+  `;
+  G._runoffTieChoice = null;
+}
+
+function selectRunoffTie(chosen, a, b) {
+  G._runoffTieChoice = chosen;
+  [a, b].forEach(name => {
+    const el = document.getElementById(`rtie-${sanitize(name)}`);
+    const ind = document.getElementById(`rtie-ind-${sanitize(name)}`);
+    if (name === chosen) { el.classList.add('eliminated-final'); ind.textContent = '🔥'; }
+    else { el.classList.remove('eliminated-final'); ind.textContent = '○'; }
+  });
+  document.getElementById('rtie-confirm-btn').disabled = false;
+}
+
+function confirmRunoffTie() {
+  if (!G._runoffTieChoice) return;
+  const player = G.players.find(p => p.name === G._runoffTieChoice);
+  player.alive = false;
+  showEliminationResult(G._runoffTieChoice, false);
+}
+
+function showEliminationResult(eliminated, tie) {
+  const icon = document.getElementById('elim-icon');
+  const title = document.getElementById('elim-title');
+  const sub = document.getElementById('elim-sub');
+  const card = document.getElementById('elim-card');
+  const arciereArea = document.getElementById('elim-arciere-area');
+  arciereArea.style.display = 'none';
+
+  if (tie) {
+    icon.textContent = '🤝';
+    title.textContent = 'PAREGGIO';
+    title.style.color = 'var(--gold)';
+    sub.textContent = 'Il villaggio non trova un accordo';
+    card.innerHTML = `<div style="font-size:15px;color:var(--muted2);font-style:italic;">Voti pari. Nessuno viene linciato questo turno.</div>`;
+  } else {
+    const player = G.players.find(p => p.name === eliminated);
+    const role = ROLES[player.role];
+    const isWolf = role.faction === 'wolf';
+    icon.textContent = isWolf ? '🔥' : '😢';
+    title.textContent = 'AL ROGO!';
+    title.style.color = 'var(--blood2)';
+    sub.textContent = `${eliminated} è stato linciato`;
+    card.innerHTML = `
+      <div style="font-family:'Cinzel',serif;font-size:22px;font-weight:700;color:var(--blood2);margin-bottom:8px;">${eliminated}</div>
+      <div style="font-size:15px;color:var(--muted2);font-style:italic;margin-bottom:12px;">è stato mandato al rogo dal villaggio</div>
+      <div style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:2px;color:var(--muted);">IL SUO RUOLO ERA</div>
+      <div style="font-family:'Cinzel',serif;font-size:18px;color:${isWolf?'var(--blood2)':role.faction==='neutral'?'var(--neutral2)':'var(--village2)'};margin-top:4px;">${role.icon} ${role.name}</div>
+      <div style="margin-top:12px;"><span style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:2px;background:${isWolf?'rgba(139,26,26,0.15)':'rgba(74,124,89,0.1)'};border:1px solid ${isWolf?'var(--blood)':'var(--village)'};color:${isWolf?'var(--blood2)':'var(--village2)'};">${isWolf?'ERA UN LUPO':'NON ERA UN LUPO'}</span></div>`;
+
+    // Arciere trigger
+    if (player.role === 'arciere') {
+      arciereArea.style.display = 'block';
+      renderArciereList('elim-arciere-list', eliminated);
+    }
+  }
+
+  const contBtn = document.getElementById('elim-continue-btn');
+  contBtn.textContent = 'Continua verso la notte →';
+  contBtn.onclick = checkWinAndContinue;
+
+  goTo('s-elim');
+}
+
+function checkWinAndContinue() {
+  if (!checkWin()) {
+    G.round++;
+    startNight();
+  }
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                   WIN CHECK                        ║
+// ╚══════════════════════════════════════════════════════╝
+function checkWin() {
+  const alive = G.players.filter(p => p.alive);
+  const aliveWolves = alive.filter(p => p.role === 'lupo').length;
+  const aliveHumans = alive.filter(p => p.role !== 'lupo' && p.role !== 'stregone').length;
+  const aliveStregone = alive.filter(p => p.role === 'stregone').length;
+
+  // Wolves win: wolves >= humans (excluding stregone)
+  if (aliveWolves > 0 && aliveWolves >= aliveHumans) {
+    showGameOver('wolf');
+    return true;
+  }
+  // Village wins: no wolves left
+  if (aliveWolves === 0) {
+    // Stregone still alive → stregone wins
+    if (aliveStregone > 0) {
+      showGameOver('neutral');
+    } else {
+      showGameOver('village');
+    }
+    return true;
+  }
+  // Stregone alone
+  if (aliveStregone > 0 && alive.length === 1) {
+    showGameOver('neutral');
+    return true;
+  }
+  return false;
+}
+
+function showGameOver(winner) {
+  const icons = { village:'🏆', wolf:'🐺', neutral:'⚡' };
+  const titles = { village:'IL VILLAGGIO VINCE', wolf:'I LUPI VINCONO', neutral:'LO STREGONE VINCE' };
+  const texts = {
+    village: 'Tutti i Lupi sono stati eliminati. Il villaggio è salvo!',
+    wolf: 'I Lupi hanno raggiunto la parità. Il villaggio è perduto.',
+    neutral: 'Lo Stregone è sopravvissuto fino alla fine. Vince da solo!'
+  };
+  const classes = { village:'result-village', wolf:'result-wolf', neutral:'result-neutral' };
+
+  document.getElementById('go-icon').textContent = icons[winner];
+  const title = document.getElementById('go-title');
+  title.textContent = titles[winner];
+  title.className = `result-big ${classes[winner]}`;
+  document.getElementById('go-text').textContent = texts[winner];
+
+  // Reveal all roles
+  document.getElementById('go-roles').innerHTML = G.players.map(p => {
+    const role = ROLES[p.role];
+    const fcolor = role.faction === 'wolf' ? 'var(--blood2)' : role.faction === 'neutral' ? 'var(--neutral2)' : 'var(--village2)';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;${!p.alive?'opacity:0.5;':''}">
+      <span style="font-size:15px;">${p.name} ${!p.alive?'<span style="color:var(--muted);font-size:12px;">(eliminato)</span>':''}</span>
+      <span style="font-family:\'Cinzel\',serif;font-size:11px;letter-spacing:1px;padding:3px 10px;border-radius:2px;background:rgba(0,0,0,0.3);border:1px solid ${fcolor};color:${fcolor};">${role.icon} ${role.name}</span>
+    </div>`;
+  }).join('');
+
+  goTo('s-gameover');
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                     RESET                          ║
+// ╚══════════════════════════════════════════════════════╝
+function resetGame() {
+  const prevPlayers = G.players.map(p => ({ name: p.name, alive: true, role: null }));
+  G = freshState();
+  G.players = prevPlayers;
+  renderSetup();
+  initRolesConfig();
+  goTo('s-setup');
+}
+
+// ╔══════════════════════════════════════════════════════╗
+// ║                     UTILS                          ║
+// ╚══════════════════════════════════════════════════════╝
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function sanitize(name) { return name.replace(/[^a-zA-Z0-9]/g,'_'); }
+
+// Init roles config when navigating there
+document.getElementById('s-roles-config').addEventListener('animationstart', initRolesConfig);
+
+// Wake lock
+(async () => {
+  try { if ('wakeLock' in navigator) await navigator.wakeLock.request('screen'); } catch(e) {}
+})();
+</script>
+</body>
+</html>
