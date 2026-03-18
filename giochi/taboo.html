@@ -1,0 +1,2477 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Taboo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap');
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a24;
+    --surface2: #22222f;
+    --border: #2e2e3f;
+    --text: #f0eee8;
+    --muted: #7a7890;
+    --green: #2ecc71;
+    --green-dark: #1a7a42;
+    --red: #e74c3c;
+    --red-dark: #7a1f17;
+    --amber: #f39c12;
+    --amber-dark: #7a4e06;
+    --blue: #3498db;
+    --purple: #9b59b6;
+    --purple-light: #ce93d8;
+    --gold: #f1c40f;
+    --card-word: #e74c3c;
+    --card-taboo: #1a1a24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    user-select: none;
+  }
+
+  h1, h2, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
+
+  /* ========== SCREENS ========== */
+  .screen { display: none; flex-direction: column; min-height: 100vh; min-height: 100dvh; }
+  .screen.active { display: flex; }
+
+  /* ========== SCREEN: INTRO ========== */
+  #screen-intro {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    background: radial-gradient(ellipse at 50% 30%, #2d1b4e 0%, var(--bg) 70%);
+  }
+  .intro-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 20vw, 9rem);
+    color: var(--text);
+    line-height: 1;
+    text-align: center;
+    letter-spacing: 0.1em;
+  }
+  .intro-logo span { color: var(--card-word); }
+  .intro-subtitle {
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .intro-btn {
+    background: var(--card-word);
+    color: #fff;
+    border: none;
+    padding: 1rem 3rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(231,76,60,0.4);
+  }
+  .intro-btn:active { transform: scale(0.96); }
+
+  /* ========== SCREEN: SETUP ========== */
+  #screen-setup {
+    padding: 2rem 1.5rem;
+    background: var(--bg);
+    overflow-y: auto;
+  }
+  .setup-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--text);
+  }
+  .setup-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .setup-section label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .lang-btns, .time-btns, .skip-btns {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .option-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 0.65rem 0.5rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .option-btn.selected {
+    background: var(--card-word);
+    border-color: var(--card-word);
+    color: #fff;
+    font-weight: 700;
+  }
+  .team-inputs { display: flex; flex-direction: column; gap: 0.75rem; }
+  .team-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .team-input:focus { border-color: var(--card-word); }
+  .start-game-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--card-word);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: opacity 0.15s, transform 0.15s;
+    box-shadow: 0 4px 20px rgba(231,76,60,0.3);
+  }
+  .start-game-btn:active { transform: scale(0.98); }
+
+  /* ========== SCREEN: BOARD ========== */
+  #screen-board {
+    padding: 1rem;
+    overflow-y: auto;
+    background: var(--bg);
+  }
+  .board-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .board-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: var(--muted);
+  }
+  .scores-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .score-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    transition: border-color 0.3s;
+  }
+  .score-card.active-team {
+    border-color: var(--card-word);
+    box-shadow: 0 0 16px rgba(231,76,60,0.25);
+  }
+  .score-card.winner-team {
+    border-color: var(--gold);
+    box-shadow: 0 0 16px rgba(241,196,15,0.35);
+  }
+  .score-team-name {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .score-pos {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--text);
+    line-height: 1;
+  }
+  .score-total {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* Board SVG wrapper */
+  .board-svg-wrap {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+
+  .turn-info {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .turn-info-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .turn-info-team {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--card-word);
+  }
+  .turn-effect-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--amber);
+    margin-top: 0.5rem;
+  }
+
+  .play-turn-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--green);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    box-shadow: 0 4px 16px rgba(46,204,113,0.3);
+  }
+  .play-turn-btn:active { transform: scale(0.98); }
+
+  /* ========== SCREEN: PLAY ========== */
+  #screen-play {
+    flex-direction: column;
+    background: var(--bg);
+    padding: 0;
+  }
+  .play-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .play-team-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: var(--card-word);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .timer-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    min-width: 3.5rem;
+    text-align: center;
+    transition: color 0.3s;
+    cursor: pointer;
+    padding: 0.1rem 0.5rem;
+    border-radius: 6px;
+    border: 2px solid transparent;
+  }
+  .timer-display:hover { border-color: var(--border); }
+  .timer-display.paused { color: var(--amber); border-color: var(--amber); }
+  .timer-display.urgent { color: var(--red); }
+  .timer-display.ok { color: var(--green); }
+
+  .play-score-mini {
+    font-size: 0.85rem;
+    color: var(--muted);
+    flex: 1;
+    text-align: right;
+  }
+  .play-score-mini span { color: var(--green); font-weight: 700; }
+  .play-score-mini .neg { color: var(--red); }
+
+  /* Card area */
+  .card-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem;
+    overflow: hidden;
+  }
+  .taboo-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.25rem 1.25rem 1rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    max-width: 420px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+  }
+  .card-main-word {
+    background: var(--card-word);
+    margin: -1.25rem -1.25rem 1rem;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+  .card-main-word-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2rem, 8vw, 3rem);
+    color: #fff;
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+  .taboo-word {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0ede8;
+    color: #222;
+    font-size: clamp(0.95rem, 3.5vw, 1.1rem);
+    font-weight: 500;
+  }
+  .taboo-word:last-child { border-bottom: none; }
+  .taboo-word::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--card-word);
+    flex-shrink: 0;
+  }
+  .card-num {
+    text-align: right;
+    font-size: 0.7rem;
+    color: #bbb;
+    margin-top: 0.5rem;
+  }
+
+  /* Action buttons */
+  .action-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    flex-shrink: 0;
+  }
+  .action-btn {
+    padding: 0.75rem 0.25rem;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+  }
+  .action-btn .btn-icon { font-size: 1.4rem; }
+  .action-btn:active { transform: scale(0.94); }
+  .btn-avanti { background: var(--green); color: #fff; box-shadow: 0 3px 12px rgba(46,204,113,0.3); }
+  .btn-buzz   { background: var(--red);   color: #fff; box-shadow: 0 3px 12px rgba(231,76,60,0.3); }
+  .btn-passo  { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  .bottom-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem 0.75rem;
+    flex-shrink: 0;
+  }
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .back-btn:active { border-color: var(--text); color: var(--text); }
+  .end-turn-btn {
+    background: none;
+    border: 1px solid var(--amber);
+    color: var(--amber);
+    border-radius: 8px;
+    padding: 0.4rem 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .end-turn-btn:active { background: var(--amber); color: #000; }
+
+  /* ========== SCREEN: TURN RESULT ========== */
+  #screen-result {
+    padding: 1.5rem;
+    justify-content: center;
+    background: var(--bg);
+    overflow-y: auto;
+  }
+  .result-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 0.25rem;
+  }
+  .result-team {
+    text-align: center;
+    color: var(--card-word);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+  }
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .result-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+  }
+  .result-stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+  .result-stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+  .val-green { color: var(--green); }
+  .val-red   { color: var(--red); }
+  .val-muted { color: var(--muted); }
+  .result-movement {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .result-movement-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+  .result-movement-detail { font-size: 0.85rem; color: var(--muted); }
+  .result-log {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .result-log-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .result-log-item:last-child { border-bottom: none; }
+  .log-icon { width: 1.2rem; text-align: center; flex-shrink: 0; }
+  .log-word { flex: 1; }
+  .log-action { font-size: 0.75rem; color: var(--muted); }
+  .continue-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--card-word);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(231,76,60,0.3);
+    transition: transform 0.15s;
+  }
+  .continue-btn:active { transform: scale(0.98); }
+
+  /* ========== SCREEN: END ========== */
+  #screen-end {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    background: radial-gradient(ellipse at 50% 30%, #2d1b4e 0%, var(--bg) 70%);
+    text-align: center;
+  }
+  .end-trophy { font-size: 4rem; margin-bottom: 1rem; }
+  .end-winner-label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .end-winner-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 10vw, 4rem);
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .end-winner-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .end-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 2rem;
+  }
+  .end-score-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+  }
+  .end-score-card.winner { border-color: var(--gold); }
+  .end-score-name { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+  .end-score-num { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--text); }
+  .end-score-pos { font-size: 0.8rem; color: var(--muted); }
+  .play-again-btn {
+    background: none;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    padding: 0.75rem 2.5rem;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .play-again-btn:hover { background: var(--gold); color: #000; }
+
+  /* Board SVG cells */
+  .board-cell { transition: all 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- ===== SCREEN: INTRO ===== -->
+<div id="screen-intro" class="screen active">
+  <div class="intro-logo">T<span>A</span>BOO</div>
+  <p class="intro-subtitle">Il gioco delle parole proibite</p>
+  <button class="intro-btn" onclick="showSetup()">INIZIA</button>
+</div>
+
+<!-- ===== SCREEN: SETUP ===== -->
+<div id="screen-setup" class="screen">
+  <div class="setup-title">IMPOSTAZIONI</div>
+
+  <div class="setup-section">
+    <label>Lingua delle carte</label>
+    <div class="lang-btns">
+      <button class="option-btn selected" data-group="lang" data-val="it" onclick="selectOption(this)">🇮🇹 Italiano</button>
+      <button class="option-btn" data-group="lang" data-val="en" onclick="selectOption(this)">🇬🇧 English</button>
+    </div>
+  </div>
+
+  <div class="setup-section">
+    <label>Tempo per turno (secondi)</label>
+    <div class="time-btns">
+      <button class="option-btn" data-group="time" data-val="30" onclick="selectOption(this)">30s</button>
+      <button class="option-btn" data-group="time" data-val="45" onclick="selectOption(this)">45s</button>
+      <button class="option-btn selected" data-group="time" data-val="60" onclick="selectOption(this)">60s</button>
+      <button class="option-btn" data-group="time" data-val="90" onclick="selectOption(this)">90s</button>
+    </div>
+  </div>
+
+  <div class="setup-section">
+    <label>Passi consentiti per turno</label>
+    <div class="skip-btns">
+      <button class="option-btn" data-group="skips" data-val="0" onclick="selectOption(this)">0</button>
+      <button class="option-btn selected" data-group="skips" data-val="1" onclick="selectOption(this)">1</button>
+      <button class="option-btn" data-group="skips" data-val="2" onclick="selectOption(this)">2</button>
+      <button class="option-btn" data-group="skips" data-val="3" onclick="selectOption(this)">3</button>
+    </div>
+  </div>
+
+  <div class="setup-section">
+    <label>Nomi squadre</label>
+    <div class="team-inputs">
+      <input class="team-input" id="team1-name" type="text" placeholder="Squadra 1" maxlength="20" value="Squadra 1">
+      <input class="team-input" id="team2-name" type="text" placeholder="Squadra 2" maxlength="20" value="Squadra 2">
+    </div>
+  </div>
+
+  <button class="start-game-btn" onclick="startGame()">GIOCA</button>
+</div>
+
+<!-- ===== SCREEN: BOARD ===== -->
+<div id="screen-board" class="screen">
+  <div class="board-header">
+    <span class="board-title">TABELLONE</span>
+  </div>
+  <div class="scores-bar">
+    <div class="score-card" id="score-card-0">
+      <div class="score-team-name" id="score-name-0">Squadra 1</div>
+      <div class="score-pos" id="score-pos-0">0</div>
+      <div class="score-total" id="score-total-0">0 punti totali</div>
+    </div>
+    <div class="score-card" id="score-card-1">
+      <div class="score-team-name" id="score-name-1">Squadra 2</div>
+      <div class="score-pos" id="score-pos-1">0</div>
+      <div class="score-total" id="score-total-1">0 punti totali</div>
+    </div>
+  </div>
+  <div class="board-svg-wrap">
+    <svg id="board-svg" viewBox="0 0 360 360" width="100%" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:0.4rem 0.8rem;padding:0.5rem 0.75rem;font-size:0.72rem;color:var(--muted);border-bottom:1px solid var(--border);">
+    <span>🟩 normale</span>
+    <span style="color:#f1c40f">⏱ doppio tempo</span>
+    <span style="color:#3498db">👥 solo 1 comp.</span>
+    <span style="color:#e67e22">⏱👥 entrambi</span>
+    <span style="color:#9b59b6">🟣 ≥3 pt per avanzare</span>
+  </div>
+  <div class="turn-info">
+    <div class="turn-info-label">Turno di</div>
+    <div class="turn-info-team" id="turn-team-name">—</div>
+    <div id="turn-effect-wrap"></div>
+  </div>
+  <button class="play-turn-btn" id="play-turn-btn" onclick="startTurn()">▶ INIZIA TURNO</button>
+</div>
+
+<!-- ===== SCREEN: PLAY ===== -->
+<div id="screen-play" class="screen">
+  <div class="play-top-bar">
+    <div class="play-team-label" id="play-team-label">Squadra 1</div>
+    <div class="timer-display ok" id="timer-display" onclick="togglePause()">60</div>
+    <div class="play-score-mini" id="play-score-mini">+0</div>
+  </div>
+  <div class="card-area" id="card-area">
+    <!-- Card rendered by JS -->
+  </div>
+  <div class="action-btns">
+    <button class="action-btn btn-avanti" onclick="cardAction('avanti')">
+      <span class="btn-icon">✓</span>AVANTI
+    </button>
+    <button class="action-btn btn-buzz" onclick="cardAction('buzz')">
+      <span class="btn-icon">✗</span>BUZZ
+    </button>
+    <button class="action-btn btn-passo" id="passo-btn" onclick="cardAction('passo')">
+      <span class="btn-icon">→</span>PASSO
+    </button>
+  </div>
+  <div class="bottom-bar">
+    <button class="back-btn" onclick="undoLast()">← Annulla</button>
+    <button class="end-turn-btn" onclick="endTurnEarly()">Fine turno</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN: RESULT ===== -->
+<div id="screen-result" class="screen">
+  <div class="result-title">FINE TURNO</div>
+  <div class="result-team" id="result-team-name">Squadra 1</div>
+  <div class="result-stats">
+    <div class="result-stat">
+      <div class="result-stat-val val-green" id="res-indovinate">0</div>
+      <div class="result-stat-label">Indovinate</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat-val val-red" id="res-buzz">0</div>
+      <div class="result-stat-label">Buzz</div>
+    </div>
+    <div class="result-stat">
+      <div class="result-stat-val val-muted" id="res-passo">0</div>
+      <div class="result-stat-label">Passi</div>
+    </div>
+  </div>
+  <div class="result-movement" id="result-movement">
+    <div class="result-movement-text" id="res-move-text">+0 caselle</div>
+    <div class="result-movement-detail" id="res-move-detail"></div>
+  </div>
+  <div class="result-log" id="result-log"></div>
+  <button class="continue-btn" onclick="continueAfterResult()">CONTINUA</button>
+</div>
+
+<!-- ===== SCREEN: END ===== -->
+<div id="screen-end" class="screen">
+  <div class="end-trophy">🏆</div>
+  <div class="end-winner-label">Vince</div>
+  <div class="end-winner-name" id="end-winner-name">—</div>
+  <div class="end-winner-score" id="end-winner-score">—</div>
+  <div class="end-scores">
+    <div class="end-score-card" id="end-card-0">
+      <div class="end-score-name" id="end-name-0">S1</div>
+      <div class="end-score-num" id="end-num-0">0</div>
+      <div class="end-score-pos" id="end-pos-0">casella 0</div>
+    </div>
+    <div class="end-score-card" id="end-card-1">
+      <div class="end-score-name" id="end-name-1">S2</div>
+      <div class="end-score-num" id="end-num-1">0</div>
+      <div class="end-score-pos" id="end-pos-1">casella 0</div>
+    </div>
+  </div>
+  <button class="play-again-btn" onclick="playAgain()">GIOCA ANCORA</button>
+</div>
+
+<script>
+// ============================================================
+// CARDS DATA
+// ============================================================
+
+const CARDS_IT = [
+  {w:"ABBRACCIARE",t:["Stringere","Comprendere","Includere","Affetto","Coccolare"]},
+  {w:"ACCESSIBILE",t:["Raggiungibile","Entrare","Possibile","Divieto","Avvicinabile"]},
+  {w:"ACCIPICCHIA!",t:["Accidenti!","Per la miseria!","Acciderbola!","Caspita!","Meraviglia"]},
+  {w:"ACCONSENTIRE",t:["Assecondare","Negare","Approvare","Concordare","Concedere"]},
+  {w:"AFFASCINARE",t:["Ammaliare","Conquistare","Charme","Incantare","Attrarre"]},
+  {w:"AGIO",t:["Benessere","Lusso","Comodità","Distensione","Essere"]},
+  {w:"ALBICOCCO",t:["Albero","Frutta","Arancione","Susina","Pianta"]},
+  {w:"ALLEGARE",t:["Unire","Produrre","Accludere","Pagina","Documento"]},
+  {w:"ALTER EGO",t:["Sostituto","Vice","Persona","In vece","Mansione"]},
+  {w:"AMMAINARE",t:["Bandiera","Vela","Scendere","Abbassare","Ripiegare"]},
+  {w:"ANAGRAMMA",t:["Lettere","Gioco","Enigmistico","Settimana","Cambiare"]},
+  {w:"ANNOTARE",t:["Scrivere","Appunto","Numero","Nome","Segnare"]},
+  {w:"ANNIVERSARIO",t:["Matrimonio","Compleanno","Ricorrenza","Auguri","Celebrare"]},
+  {w:"ANTIDOTO",t:["Veleno","Rimedio","Conforto","Medicina","Cura"]},
+  {w:"ANTICIPO",t:["Cauzione","Arrivare","Prima","Presto","Ritardo"]},
+  {w:"ZIPPARE",t:["Ridurre","Comprimere","Dimensioni","Diminuire","File"]},
+  {w:"ZIZZANIA",t:["Pianto","Mettere","Litigare","Seminare","Spargere"]},
+  {w:"ACCIDIA",t:["Vizio","Capitale","Inerzia","Invidia","Indolenza"]},
+  {w:"ACCOMODARE",t:["Aggiustare","Prego","Riparare","Gustare","Rompere"]},
+  {w:"ADRENALINA",t:["Ormone","Scarica","Emozione","Paura","Nervosismo"]},
+  {w:"AFFIANCARE",t:["Collaborare","Lato","Accanto","Accompagnare","Aiutare"]},
+  {w:"AITANTE",t:["Fisico","Bello","Attraente","Uomo","Prestante"]},
+  {w:"ALLAGARE",t:["Acqua","Mare","Inondare","Liquido","Bagnare"]},
+  {w:"ALTA FEDELTÀ",t:["Hi-Fi","Stereo","Suono","Amplificazione","Riproduzione"]},
+  {w:"ALTERNANZA",t:["Avvicendamento","Rotazione","Cambio","Sostituzione","Turnover"]},
+  {w:"AMMAESTRARE",t:["Pulce","Cane","Addestrare","Circo","Foca"]},
+  {w:"AMPIEZZA",t:["Vasto","Larghezza","Dimensione","Grandezza","Estensione"]},
+  {w:"RIMMEL",t:["Trucco","Ciglia","Cosmetico","Allungare","De Gregori"]},
+  {w:"APNEA",t:["Palombaro","Bombole","Immersione","Respirare","Sommozzatore"]},
+  {w:"APPELLO",t:["Scuola","Presente","Assente","Corte","Esame"]},
+  {w:"ARACHIDE",t:["Nocciolina","Americana","Superpippo","Tostato","Olio"]},
+  {w:"ARCIPELAGO",t:["Antille","Isole","Gruppo","Mare","Eolie"]},
+  {w:"ARGUTO",t:["Avveduto","Fine","Ingegnoso","Sottile","Osservazione"]},
+  {w:"SEMOLINO",t:["Brodo","Minestra","Farina","Riso","Neonato"]},
+  {w:"ARROTINO",t:["Affilare","Mestiere","Lama","Coltello","Forbice"]},
+  {w:"SOGGIORNO",t:["Viaggio","Permanenza","Salone","Azienda","Obbligato"]},
+  {w:"ASSIEME",t:["Con","Stare","Riunire","Gruppo","Tutti"]},
+  {w:"ATTIMO",t:["Cogliere","Carpe diem","Fuggente","Istante","Aspettare"]},
+  {w:"AUGE",t:["Essere in","Apice","Culmine","Successo","Fama"]},
+  {w:"AUMENTARE",t:["Crescere","Tasse","Incrementare","Maggiore","Quantità"]},
+  {w:"ROMEO",t:["Giulietta","Innamorato","Gigli","Shakespeare","Verona"]},
+  {w:"AUSTRALIANO",t:["Continente","Abitante","Canguro","Isola","Sidney"]},
+  {w:"AUTOCERTIFICAZIONE",t:["Documenti","Dichiarazione","Anagrafe","Attestazione","Ufficio pubblico"]},
+  {w:"AUTORIZZAZIONE",t:["Licenza","OK","Concessione","Proibizione","Permesso"]},
+  {w:"AVANCE",t:["Approccio","Proposta","Donna","Fare","Respingere"]},
+  {w:"INFEDELTÀ",t:["Coppia","Matrimonio","Tradimento","Coniugale","Corna"]},
+  {w:"SCOOTER",t:["Motocicletta","Due ruote","Vespa","Ciclomotore","Traffico"]},
+  {w:"AUTOSTOPPISTA",t:["Viaggiare","Gratis","Pollice","Passaggio","Fermare"]},
+  {w:"AVANZARE",t:["Indietreggiare","Andare","Avanti","Inoltrarsi","Rimanere"]},
+  {w:"BACKUP",t:["Copia","Computer","Dati","Hard disk","Ripristino"]},
+  {w:"BAGLIORE",t:["Luce","Baleno","Fulgore","Faro","Lampada"]},
+  {w:"BALERA",t:["Discoteca","Ballo","Liscio","Musica","Danzare"]},
+  {w:"BALOCCO",t:["Profumo","Giocattolo","Canzone","Bambino","Passatempo"]},
+  {w:"BANCOMAT",t:["Prelievo","Automatico","Sportello","Carta di credito","Banca"]},
+  {w:"BARBECUE",t:["Griglia","Carne","Brace","Cucinare","Giardino"]},
+  {w:"BALILLA",t:["Fascista","Giovinezza","Calcio","Automobile","Divisa"]},
+  {w:"STRAMBO",t:["Stravagante","Stranpalato","Strano","Originale","Idea"]},
+  {w:"SCROCCARE",t:["Ufo","Gratis","Non Pagare","Pranzo","Cena"]},
+  {w:"BARELLA",t:["Letto","Trasportare","Ferito","Ambulanza","Ammalato"]},
+  {w:"BARRIRE",t:["Verso","Elefante","Animale","Annibale","Proboscide"]},
+  {w:"BAVAGLINO",t:["Saliva","Bocca","Bebè","Sporcare","Cibo"]},
+  {w:"BERMUDA",t:["Isola","Triangolo","Aerei","Sparire","Pantaloni"]},
+  {w:"BIGIOTTERIA",t:["Gioielli","Finti","Collane","Orecchini","Anelli"]},
+  {w:"BARZELLETTA",t:["Freddura","Storiella","Ridere","Raccontare","Carabinieri"]},
+  {w:"BEIGE",t:["Colore","Crema","Chiaro","Nocciola","Marrone"]},
+  {w:"BEST SELLER",t:["Libro","Disco","Venduto","Classifiche","Primo"]},
+  {w:"BIGLIETTERIA",t:["Teatro","Stazione","Acquistare","Vendere","Comprare"]},
+  {w:"OPEN SPACE",t:["Ufficio","Stanze","Muri","Pareti","Loft"]},
+  {w:"BILINGUE",t:["Parlare","Due","Lingua","Poliglotta","Tradurre"]},
+  {w:"OPERETTA",t:["Genere","Musica","Teatro","Leggero","La vedova allegra"]},
+  {w:"BISBETICO",t:["Brontolone","Irascibile","Domato","Irritabile","Carattere"]},
+  {w:"OVVIO",t:["Sicuro","Evidente","Chiaro","Logico","Certo"]},
+  {w:"BISTECCA",t:["Carne","Cotta","Fiorentina","Svizzera","Al sangue"]},
+  {w:"BLOODY MARY",t:["Cocktail","Succo","Pomodoro","Vodka","Limone"]},
+  {w:"SCONFORTO",t:["Afflizione","Avvilimento","Scoramento","Tristezza","Abbattimento"]},
+  {w:"BISCA",t:["Gioco","Azzardo","Clandestino","Illegale","Locale"]},
+  {w:"BESTEMMIA",t:["Religione","Offendere","Bestemmiare","Miscredente","Irriverente"]},
+  {w:"BLUE JEANS",t:["Levi's","Pantaloni","Tela","Wrangler","Diesel"]},
+  {w:"BOSCAIOLO",t:["Legno","Contadino","Tagliare","Alberi","Foresta"]},
+  {w:"BOTANICA",t:["Orto","Fiori","Scienza","Piante","Vegetali"]},
+  {w:"BRAINSTORMING",t:["Idee","Proposte","Problema","Soluzione","Riunione"]},
+  {w:"BRIEF",t:["Spot","Documento","Lancio","Prodotto","Campagna pubblicitaria"]},
+  {w:"ILLUSIONE",t:["Ottica","Errore","Sbaglio","Speranza","Inganno"]},
+  {w:"BOUQUET",t:["Mazzo","Fiori","Sposo","Lanciare","Matrimonio"]},
+  {w:"BREVI MANU",t:["Consegna","Di persona","Lettera","Pacco","Dare"]},
+  {w:"BRIGADIERE",t:["Carabiniere","Finanza","Sicurezza","Appuntato","Ufficiale"]},
+  {w:"BRISCOLA",t:["Gioco","Carte","Due","Seme","Asso"]},
+  {w:"BRITANNICO",t:["Inglese","Londra","Isola","Abitante","Popolazione"]},
+  {w:"BRONTOLARE",t:["Protestare","Lagnarsi","Malcontento","Borbottare","Contestare"]},
+  {w:"BROWSER",t:["Navigare","Internet","Web","Explorer","Netscape"]},
+  {w:"BRUNCH",t:["Domenica","Prima colazione","Mattino","Pranzo","Mangiare"]},
+  {w:"BRODO",t:["Cibo","Zuppa","Liquido","Primordiale","Vegetale"]},
+  {w:"BRONZO",t:["Metallo","Lega","Rame","Stagno","Riace"]},
+  {w:"BRUCIAPELO",t:["Improvviso","Inaspettato","Sorpresa","Domandare","Vicino"]},
+  {w:"BUDDHA",t:["Divinità","Dio","Religione","India","Seduto"]},
+  {w:"BUIO",t:["Oscuro","Luce","Notte","Nero","Fitto"]},
+  {w:"BUSSARE",t:["Porta","Toc toc","Campanello","Percuotere","Battere"]},
+  {w:"BUONISMO",t:["Tolleranza","Politica","Atteggiamento","Demagogia","Comportamento"]},
+  {w:"BUSINESS CLASS",t:["Aerei","Viaggiare","Economy","Turistica","Prima"]},
+  {w:"GRIFFE",t:["Firma","Stilista","Vestito","Marca","Moda"]},
+  {w:"CAICCO",t:["Imbarcazione","Antica","Remi","Turca","Tipica"]},
+  {w:"SINTONIA",t:["Accordo","Frequenza","Radio","Concordanza","Canale"]},
+  {w:"CABARET",t:["Liza Minnelli","Spettacolo","Varietà","Locale","Divertente"]},
+  {w:"CACHEMIRE",t:["India","Lana","Pregiata","Maglione","Inglese"]},
+  {w:"CAINO",t:["Abele","Figlio","Adamo","Assassino","Fratello"]},
+  {w:"CALAMAIO",t:["Inchiostro","Penna","Infingere","Scrivere","Carta"]},
+  {w:"GERUNDIO",t:["Modo","Verbo","Participio","Presente","Passato"]},
+  {w:"GHIRO",t:["Mammifero","Roditore","Dormire","Letargo","Pelliccia"]},
+  {w:"DOSARE",t:["Soppesare","Valutare","Pesare","Bilanciare","Misurino"]},
+  {w:"SLAVINA",t:["Valanga","Neve","Cadere","Montagna","Rotolare"]},
+  {w:"CALABRONE",t:["Volo","Nero","Insetto","Pungiglione","Ronzare"]},
+  {w:"CALCIO-MERCATO",t:["Comprare","Vendere","Giocatori","Procuratori","Squadre"]},
+  {w:"CALLE",t:["Vicolo","Strada","Strette","Via","Venezia"]},
+  {w:"SLEGARE",t:["Sciogliere","Fune","Corda","Liberare","Nodo"]},
+  {w:"CAMBIALE",t:["Debito","Pagare","Scadenza","Anticipo","Bollo"]},
+  {w:"CAMEO",t:["Ruolo","Gemma","Profilo","Pietra","Ciondolo"]},
+  {w:"CAMUFFARE",t:["Mutare","Cambiare","Sembianze","Travestire","Mascherare"]},
+  {w:"CANCAN",t:["Chiasso","Cafè Chantant","Francia","Ballo","Crazy Horse"]},
+  {w:"PONY EXPRESS",t:["Fattorino","Recapito","Espresso","Urgente","Portare"]},
+  {w:"POMATA",t:["Crema","Unguento","Preparazione","Farmaceutica","Medicina"]},
+  {w:"LIMOUSINE",t:["Grande","Autovettura","Macchina","Lusso","Vip"]},
+  {w:"CANAGLIA",t:["Persona","Cattivo","Furfante","Birbante","Scherzo"]},
+  {w:"CANASTA",t:["Gioco","Carte","Bridge","Poker","Mazzo"]},
+  {w:"MICROSCOPIO",t:["Osservare","Ottico","Ingrandire","Strumento","Laboratorio"]},
+  {w:"PIROMANE",t:["Appiccare","Fuoco","Incendio","Fiamme","Nerone"]},
+  {w:"CANDELABRO",t:["Supporto","Lampada","Olio","Luce","Sostengo"]},
+  {w:"CANOA",t:["Imbarcazione","Abbagnale","Fiume","Pagaia","Remo"]},
+  {w:"PITAGORA",t:["Tabelline","Teorema","Filosofo","Tavola","Moltiplicazione"]},
+  {w:"CHIOCCIOLA",t:["Lumaca","Striscia","At","E-mail","Internet"]},
+  {w:"CICALA",t:["Insetto","Frinire","Favola","Formica","Previdente"]},
+  {w:"SMINUIRE",t:["Poco","Piccolo","Valore","Minore","Ridurre"]},
+  {w:"PASTORE",t:["Campagna","Pecore","Cane","Buon","Anime"]},
+  {w:"CILINDRO",t:["Solido","Coniglio","Cappello","Tuba","Geometrico"]},
+  {w:"MOUSSE",t:["Tonno","Fegato","Freddo","Cioccolato","Budino"]},
+  {w:"CROCCHETTA",t:["Impanata","Uovo","Fritta","Patate","Riso"]},
+  {w:"EDICOLA",t:["Chiosco","Vendere","Giornali","Quotidiani","Riviste"]},
+  {w:"TELEPATIA",t:["Trasmissione","Pensiero","Comunicare","Parapsicologia","Mente"]},
+  {w:"E-MAIL",t:["Elettronico","Internet","Messaggio","Indirizzo","Posta"]},
+  {w:"DIVA",t:["Stelle","Famosa","Cinema","Canzone","Attrice"]},
+  {w:"CUOIO",t:["Pelle","Conciare","Borsa","Scarpa","Valigia"]},
+  {w:"DVD",t:["Compact","Film","Dati","Lingua","Videocassetta"]},
+  {w:"DEPOSITO",t:["Bagagli","Magazzino","Conservare","Pacco","Bancario"]},
+  {w:"SCRUPOLOSO",t:["Meticoloso","Coscienzioso","Preciso","Accurato","Diligente"]},
+  {w:"TEMPERINO",t:["Tagliare","Svizzero","Lama","Coltello","Piccolo"]},
+  {w:"DNA",t:["Acido","Desossiribonucleico","Ereditario","Cellula","Cromosomi"]},
+  {w:"SCRUTINIO",t:["Esame","Pagelle","Segreto","Voti","Cromosomi"]},
+  {w:"SEDE",t:["Residenza","Dimora","Apostolica","Legale","Luogo"]},
+  {w:"ELMO",t:["Armatura","Protezione","Testa","Casco","Scipione"]},
+  {w:"ENCICLOPEDIA",t:["Opera","Libri","Volumi","Britannica","Treccani"]},
+  {w:"EQUIVOCO",t:["Losco","Ambiguo","Confusione","Sbaglio","Qui pro quo"]},
+  {w:"GENUINO",t:["Autentico","Vero","Naturale","Spontaneo","Contraffatto"]},
+  {w:"ERGASTOLO",t:["Carcere","Prigione","Detenzione","Reclusione","A vita"]},
+  {w:"SCIVOLARE",t:["Cadere","Ghiaccio","Scorrere","Inciampare","Buccia di banana"]},
+  {w:"ESTINTORE",t:["Spegnere","Fuoco","Incendio","Obbligatorio","Rosso"]},
+  {w:"POLVERIERA",t:["Magazzino","Deposito","Sparo","Pericolo","Esplodere"]},
+  {w:"RUFFIANO",t:["Accoppiare","Ingraziarsi","Leccapiedi","Adulare","Falso"]},
+  {w:"RULLO",t:["Cilindro","Girare","Compressore","Rotolo","Fotografico"]},
+  {w:"RUOLO",t:["Iscrizione","Gioco","Funzione","Ricoprire","Attore"]},
+  {w:"LUNATICO",t:["Volubile","Incostante","Umorale","Mutevole","Variabile"]},
+  {w:"TEOLOGO",t:["Studioso","Dio","Religioso","Prete","Esperto"]},
+  {w:"TERGICRISTALLO",t:["Parabrezza","Pioggia","Automobile","Pazzola","Macchina"]},
+  {w:"FATALE",t:["Letale","Attrazione","Fascino","Femme","Mortale"]},
+  {w:"FERTILE",t:["Donna","Terreno","Riproduzione","Fecondo","Sterile"]},
+  {w:"FIACCOLA",t:["Accendere","Luce","Fuoco","Olimpica","Torcia"]},
+  {w:"FIORETTO",t:["Arma","Scherma","Sciabola","Voto","Sacrificio"]},
+  {w:"RIVERBERO",t:["Eco","Suono","Luce","Riflesso","Sole"]},
+  {w:"FONDAZIONE",t:["Ente","Associazione","No profit","Culturale","Lucro"]},
+  {w:"SUITE",t:["Albergo","Lusso","Appartamento","Musica","Stanza"]},
+  {w:"ZAVORRA",t:["Peso","Nave","Sabbia","Freno","Sacco"]},
+  {w:"FRANCHISING",t:["Catena","Esercizi","McDonald's","Blockbusters","Benetton"]},
+  {w:"FRANGETTA",t:["Pettinatura","Capelli","Corti","Fronte","Tagliare"]},
+  {w:"SCIÀ",t:["Regnante","Persia","Iran","Capo","Presidente"]},
+  {w:"RISENTIMENTO",t:["Astio","Rancore","Sentimento","Ostilità","Sofferenza"]},
+  {w:"RITENUTA",t:["Trattenuta","Detrazione","Imposta","Reddito","D'acconto"]},
+  {w:"FRISBEE",t:["Disco","Lanciare","Prendere","Cerchio","Piatto"]},
+  {w:"SPALANCATO",t:["Aperto","Imposte","Finestre","Braccia","Porta"]},
+  {w:"FRIGOBAR",t:["Albergo","Consumare","Freddo","Fresco","Bevande"]},
+  {w:"SCIAME",t:["Api","Numeroso","Gruppo","Moltitudine","Alveare"]},
+  {w:"FRIVOLO",t:["Discorso","Leggero","Superficiale","Serio","Grave"]},
+  {w:"MORSE",t:["Alfabeto","Punto","Linea","Codice","Messaggi"]},
+  {w:"FULCRO",t:["Leva","Appoggio","Cardine","Perno","Centro"]},
+  {w:"MAGGIOLINO",t:["Coccinella","Portafortuna","Coleottero","Insetto","Volkswagen"]},
+  {w:"SPARTARE",t:["Cattiveria","Male","Spalle","Spettegolare","Sproposito"]},
+  {w:"SPARTANO",t:["Austero","Città","Grecia","Sparta","Educazione"]},
+  {w:"GABIBBO",t:["Pupozzo","Rosso","Canale 5","Besugo","Striscia la notizia"]},
+  {w:"FUSTINO",t:["Detersivo","Polvere","Dash","Dixan","Recipiente"]},
+  {w:"MAI DIRE GOL",t:["Gialappa's","Italia Uno","Calcio","Trasmissione","Televisiva"]},
+  {w:"GANCIO",t:["Uncino","Traino","Metallo","Appendere","Pugno"]},
+  {w:"GIANDUIOTTO",t:["Cioccolatino","Torino","Nocciola","Caffarel","Dolce"]},
+  {w:"GIROTONDO",t:["Cerchio","Gioco","Bambini","Canzone","Filastrocca"]},
+  {w:"GADGET",t:["Oggetto","Piccolo","Regalo","Omaggio","Promozione"]},
+  {w:"MALPENSA",t:["Aeroporto","Milano","Varese","Scalo","Linate"]},
+  {w:"ZOTICO",t:["Rozzo","Incolto","Persona","Grossolano","Maleducato"]},
+  {w:"PATIBOLO",t:["Ghigliottina","Impiccagione","Forca","Decapitazione","Boia"]},
+  {w:"SORDINA",t:["Udito","Di nascosto","Musica","Tromba","Attutire"]},
+  {w:"GO-KART",t:["Macchina","Autoveicolo","Monoposto","Gara","Pista"]},
+  {w:"GOLOSO",t:["Ghiotto","Cibo","Dolci","Mangiare","Abbuffarsi"]},
+  {w:"GRATTARE",t:["Graffiare","Unghie","Prurito","Pancia","Vincere"]},
+  {w:"GLOBULO",t:["Bianco","Rosso","Sangue","Emoglobina","Organismo"]},
+  {w:"PRIMADONNA",t:["Star","Eccentrica","Egocentric","Opera","Attrice"]},
+  {w:"PRIMIERA",t:["Carte","Gioco","Punti","Scopa","Sette"]},
+  {w:"HACKER",t:["Computer","Internet","Pirata","Crack","Sito"]},
+  {w:"CACHE",t:["Memoria","Computer","Transito","Dati","Richiamare"]},
+  {w:"RUBRICA",t:["Quaderno","Elenco","Telefonica","Indirizzi","Lettere"]},
+  {w:"GRISSINI",t:["Pane","Cracker","Bastoncino","Croccante","Torinese"]},
+  {w:"RUBINETTO",t:["Aprire","Chiudere","Acqua","Perdere","Gas"]},
+  {w:"IGLOO",t:["Freddo","Ghiaccio","Polo nord","Eschimese","Casa"]},
+  {w:"IDILLIACO",t:["Ideale","Serenità","Calmo","Quieto","Visione"]},
+  {w:"INCROCIO",t:["Strade","Traffico","Semaforo","Precedenza","Animale"]},
+  {w:"FAZIOSO",t:["Parziale","Fanatico","Giudizio","Obiettivo","Moderato"]},
+  {w:"ZUPPO",t:["Bagnato","Intriso","Acqua","Fradicio","Pioggia"]},
+  {w:"FEDERALISMO",t:["Federazione","Politica","Regioni","Autonomia","Stato"]},
+  {w:"INFLUENTE",t:["Personaggio","Potente","Prestigioso","Autorevole","Conoscenza"]},
+  {w:"SENATORE",t:["Camera","Eletto","Anziano","Votare","Parlamento"]},
+  {w:"INDESCRIVIBILE",t:["Ineffabile","Inenarabile","Indicibile","Inspiegabile","Nulla"]},
+  {w:"INERZIA",t:["Inoperosità","Quiete","Forza","Oziosità","Moto uniforme"]},
+  {w:"LLOYDS",t:["Armatori","Assicuratori","Londra","Inghilterra","Compagnia"]},
+  {w:"INQUILINO",t:["Affitto","Abitare","Casa","Palazzo","Condomino"]},
+  {w:"SENAPE",t:["Salsa","Piccante","Mostarda","Colore","Giallo"]},
+  {w:"URGENTE",t:["Importante","Pressante","Immediato","Telefonata","Bisogno"]},
+  {w:"URLARE",t:["Strillare","Gridare","Alta","Voce","Paura"]},
+  {w:"TALPA",t:["Animale","Cieco","Tana","Sotto","Vedere"]},
+  {w:"URBI ET ORBI",t:["Papa","Benedizione","Santa Sede","Vaticano","Fedeli"]},
+  {w:"INVOLUCRO",t:["Rivestimento","Protezione","Esterno","Confezione","Guscio"]},
+  {w:"IPPICO",t:["Cavallo","Concorso","Equitazione","Trotto","Darsi"]},
+  {w:"USURA",t:["Logorio","Utilizzo","Prestito","Interessi","Reato"]},
+  {w:"SPETTABILE",t:["Ditta","Stimabile","Egregio","Lettera","Società"]},
+  {w:"TANGENZIALE",t:["Strada","Svincolo","Raccordo","Autostrada","Città"]},
+  {w:"LAY OUT JET",t:["Sfasamento","Viaggio","Aereo","Malessere","Fuso orario"]},
+  {w:"TANTRA",t:["Libro","Sacro","Induismo","Testo","Buddismo"]},
+  {w:"TALISMANO",t:["Felicità","Portafortuna","Amuleto","Magia","Toccasana"]},
+  {w:"TALK SHOW",t:["Programma","Televisivo","Ospiti","Maurizio Costanzo","Anchor man"]},
+  {w:"ANTEPRIMA",t:["Visione","Anticipazione","Film","Esclusiva","Proiezione"]},
+  {w:"TUBETTO",t:["Idraulico","Dentrificio","Catodico","Saldare","Scarico"]},
+  {w:"METAFORA",t:["Analogia","Retorica","Paragone","Allegoria","Il Postino"]},
+  {w:"LOGARITMO",t:["Matematica","Aritmetica","Numero","Esponente","Decimale"]},
+  {w:"LP",t:["Disco","Vinile","CD","Musica","Trentatre giri"]},
+  {w:"ASOCIALE",t:["Mondano","Uscire","Vita notturna","Casa","Solitudine"]},
+  {w:"LUNGO",t:["Distanza","Corto","Abito","Passo","Lento"]},
+  {w:"SONDAGGIO",t:["Indagine","Ricerca","Elettorale","Exit Poll","Inchiesta"]},
+  {w:"SONNAMBULO",t:["Ipnosi","Dormire","Svegliarsi","Camminare","Inconscio"]},
+  {w:"TATTO",t:["Senso","Delicatezza","Garbo","Mano","Toccare"]},
+  {w:"VETERINARIO",t:["Medico","Dottore","Curare","Animali","Ammalato"]},
+  {w:"MACISTE",t:["Forte","Uomo","Muscoloso","Ercole","Sansone"]},
+  {w:"MADRINA",t:["Battesimo","Cresima","Padrino","Donna","Figlio"]},
+  {w:"MENU",t:["Turistico","Lista","Cibi","Vini","Ristoranti"]},
+  {w:"MIRRA",t:["Oro","Incenso","Re magi","Doni","Profumo"]},
+  {w:"GIRAFFA",t:["Alto","Collo","Mammifero","Lungo","Africa"]},
+  {w:"CIOCCOLATO",t:["Latte","Cacao","Fondente","Dolce","Energetico"]},
+  {w:"ON THE ROAD",t:["Easy Rider","Jack Kerouac","America","Film","Racconto"]},
+  {w:"LUCCIO",t:["Pesce","Grande","Mare","Acqua","Vorace"]},
+  {w:"MITTENTE",t:["Spedire","Inviare","Lettera","Destinatario","Firma"]},
+  {w:"MUTA",t:["Pelle","Cani","Sub","Tuta","Parlare"]},
+  {w:"NOMENKLATURA",t:["Unione sovietica","Incarichi","Comunismo","Dirigenti","Potere"]},
+  {w:"SMEMORATO",t:["Perdere","Collega","Sbadato","Distratto","Dimenticare"]},
+  {w:"GIGLIO",t:["Fiore","Bianco","Puro","Candido","Firenze"]},
+  {w:"CIONDOLO",t:["Oggetto","Pendente","Collana","Catenella","Gioiello"]},
+  {w:"SOMARO",t:["Asino","Mulo","Ignorante","Ragliare","Quadrupede"]},
+  {w:"BOOMERANG",t:["Indietro","Tornare","Lanciare","Arma","Australia"]},
+  {w:"OMONIMO",t:["Stesso","Uguale","Identico","Cognome","Nome"]},
+  {w:"MANTO",t:["Cappa","Stradale","Coltre","Erba","Neve"]},
+  {w:"OLOGRAMMA",t:["Immagine","Disegno","Fotografia","Tridimensionale","Movimento"]},
+  {w:"MENESTRELLO",t:["Giullare","Corte","Cantastorie","Musica","Recitare"]},
+  {w:"GARGARISMO",t:["Gola","Colluttorio","Bocca","Sciacqui","Infezione"]},
+  {w:"OZIO",t:["Inattività","Inoperosità","Pigrizia","Riposo","Vizi"]},
+  {w:"SORTEGGIO",t:["Estrazione","Casuale","Arbitrale","Lotteria","Concorso"]},
+  {w:"SOMMELIER",t:["Esperto","Degustatore","Vino","Enologo","Provare"]},
+  {w:"OPACO",t:["Trasparente","Luce","Corpo","Oscuro","Lente"]},
+  {w:"PALINDROMO",t:["Parola","Frase","Bifronte","Leggere","Contrario"]},
+  {w:"ZOMBIE",t:["Morto vivente","Romero","Spirito","Resuscitare","Cadavere"]},
+  {w:"BONSAI",t:["Giappone","Giardino","Coltivazione","Piccolo","Radici"]},
+  {w:"PAPIRO",t:["Egitto","Carta","Foglio","Documento","Pergamena"]},
+  {w:"PARABOLA",t:["Satellite","Traiettoria","Antenna","Buon samaritano","Stream"]},
+  {w:"ZONZO",t:["Vagare","Senza meta","Andare","Que e là","Oziare"]},
+  {w:"PARAPENDIO",t:["Sport","Paracadute","Lanciarsi","Planare","Montagna"]},
+  {w:"REGGAE",t:["Musica","Calipso","Giamaica","Bob Marley","Rasta"]},
+  {w:"PATTEGGIARE",t:["Concordare","Conciliare","Accordarsi","Fisco","Trattativa"]},
+  {w:"CALZAMAGLIA",t:["Freddo","Collant","Lana","Cotone","Stretta"]},
+  {w:"CORDLESS",t:["Batteria","Fili","Telefono","Infrarossi","Distanza"]},
+  {w:"PARERE",t:["Sembrare","Consiglio","Consulto","Opinione","Chiedere"]},
+  {w:"TIZZONE",t:["Fuoco","Legno","Ardente","Bruciare","Spento"]},
+  {w:"PEGNO",t:["Pagare","Dare","Banco","Banca","Garanzia"]},
+  {w:"PELLICOLA",t:["Film","Trasparente","Sottile","Rullino","Fotografica"]},
+  {w:"PIROETTA",t:["Danza","Capriola","Ruotare","Giravolta","Ballerino"]},
+  {w:"PORCHETTA",t:["Maiale","Forno","Spiedo","Ripieno","Panino"]},
+  {w:"POZZANGHERA",t:["Acqua","Bagnata","Sporca","Pioggia","Fango"]},
+  {w:"ERGONOMICO",t:["Forma","Naturale","Design","Mouse","Tastiera"]},
+  {w:"PIUMINO",t:["D'oca","Giubbotto","Cuscino","Coperta","Caldo"]},
+  {w:"GUELFO",t:["Papa","Chiesa","Tecrazia","Toscana","Ghibellino"]},
+  {w:"ANFIBIO",t:["Animale","Terra","Acqua","Scarpone","Veicolo"]},
+  {w:"PROLETARIATO",t:["Classe","Sociale","Dittatura","Marxismo","Comunismo"]},
+  {w:"REQUIEM",t:["Messa","Funerale","Musica","Preghiera","Mozart"]},
+  {w:"RICOVERARE",t:["Ospedale","Clinica","Ferito","Ammalato","Curare"]},
+  {w:"PROPOSTA",t:["Offerta","Presentare","Lavoro","Legge","Respingere"]},
+  {w:"TATUAGGIO",t:["Applicazione","Incisione","Pelle","Permanente","Corpo"]},
+  {w:"POLAROID",t:["Fotografica","Macchina","Sviluppo","Istantaneo","Immediato"]},
+  {w:"PROPAGANDA",t:["Pubblicità","Diffusione","Elettorale","Politico","Commerciale"]},
+  {w:"TRAMPOLINO",t:["Tuffo","Sì","Salto","Elastico","Pedana"]},
+  {w:"PULP",t:["Romanzo","Scrittore","Splatter","Film","Fiction"]},
+  {w:"POKEMON",t:["Personaggio","Gioco","Pikachu","Allenatore","Gettone"]},
+  {w:"PUNGIGLIONE",t:["Vespa","Zanzara","Ape","Insetto","Aculeo"]},
+  {w:"RINNEGARE",t:["Disconoscere","Amico","Figlio","Cambiare","Passato"]},
+  {w:"FRONTALINO",t:["Autoradio","Asportare","Togliere","Stereo","Mettere"]},
+  {w:"RATA",t:["Pagare","Mutuo","Mensile","Annuale","Frazione"]},
+  {w:"SEVERO",t:["Rigoroso","Educazione","Austero","Serio","Padre"]},
+  {w:"SCADENZA",t:["Termine","Data","Tempo","Pagamento","Cibo"]},
+  {w:"PURGATORIO",t:["Paradiso","Inferno","Animo","Dante","Divina Commedia"]},
+  {w:"SETTENTRIONALE",t:["Nord","Meridionale","Centro","Pianura Padana","Italia"]},
+  {w:"ANZI",t:["Piuttosto","Invece","Opposto","Rafforzativo","Tutto"]},
+  {w:"RINOCERONTE",t:["Grande","Mammifero","Corno","Muso","Pachiderma"]},
+  {w:"FRONDA",t:["Frasca","Ornamento","Alloro","Ribellione","Opposizione"]},
+  {w:"ROMBO",t:["Quadrilatero","Equilatero","Pesce","Geometria","Trapezio"]},
+  {w:"ROYALTY",t:["Percentuale","Utile","Fatturato","Sfruttamento","Autore"]},
+  {w:"MANCIA",t:["Dare","Ricevere","Lasciare","Conto","Ristorante"]},
+  {w:"SCARABOCCHIO",t:["Macchia","Inchiostro","Nero","Disegno","Sgorbio"]},
+  {w:"MANCHE",t:["Parte","Prima","Seconda","Slalom","Sci"]},
+  {w:"TELENOVELA",t:["Beautiful","Televisione","Sentieri","Puntate","Soap Opera"]},
+  {w:"YO-YO",t:["Giocattolo","Filo","Su e giù","Rotella","Spago"]},
+  {w:"TELECOMANDO",t:["Cambiare","Canale","Zapping","Distanza","Onde"]},
+  {w:"SCARLATTINA",t:["Malattia","Contagio","Morbillo","Varicella","Rosolia"]},
+  {w:"ZERBINO",t:["Tapino","Suino","Piedi","Entrata","Ingresso"]},
+  {w:"ZEN",t:["Arte","Budda","Religione","Cina","Giappone"]},
+  {w:"TARANTELLA",t:["Ballo","Danza","Napoli","Canzone","Tamburello"]},
+  {w:"SCENEGGIATA",t:["Napoletana","Mario Merola","Messa in scena","Teatro","Finzione"]},
+  {w:"TARGET",t:["Televisione","Canale 5","Obiettivo","Consumatore","Pubblicità"]},
+  {w:"SCHIFO",t:["Pessimo","Cattivissimo","Disgustoso","Ripugnante","Cattivo"]},
+  {w:"MANGANELLO",t:["Sfollagente","Bastone","Randello","Ferire","Polizia"]},
+  {w:"MANGIME",t:["Cibo","Alimento","Nutrizione","Animale","Semi"]},
+  {w:"SCIOLTO",t:["Liquefatto","Liberato","Svincolato","Disinvolto","Sfuso"]},
+  {w:"EURO",t:["Moneta","Valuta","Divisa","Cambio","Millenovecentotrentasei"]},
+  {w:"SCHIVO",t:["Riservato","Taciturno","Timido","Asociale","Discreto"]},
+  {w:"SCIATTO",t:["Trasandato","Trascurato","Abbandonato","Disordinato","Vestire"]},
+  {w:"VISCIDO",t:["Persona","Anguilla","Sfuggente","Subdolo","Falso"]},
+  {w:"VISPA",t:["Allegro","Vivace","Arzillo","Veloce","Teresa"]},
+  {w:"LASER",t:["Fascio","Raggio","Luce","Disc","Stampante"]},
+  {w:"TAROCCO",t:["Cartomanzia","Futuro","Falso","Arancia","Predire"]},
+  {w:"XENOFOBO",t:["Detestare","Odiare","Straniero","Nazione","Estero"]},
+  {w:"WINDSURF",t:["Tavola","Onde","Sport","Mare","Oceano"]},
+  {w:"SORVEGLIARE",t:["Vigilare","Controllare","Soft'occhio","Polizia","Sicurezza"]},
+  {w:"MINUTO",t:["Secondo","Ora","Lancetta","Tempo","Piccolo"]},
+  {w:"AMPERE",t:["Misura","Intensità","Corrente","Elettricità","Conduttore"]},
+  {w:"SCOMUNICARE",t:["Chiesa","Papa","Peccato","Censurare","Escludere"]},
+  {w:"BORSELLINO",t:["Giudice","Falcone","Portamonete","Portafoglio","Tasca"]},
+  {w:"BAGARINO",t:["Biglietto","Mercato nero","Stadio","Rivendere","Prezzo"]},
+  {w:"INCOMPIUTO",t:["Sinfonia","Incompleto","Terminato","Finito","Completato"]},
+  {w:"PIZZERIA",t:["Ristorante","Mangiare","Margherita","Quattro Stagioni","Forno a legna"]},
+  {w:"SCONTRINO",t:["Cassa","Biglietto","Fiscale","Pagamento","Battere"]},
+  {w:"SEGGOVIA",t:["Montagna","Salire","Funivia","Trasporto","Impianto"]},
+  {w:"RIGIDO",t:["Duro","Inverno","Inflessibile","Freddo","Piegato"]},
+  {w:"SELVAGGINA",t:["Cacciagione","Preda","Animale","Uccello","Mangiare"]},
+  {w:"REPUTAZIONE",t:["Fama","Buona","Cattiva","Opinione","Considerazione"]},
+  {w:"IPOCONDRIA",t:["Malattia","Autosugguestione","Immaginaria","Finto","Molière"]},
+  {w:"SENTINELLA",t:["Guardia","Soldato","Vigilare","Custodire","Sorvegliare"]},
+  {w:"TINTARELLA",t:["Sole","Luna","Scottatura","Colore","Abbronzatura"]},
+  {w:"TOP MODEL",t:["Naomi Campbell","Sfilata","Passerella","Donna","Claudia Schiffer"]},
+  {w:"SERENITÀ",t:["Calma","Cielo","Tranquillità","Limpidezza","Equilibrio"]},
+  {w:"MP3",t:["Musica","Scaricare","Internet","Files","Compressione"]},
+  {w:"TRASPARENTE",t:["Vedere","Attraverso","Vetro","Luce","Opaco"]},
+  {w:"SERENATA",t:["Cantare","Spasimante","Balcone","Musica","Amore"]},
+  {w:"IGNIFUGO",t:["Fuoco","Calore","Incendio","Pompiere","Tuta"]},
+  {w:"REPLICANTE",t:["Simile","Uguale","Identico","Uomo","Blade Runner"]},
+  {w:"SETE",t:["Acqua","Bere","Caldo","Secca","Estate"]},
+  {w:"NOVELLE CUISINE",t:["Gastronomia","Francese","Creativa","Raffinata","Leggera"]},
+  {w:"TOPLESS",t:["Seno","Nudo","Costume","Monokini","Spiaggia"]},
+  {w:"ULTRAVIOLETTO",t:["Raggio","Radiazione","Elettromagnetico","Lampada","Onda"]},
+  {w:"UNA TANTUM",t:["Volta","Finanziaria","Tassa","Imposta","Pagare"]},
+  {w:"SFIZIO",t:["Soddisfazione","Capriccio","Togliersi","Divertimento","Voglia"]},
+  {w:"SFONDARE",t:["Irrompere","Aprire","Spalancare","Porta","Successo"]},
+  {w:"SGONFIARE",t:["Togliere","Aria","Ridurre","Pallone","Notizia"]},
+  {w:"SGUARDO",t:["Vista","Primo","Occhiata","Degnare","Lettura"]},
+  {w:"PAVONE",t:["Uccello","Coda","Ruota","Piume","Colorato"]},
+  {w:"YES MAN",t:["Leccapiedi","Accondiscendente","Capo","Remissivo","Servile"]},
+  {w:"TURNOVER",t:["Sostituzione","Calciatore","Giro di affari","Fatturato","Avvicendamento"]},
+  {w:"SILENZIOSO",t:["Quieto","Riservato","Rumore","Taciturno","Parlare"]},
+  {w:"SICARIO",t:["Assassino","Ammazzare","Killer","Uccidere","Mandante"]},
+  {w:"SIEPE",t:["Corso","Pianta","Ramo","Giardino","Ornamentale"]},
+  {w:"SIGARO",t:["Cuba","Avana","Fumare","Tabacco","Toscano"]},
+  {w:"ANTENNA",t:["Parabola","Satellite","Tetto","Otto","Centralizzata"]},
+  {w:"SINCERO",t:["Onesto","Vero","Leale","Falso","Bugiardo"]},
+  {w:"SIMULTANEO",t:["Stesso","Contemporaneo","Tempo","Istante","Traduzione"]},
+  {w:"SINONIMIS",t:["Segno","Spia","Causa","Malato","Significato"]},
+  {w:"VIDEOMOLLEGGIO",t:["Blockbuster","Prestare","Film","Riportare","Vedere"]},
+  {w:"SMART CARD",t:["Pay TV","Decodificatore","Programmi","Scheda","Canale"]},
+  {w:"MULETTO",t:["Asino","Carrello","Ruote","Macchina","Sollevare"]},
+  {w:"SOFFICE",t:["Morbido","Dolce","Tenero","Lana","Letto"]},
+  {w:"SOLCO",t:["Aratro","Tracciare","Terreno","Segno","Impronta"]},
+  {w:"TEGAMINO",t:["Pentola","Piccolo","Cucinare","Uova","Friggere"]},
+  {w:"TEGOLA",t:["Cadere","Mattone","Disgrazia","Tetto","Rettangolare"]},
+  {w:"SOFFOCARE",t:["Uccidere","Aria","Respirare","Reprimere","Cuscino"]},
+  {w:"SOLDATINO",t:["Militare","Giocattolo","Piombo","Collezionare","Plastica"]},
+  {w:"SOLUZIONE",t:["Problema","Composto","Sciogliere","Miscela","Risposta"]},
+  {w:"SORTILEGIO",t:["Magia","Incantesimo","Stregoneria","Fata","Spezzare"]},
+  {w:"TARZAN",t:["Film","Giungla","Liana","Cita","Jane"]},
+  {w:"TRIUMVIRATO",t:["Roma","Tre","Cesare","Pompeo","Crasso"]},
+  {w:"TRONO",t:["Re","Sedia","Altare","Imperatore","Sovrano"]},
+  {w:"SPARTITRAFFICO",t:["Banchina","Strada","Corsia","Autostrada","Guardrail"]},
+  {w:"ULCERA",t:["Malattia","Gastrite","Duodenale","Rodere","Stomaco"]},
+  {w:"MIMETIZZARE",t:["Nascondere","Adattare","Mascherare","Colore","Camaleonte"]},
+  {w:"SPAVENTO",t:["Paura","Timore","Soprassalto","Inculire","Provare"]},
+  {w:"SOVVERSIVO",t:["Rivoluzionario","Ribelle","Anarchico","Rovesciare","Fuorilegge"]},
+  {w:"MADONNA",t:["Cantante","Spettacolo","Musica","Diva","Stati Uniti"]},
+  {w:"VULNERARE",t:["Offendere","Ledere","Ferire","Danneggiare","Fare male"]},
+  {w:"SPEAKER",t:["Voce","Attore","Doppiatore","Annunciatore","Stadio"]},
+  {w:"MICIO",t:["Miagolare","Gatto","Felino","Domestico","Animale"]},
+  {w:"SPERICOLATO",t:["Vita","Vasco Rossi","Temerario","Rischio","Paura"]},
+  {w:"METROPOLITANA",t:["Trasporto","Treno","Linea","Sottotera","Rotaie"]},
+  {w:"VODKA",t:["Russia","Bevanda","Alcolica","Absolut","Acquavite"]},
+  {w:"MANGO",t:["Frutto","Tropicale","Polpa","Esotico","Cantante"]},
+  {w:"ZIBALDONE",t:["Quaderno","Appunti","Pensieri","Note","Leopardi"]},
+  {w:"ZINCO",t:["Elemento","Metallo","Grigio","Protettivo","Carbone"]},
+  {w:"SPIRALE",t:["Anticoncezionale","Molla","Curva","Avvitare","Violenza"]},
+  {w:"SPRUZZARE",t:["Acqua","Bagnare","Schizzare","Colonia","Spargere"]},
+  {w:"SQUATTER",t:["Anarchico","Casa","Occupare","Abusivo","Centro sociale"]},
+  {w:"SQUITTIRE",t:["Emettere","Verso","Topo","Roditore","Acuto"]},
+  {w:"SRADICARE",t:["Albero","Pianta","Vegetale","Tagliare","Estirpare"]},
+  {w:"TAILLEUR",t:["Giacca","Gonna","Vestito","Donna","Femminile"]},
+  {w:"STANTUFFO",t:["Su","Giù","Cilindro","Motore","Biella"]},
+  {w:"STIMOLO",t:["Motivo","Incentivo","Pungolo","Interesse","Sprone"]},
+  {w:"STONARE",t:["Stordire","Cantare","Nota","Suonare","Steccare"]},
+  {w:"STORY BOARD",t:["Bozzetto","Pubblicità","Sequenza","Immagini","Spot"]},
+  {w:"PAY TV",t:["Telepiù","Abbonamento","Decodificatore","Criptare","Decoder"]},
+  {w:"STRIZZACERVELLI",t:["Psicologo","Psichiatra","Psicanalista","Medico","Psicoterapeuta"]},
+  {w:"TERSO",t:["Pulito","Cielo","Aria","Nuvole","Puro"]},
+  {w:"STRABISMO",t:["Difetto","Occhi","Vista","Venere","Convergente"]},
+  {w:"MIMO",t:["Attore","Muto","Gesti","Imitare","Marcel Marceau"]},
+  {w:"STRUZZO",t:["Grosso","Uccello","Testa","Sabbia","Stomaco"]},
+  {w:"TECHNO",t:["Musica","Ballo","Discoteca","Rave","Ecstasy"]},
+  {w:"SUPERGIGANTE",t:["Discesa libera","Slalom","Sci","Neve","Specialità"]},
+  {w:"SCIVAIAVA",t:["Telefono","Parlare","Senza","Cornetta","Amplificare"]},
+  {w:"SUPPORTO",t:["Presumere","Ritenere","Pensare","Immaginare","Innocenza"]},
+  {w:"PIT STOP",t:["Pausa","Box","Rifornimento","Fermata","Automobilismo"]},
+  {w:"CANTILENA",t:["Canzone","Nenia","Ninna Nanna","Filastrocca","Ripetitivo"]},
+  {w:"EDERA",t:["Pianta","Sempreverde","Rampicante","Avvinto","Muro"]},
+  {w:"PARMIGIANO",t:["Reggiano","Grana","Formaggio","Grattugiato","Abitante"]},
+  {w:"PART-TIME",t:["Lavoro","Orario","Occupazione","Riduzione","Tempo pieno"]},
+  {w:"SMETTERE",t:["Interrompere","Fermarsi","Fumare","Finire","Continuare"]},
+  {w:"NAVETTA",t:["Spaziale","Trasporto","Shuttle","Breve","Spola"]},
+  {w:"CINEFORUM",t:["Film","Proiezione","Commento","Dibattito","Discussione"]},
+  {w:"EFFERVESCENTE",t:["Acqua","Bollicine","Gassata","Gasata","Ferrarelle"]},
+  {w:"SDRAIATO",t:["Disteso","Orizzontale","Sedia","Spiaggia","Abbronzarsi"]},
+  {w:"ENOTECA",t:["Locale","Cantina","Degustazione","Vini","Bottiglia"]},
+  {w:"PORCOSPINO",t:["Animale","Istrice","Riccio","Spine","Aculeato"]},
+  {w:"ERETICO",t:["Ateo","Miscredente","Religione","Dottrina","Contrario"]},
+  {w:"SCIUSCIA",t:["De Sica","Bianco","Muro","Soffitto","Lustrascarpe"]},
+  {w:"INTONACO",t:["Bianco","Muro","Soffitto","Ricoprire","Malta"]},
+  {w:"FABBRICA",t:["Officina","Stabilimento","Industria","Impresa","Produzione"]},
+  {w:"EXIT POLL",t:["Sondaggio","Elezioni","Voto","Seggio","Urna"]},
+  {w:"SCHERZO",t:["Burla","Beffa","A parte","Ridere","Facile"]},
+  {w:"FALEGNAME",t:["Mestiere","Lavoro","Artigiano","Geppetto","San Giuseppe"]},
+  {w:"FANTOZZI",t:["Paolo Villaggio","Ragioniere","Imbranato","Impacciato","Fracchia"]},
+  {w:"SPIGA",t:["Grano","Frumento","Pannocchia","Mais","Parquet"]},
+  {w:"FISCO",t:["Stato","Erario","Tasse","Imposte","Amministrazione"]},
+  {w:"FILTRO",t:["Aria","Olio","Bevanda","Magia","Posizione"]},
+  {w:"SUFFRAGIO",t:["Messa","Voto","Elezione","Consenso","Universale"]},
+  {w:"FORESTA",t:["Bosco","Alberi","Tarzan","Nera","Pluviale"]},
+  {w:"FORMAT",t:["Modello","Schema","Testo","Acquistare","Programma"]},
+  {w:"RITRATTO",t:["Quadro","Pittore","Raffigurazione","Descrizione","Fotografia"]},
+  {w:"KETCHUP",t:["Salsa","Pomodoro","Agrodolce","Aceto","Patatine"]},
+  {w:"FRAPPÈ",t:["Latte","Fragola","Menta","Frullato","Ghiaccio"]},
+  {w:"FRASTUONO",t:["Rumore","Suono","Forte","Fracasso","Baccano"]},
+  {w:"FRENETICO",t:["Stressato","Ritmo","Convulso","Irrequieto","Sfrenato"]},
+  {w:"SPACCONE",t:["Paul Newman","Gradasso","Tronfio","Smargiasso","Presuntuoso"]},
+  {w:"TURBOLENZA",t:["Torbidezza","Agitazione","Burrascoso","Aereo","Atmosferica"]},
+  {w:"SPAVENTAPASSERI",t:["Fantoccio","Paglia","Uccelli","Volatili","Campagna"]},
+  {w:"SPAZZINO",t:["Operatore ecologico","Pulire","Strade","Notte","Netturbino"]},
+  {w:"TURBINE",t:["Vortice","Aria","Tromba d'aria","Movimento","Polvere"]},
+  {w:"WAGNERIANO",t:["Valchirie","Nibelunghi","Musica","Classico","Anello"]},
+  {w:"BIBLIOTECARIO",t:["Libro","Scaffale","Volume","Lettura","Silenzio"]},
+  {w:"SPAVALDO",t:["Coraggioso","Sicuro","Tronfio","Orgoglioso","Sfrontato"]},
+  {w:"VOCAZIONE",t:["Religione","Tendenza","Inclinazione","Chiamata","Preferenza"]},
+  {w:"TRATTATI",t:["Accordo","Patto","Convenzione","Dottrina","Materia"]},
+  {w:"SPIRAGLIO",t:["Fessura","Luce","Speranza","Barume","Possibilità"]},
+  {w:"SPECULARE",t:["Spiare","Studiare","Sfruttare","Simmetrico","Reciproco"]},
+  {w:"SOCCHIUDERE",t:["Porta","Finestra","Fessura","Spiraglio","Aprire"]},
+  {w:"SOFFIARE",t:["Fiato","Bocca","Aria","Vetro","Vento"]},
+  {w:"SOGLIOLA",t:["Pesce","Mare","Piatto","Cibo","Mangiare"]},
+  {w:"SOLLETICO",t:["Fare","Ridere","Soffrire","Piedi","Stuzzicare"]},
+  {w:"SNELLO",t:["Magro","Agile","Smilzo","Svetto","Sottile"]},
+  {w:"SOCCORRERE",t:["Aiutare","Intervenire","Malato","Ferito","Pericolo"]},
+  {w:"SOFTWARE",t:["Hardware","Computer","Programma","Windows","Dati"]},
+  {w:"SOLIDARIETÀ",t:["Aiuto","Supporto","Appoggio","Sostegno","Società"]},
+  {w:"SONNIFERO",t:["Tubetto","Medicina","Pillola","Fermata","Stop"]},
+  {w:"SOSTA",t:["Arresto","Fermata","Stop","Divieto","Pausa"]},
+  {w:"TRIPUDIO",t:["Folla","Gioia","Gaudio","Visibile","Esultanza"]},
+  {w:"VONGOLA",t:["Frutto di mare","Conchiglia","Verace","Mollusco","Mangiare"]},
+  {w:"TARTARUGA",t:["Lento","Testuggine","Piano","Mare","Guscio"]},
+  {w:"SOTTOLINEARE",t:["Matita","Penna","Evidenziare","Rimarcare","Rilevare"]},
+  {w:"SOUBRETTE",t:["Presentatrice","Ballerina","Cantante","Star","Spettacolo"]},
+  {w:"SOTTILETTE",t:["Kraft","Fette","Formaggio","Fuso","Toast"]},
+  {w:"SPORADICO",t:["Isolato","Saltuario","Continuo","Ripetuto","Casuale"]},
+  {w:"SQUASH",t:["Sport","Chiuso","Pallina","Racchetta","Muro"]},
+  {w:"SQUAW",t:["Donna","Moglie","Indiani","Augh","Toro seduto"]},
+  {w:"ZIP",t:["Cerniera","Lampo","Pantaloni","Patta","Bottoni"]},
+  {w:"TACITURNO",t:["Introverso","Muto","Parole","Poco","Parlare"]},
+  {w:"MINACCIA",t:["Intimidazione","Pericolo","Danno","Male","Futuro"]},
+  {w:"TREDICESIMA",t:["Paga","Stipendio","Mensilità","Natale","Retribuzione"]},
+  {w:"TRATTORE",t:["Contadino","Veicolo","Cingolo","Campagna","Agricoltura"]},
+  {w:"STAGISTA",t:["Lewinsky","Corso","Addestramento","Lavoro","Azienda"]},
+  {w:"TAKEAWAY",t:["Fast Food","Mangiare","Cibo","Cinese","Ristorante"]},
+  {w:"TAOISMO",t:["Lao-Tse","Religione","Cina","Filosofia","Cosmo"]},
+  {w:"TERMOSIFONE",t:["Riscaldamento","Casa","Temperatura","Acqua","Caldaia"]},
+  {w:"SREGOLATEZZA",t:["Vita","Costumi","Genio","Comportamento","Dissolutezza"]},
+  {w:"STAMPATELLO",t:["Lettere","Maiuscole","Corsivo","Alfabeto","Carattere"]},
+  {w:"STATION WAGON",t:["Automobile","Giardinetta","Berlina","Familiare","Portellone"]},
+  {w:"STOCK",t:["Merce","Disponibile","Magazzino","Inventario","Negozio"]},
+  {w:"TESTARDO",t:["Mulo","Cocciuto","Insistente","Ostinato","Rinunciatario"]},
+  {w:"STRADIVARIO",t:["Violino","Violoncello","Strumento","Musicale","Accardo"]},
+  {w:"STRIMPELLARE",t:["Suonare","Strumento","Musicale","Pianoforte","Chitarra"]},
+  {w:"STUPEFACENTE",t:["Meraviglia","Ammirevole","Incredibile","Inaspettato","Piacevole"]},
+  {w:"STORTO",t:["Dritto","Inclinato","Piegato","Gambe","Quadro"]},
+  {w:"STRADARIO",t:["Cartina","Elenco","Vie","Città","Percorso"]},
+  {w:"STRESS",t:["Lavoro","Fatica","Sovraccarico","Tensione","Frenesia"]},
+  {w:"TRENDY",t:["Attuale","Moda","Moderno","Yoga","Discoteca"]},
+  {w:"SUPERLATIVO",t:["Assoluto","Relativo","Aggettivo","Avverbio","Massimo"]},
+  {w:"SUPPLIZIO",t:["Sofferenza","Tormento","Tortura","Pena","Tantalo"]},
+  {w:"SURROUND",t:["Suono","Stereo","Audio","Casse","Effetto"]},
+  {w:"SUSHI",t:["Giapponese","Piatto","Cibo","Pesce","Crudo"]},
+  {w:"SCIARADA",t:["Gioco","Enigmistico","Parole","Risolvere","Unire"]},
+  {w:"SCIOCCHEZZA",t:["Stolteria","Insignificante","Stupidaggine","Nonnulla","Fesseria"]},
+  {w:"SCIROCCO",t:["Vento","Caldo","Sud-est","Umido","Africa"]},
+  {w:"TROUSSE",t:["Astuccio","Trucco","Borsetta","Pelle","Viaggio"]},
+  {w:"SCIOPERO",t:["Trasporti","Lavoro","Sindacato","Ad oltranza","Precettare"]},
+  {w:"VIRTUALE",t:["Irreale","Internet","Finto","Potenziale","Possibile"]},
+  {w:"SCOLIOSI",t:["Schiena","Malformazione","Deviazione","Sport","Colonna vertebrale"]},
+  {w:"SCOLLEGARE",t:["Disconnettere","Disunire","Separare","Cavo","Disgiungere"]},
+  {w:"PASSWORD",t:["Codice","Segreto","Accesso","Digitare","Inserire"]},
+  {w:"SCOTCH",t:["Whisky","Attaccare","Adesivo","Post it","Nastro"]},
+  {w:"SEGNALINO",t:["Pedina","Posto","Casella","Gioco in scatola","Percorso"]},
+  {w:"SEGRETERIA",t:["Telefonica","Messaggio","Ufficio","Carica","Presidenza"]},
+  {w:"SEMPLIFICARE",t:["Chiarire","Esplicitare","Complicare","Concetto","Facilitare"]},
+  {w:"ARCHETIPO",t:["Modello","Ideale","Filosofia","Platone","Forma"]},
+  {w:"BABY BOOM",t:["Incremento","Natalità","Demografica","Aumento","Crescita"]},
+  {w:"ARRANGIARE",t:["Sistemare","Accomodare","Musica","Cavarsela","Accordarsi"]},
+  {w:"ARRIVEDERCI",t:["Salutarsi","Ciao","Addio","Congedarsi","Accomiatarsi"]},
+  {w:"SENSUALE",t:["Sexy","Voce","Sessuale","Attraente","Seduzione"]},
+  {w:"PLEBISCITO",t:["Popolare","Consenso","Unanimità","Assemblea","Voto"]},
+  {w:"IGNOTO",t:["Sconosciuto","Famoso","Ignaro","I soliti","Milite"]},
+  {w:"SICCITÀ",t:["Secchezza","Arsura","Calore","Sete","Aridità"]},
+  {w:"SIESTA",t:["Dormita","Pisolino","Sonno","Pennichella","Riposo"]},
+  {w:"TWIST",t:["Ballo","Again","Shout","Anche","Anni 60-70"]},
+  {w:"VICEVERSA",t:["Invece","Opposto","Contrario","Inverso","Piuttosto"]},
+  {w:"YEN",t:["Moneta","Divisa","Valore","Giappone","Tokio"]},
+  {w:"TURCHESE",t:["Pietra","Colore","Azzurro","Prezioso","Mare"]},
+  {w:"SIGLA",t:["Targa","Acrostico","Musicale","Programma televisivo","Abbreviazione"]},
+  {w:"SIMULAZIONE",t:["Finta","Reato","Fallo","Prova","Volo"]},
+  {w:"SINTESI",t:["Breve","Riassunto","Analisi","Conclusione","Unità"]},
+  {w:"YETI",t:["Enorme","Uomo","Nevi","Himalaya","Abominevole"]},
+  {w:"SMAGLIANTE",t:["Forma","Brillante","Ottimo","Eccellente","Lucentezza"]},
+  {w:"VIDEOCONFERENZA",t:["Computer","Collegamento","Fibra ottica","Telefono","Vedere"]},
+  {w:"SFOGLIARE",t:["Libro","Giornale","Rivista","Margherita","Scorrere"]},
+  {w:"SGAMBETTO",t:["Fare","Piede","Inciampare","Cadere","Tranello"]},
+  {w:"SGORBIO",t:["Macchia","Scarabocchio","Inchiostro","Disegno","Brutto"]},
+  {w:"SIBILLINO",t:["Oscuro","Misterioso","Cumana","Enigmatico","Oracolo"]},
+  {w:"RIFLETTERE",t:["Specchio","Meditare","Considerare","Mare","Pensare"]},
+  {w:"TRAPPOLA",t:["Catturare","Animali","Tendere","Tranello","Topi"]},
+  {w:"SET POINT",t:["Decisivo","Vittoria","Tie break","Pallavolo","Tennis"]},
+  {w:"MOSCA TSE-TSE",t:["Insetto","Ronzare","Sonno","Malattia","Volare"]},
+  {w:"NOMINATION",t:["Candidatura","Premio","Oscar","Vincere","Film"]},
+  {w:"TORERO",t:["Dominguìn","Corrida","Spagna","Arena","Matador"]},
+  {w:"ULTIMATUM",t:["Ingiunzione","Obbligo","Mandare","Dare","Scadenza"]},
+  {w:"LOOP",t:["Ripetizione","Costante","Ininterrotta","Ciclico","Continuo"]},
+  {w:"SESAMO",t:["Porta","Apriti","Pane","Olio","Semi"]},
+  {w:"NONNISMO",t:["Caserma","Militare","Matricola","Reclute","Soldato"]},
+  {w:"SFIORARE",t:["Sfuggita","Toccare","Superficialmente","Vicino","Leggermente"]},
+  {w:"TRAPEZIO",t:["Geometria","Quattro","Lati","Circo","Osso"]},
+  {w:"TELECRONACA",t:["Commento","Partita","Bruno Pizzul","Descrizione","Avvenimento"]},
+  {w:"SCANNER",t:["Immagine","Fotografia","Elaborare","File","Definizione"]},
+  {w:"SCARSO",t:["Abbondante","Poco","Insufficiente","Povero","Inadeguato"]},
+  {w:"SCATTO",t:["Molla","Balzo","Anzianità","Slancio","Telefonico"]},
+  {w:"SCELTA",t:["Opzione","Decisione","Assortimento","Imbarazzo","Alternativa"]},
+  {w:"SCAVALCARE",t:["Passare","Sopra","Ostacolo","Superare","Sorpassare"]},
+  {w:"FALCE",t:["Taglio","Attrezzo","Agricoltura","Grano","Martello"]},
+  {w:"SCHERMA",t:["Fioretto","Sciabola","Sport","Spada","Dorina Vaccaroni"]},
+  {w:"TARLO",t:["Legno","Rodere","Insetto","Assillo","Dubbio"]},
+  {w:"SCHIUMA",t:["Barba","Bagno","Bolle","Liquido","Sapone"]},
+  {w:"RAGIONAMENTO",t:["Riflessione","Logica","Dimostrazione","Argomentazione","Razionale"]},
+  {w:"RATTO",t:["Rapina","Sabine","Veloce","Topo","Sequestro"]},
+  {w:"RINNOVARE",t:["Restaurare","Abbonamento","Contratto","Ripetere","Modernizzare"]},
+  {w:"FRODE",t:["Raggiro","Imbroglio","Truffa","Fiscale","Illegale"]},
+  {w:"FALANGE",t:["Dita","Mano","Formazione","Militare","Armata"]},
+  {w:"MANAGER",t:["Dirigente","Direttore","Capo","Procuratore","Donna"]},
+  {w:"SAFARI",t:["Caccia","Africa","Fotografico","Jeep","Animali"]},
+  {w:"SCONCIO",t:["Osceno","Sporco","Atto","Parola","Vergognoso"]},
+  {w:"RITMO",t:["Fît","Successione","Musica","Suono","Cadenza"]},
+  {w:"ROSPO",t:["Anfibio","Rana","Principe","Stagno","Brutto"]},
+  {w:"RUSCELLO",t:["Rivolo","Scorrere","Acqua","Fiume","Montagna"]},
+  {w:"MALVAGIO",t:["Cattivo","Maligno","Perfido","Azione","Persona"]},
+  {w:"PIRANHA",t:["Vorace","Carnivoro","Predatore","Tigre","Pesce"]},
+  {w:"PIOVRA",t:["Mafia","Mollusco","Polipo","Michele Placido","Film TV"]},
+  {w:"SFINGE",t:["Mitologia","Statua","Leone","Ali","Enigma"]},
+  {w:"PROVARE",t:["Cercare","Tentare","Assaggiare","Credere","Dimostrare"]},
+  {w:"CIOCIARO",t:["Roma","Lazio","Dialetto","Stornello","Sofia Loren"]},
+  {w:"SMOG",t:["Inquinamento","Scarico","Auto","Nebbia","Combustione"]},
+  {w:"CODINO",t:["Treccia","Capello","Cavallo","Baggio","Fiorello"]},
+  {w:"COLBACCO",t:["Cappello","Copricapo","Russo","Pelliccia","Caldo"]},
+  {w:"SOMATIZZARE",t:["Malattia","Psicosomatico","Condizionamento","Sintomo","Corpo"]},
+  {w:"BOND",t:["Obbligazione","James","007","Sean Connery","Roger Moore"]},
+  {w:"MENAGRAMO",t:["Male","Sfortuna","Iettatore","Iella","Superstizione"]},
+  {w:"PACHIDERMA",t:["Mammifero","Elefante","Rinoceronte","Ippopotamo","Grosso"]},
+  {w:"OCCHIATA",t:["Sguardo","Veloce","Controllare","Dolce","Intesa"]},
+  {w:"BON TON",t:["Buone maniere","Educazione","Comportamento","Eleganza","Classe"]},
+  {w:"PANINO",t:["Tramezzino","Mangiare","Hamburger","McDonald's","Imbottito"]},
+  {w:"CRAC",t:["Rumore","Rovina","Fallimento","Tracollo","Finanziario"]},
+  {w:"NOLEGGIO",t:["Affitto","Locazione","Film","Videocassetta","Blockbuster"]},
+  {w:"MOSCA CIECA",t:["Gioco","Bambini","Ragazzi","Bendati","Cercare"]},
+  {w:"SMORFIA",t:["Fare","Viso","Faccia","Numeri","Lotto"]},
+  {w:"ONIRICO",t:["Interpretazione","Dormire","Sonno","Sogno","Freud"]},
+  {w:"NEMESI",t:["Vendetta","Giustizia","Riparare","Storica","Successi"]},
+  {w:"MODEM",t:["Computer","Telefono","Collegare","Internet","ISDN"]},
+  {w:"GEOLOGIA",t:["Scienza","Terra","Crosta","Rocce","Movimenti"]},
+  {w:"GAZZETTA",t:["Giornale","Quotidiano","Sport","Rosa","Mezzogiorno"]},
+  {w:"MENISCO",t:["Cartilagine","Legamento","Ginocchio","Operazione","Calciatore"]},
+  {w:"SORSO",t:["Bere","Poco","Piccolo","Liquido","Tutto"]},
+  {w:"BOA",t:["Rettile","Serpente","Galleggiante","Strisciare","Segnalare"]},
+  {w:"BOLGIA",t:["Inferno","Calca","Ressa","Confusione","Folla"]},
+  {w:"RAUCO",t:["Voce","Raffreddore","Basso","Debole","Sandro Ciotti"]},
+  {w:"PAR CONDICIO",t:["Legge","Politica","Uguaglianza","Elezioni","Parità"]},
+  {w:"CALZATURA",t:["Scarpa","Sandalo","Pantofola","Stivale","Piede"]},
+  {w:"ZULU",t:["Popolazione","Africana","Bantu","Primitivo","Incivile"]},
+  {w:"STREPITOSO",t:["Straordinario","Eccezionale","Clamoroso","Fantastico","Successo"]},
+  {w:"PEDAGGIO",t:["Pagare","Autostrada","Casello","Dazio","Tassa"]},
+  {w:"TIP TAP",t:["Ballo","Danza","Rumore","Fred Astaire","Ginger Rogers"]},
+  {w:"PARCELLA",t:["Professionista","Onorario","Pagare","Presentare","Competenze"]},
+  {w:"PAVESE",t:["Città","Scrittore","Padano","Lombardia","Cesare"]},
+  {w:"STRATAGEMMA",t:["Astuzia","Escamotage","Accorgimento","Raggiro","Soluzione"]},
+  {w:"TIRCHIO",t:["Avaro","Spilorcio","Taccagno","Soldi","Mani bucate"]},
+  {w:"CALIPSO",t:["Ballo","Canzone","Antille","Reggae","Harry Belafonte"]},
+  {w:"GUINNESS",t:["Alec","Birra","Record","Primati","Libro"]},
+  {w:"GUGLIA",t:["Cono","Piramide","Chiesa","Campanile","Duomo"]},
+  {w:"PENALE",t:["Civile","Diritto","Pagare","Codice","Fedina"]},
+  {w:"PODISTA",t:["Atleta","Correre","Marciatore","Sport","Sprint"]},
+  {w:"POTARE",t:["Piante","Rami","Tagliare","Alberi","Primavera"]},
+  {w:"PRANOTERAPIA",t:["Colore","Mani","Guarire","Energia","Malato"]},
+  {w:"ANATROCCOLO",t:["Brutto","Cigno","Favola","Uccello","Anatra"]},
+  {w:"PRONOSTICO",t:["Previsione","Vincitore","Gara","Favore","Predire"]},
+  {w:"TRAINING",t:["Preparazione","Addestramento","Formazione","Corso","Autogeno"]},
+  {w:"QUERCIA",t:["Albero","Sequoia","Sempreverde","Sughero","P.D.S."]},
+  {w:"PROLOGO",t:["Premessa","Preambolo","Introduzione","Prima","Epilogo"]},
+  {w:"ANGELICO",t:["Beato","Puro","Dolce","Viso","Alì"]},
+  {w:"RICREAZIONE",t:["Pausa","Intervallo","Scuola","Svago","Distrazione"]},
+  {w:"PROTEGGERE",t:["Difendere","Coprire","Favorire","Preservare","Riparare"]},
+  {w:"QUIZ",t:["Gioco","Premi","Domanda","Televisione","Mike Bongiorno"]},
+  {w:"PUMA",t:["Felino","Cacciatore","Agile","Snello","Veloce"]},
+  {w:"ARETINO",t:["Arezzo","Pietro","Poeta","Città","Toscana"]},
+  {w:"FRUSTRAZIONE",t:["Complesso","Depressione","Insoddisfazione","Insuccesso","Problema"]},
+  {w:"ARPA",t:["Strumento","Musicale","Corda","Celtica","Pizzicare"]},
+  {w:"ARTICO",t:["Circolo","Polo","Nord","Calotta","Ghiaccio"]},
+  {w:"ARDENTE",t:["Caldo","Sole","Sabbia","Camera","Impetuoso"]},
+  {w:"ARITMETICA",t:["Matematica","Scuola","Numeri","Algebra","Operazione"]},
+  {w:"AROMA",t:["Fragranza","Sapore","Odore","Olfatto","Gusto"]},
+  {w:"ART DIRECTOR",t:["Pubblicità","Copywriter","Disegno","Grafico","Agenzia"]},
+  {w:"ASPETTATIVA",t:["Attesa","Lavoratore","Periodo","Chiedere","Mettere"]},
+  {w:"ATELIER",t:["Sartoria","Moda","Artigiano","Artista","Lavoro"]},
+  {w:"ATTRAZIONE",t:["Attirare","Calamita","Fatale","Magnete","Fisica"]},
+  {w:"BACKGROUND",t:["Situazione","Base","Musicale","Substrato","Dietro"]},
+  {w:"AORTA",t:["Cuore","Arteria","Vena","Sangue","Ventricolo"]},
+  {w:"APPARENZA",t:["Esteriore","Forma","Sembianza","Sostanza","Salvare"]},
+  {w:"APPRENDERE",t:["Capire","Conoscere","Imparare","Concetto","Notizia"]},
+  {w:"ARBITRO",t:["Imparziale","Calcio","Guardalinee","Fischietto","Rigore"]},
+  {w:"AUTOCONTROLLO",t:["Dominio","Azioni","Calma","Perdere","Mantenere"]},
+  {w:"AUREOLA",t:["Santo","Luce","Cerchio","Corona","Splendore"]},
+  {w:"AUSTERITY",t:["Limitazione","Inquinamento","Benzina","Autovetture","Macchine"]},
+  {w:"IPERTESTO",t:["Informazioni","Collegamenti","Computer","Link","Internet"]},
+  {w:"ATTESTATO",t:["Dimostrazione","Documento","Partecipazione","Dichiarazione","Prova"]},
+  {w:"AUDACE",t:["Pericolo","Coraggioso","Osare","Difficoltà","Fortuna"]},
+  {w:"AULA",t:["Magna","Scuola","Universitaria","Studiare","Classe"]},
+  {w:"AVAMBRACCIO",t:["Arto","Corpo","Gomito","Mano","Polso"]},
+  {w:"BABELE",t:["Torre","Caos","Lingue","Disordine","Assiri"]},
+  {w:"BADGE",t:["Placchetta","Tessera","Cartellino","Riconoscimento","Distintivo"]},
+  {w:"BALDORIA",t:["Schiamazzare","Allegria","Baccano","Rumore","Confusione"]},
+  {w:"BAGNACAUDA",t:["Piatto tipico","Aglio","Acciughe","Olio","Piemontese"]},
+  {w:"BALNEARE",t:["Mare","Spiaggia","Stabilimento","Bagno","Divieto"]},
+  {w:"RAGAZZO",t:["Bambino","Uomo","Piccolo","Figlio","Sesso maschile"]},
+  {w:"BARATRO",t:["Abisso","Precipizio","Piombare","Cadere","Basso"]},
+  {w:"BAROMETRO",t:["Misurare","Pressione","Atmosferica","Mercurio","Colonnina"]},
+  {w:"BALLOTTAGGIO",t:["Elezioni","Secondo","Scrutinio","Maggioritario","Testa a testa"]},
+  {w:"BALSAMICO",t:["Aromatico","Aceto","Olio","Medicamento","Shampoo"]},
+  {w:"BARARE",t:["Imbrogliare","Frodare","Carte","Poker","Ingannare"]},
+  {w:"BAROLO",t:["Vino","Rosso","Piemontese","Bere","Brasato"]},
+  {w:"BATUFFOLO",t:["Lana","Cotone","Ovatta","Soffice","Piccolo"]},
+  {w:"BERGAMASCO",t:["Dialetto","Lombardia","Città","Atalanta","Sopra"]},
+  {w:"BIGAMO",t:["Due","Moglie","Infedele","Fedifrago","Matrimonio"]},
+  {w:"MOUSE",t:["Muovere","Schermo","Cursore","Puntatore","Computer"]},
+  {w:"BASSOTTO",t:["Cane","Piccolo","Corto","Bando","Johnny"]},
+  {w:"BENVENUTO",t:["Saluto","Accoglienza","Inserimento","Introduzione","Nuovo"]},
+  {w:"BETA",t:["Età","Alfa","Lettera","Bi","Greco"]},
+  {w:"BILICO",t:["Instabile","Equilibrio","Filo","Incerto","Ondeggiare"]},
+  {w:"BIODEGRADABILE",t:["Ecologia","Inquinamento","Verde","Composto","Decomponibile"]},
+  {w:"BILOCALE",t:["Stanza","Casa","Vano","Due","Abitare"]},
+  {w:"ORTO",t:["Botanico","Coltivare","Terreno","Ortaggi","Zappare"]},
+  {w:"OPPOSIZIONE",t:["Contrario","Contrasto","Governo","Maggioranza","Minoranza"]},
+  {w:"BISCIONE",t:["Canale 5","Serpe","Milano","Stemma","Visconti"]},
+  {w:"BLOCCASTERZO",t:["Antifurto","Volante","Automobile","Ladro","Macchina"]},
+  {w:"BORGO",t:["Piccolo","Paese","Medievale","Quartiere","Marinaio"]},
+  {w:"GABBIANO",t:["Uccello","Volo","Bianco","Mare","Jonathan Livingstone"]},
+  {w:"BISCHERO",t:["Grullo","Sciocco","Stolto","Stupido","Ingenuo"]},
+  {w:"BLOB",t:["Sostanza","Spezzoni","Televisiva","Rai tre","Montaggio"]},
+  {w:"BOREALE",t:["Settentrionale","Aurora","Equatore","Polo Nord","Emisfero"]},
+  {w:"HARE KRISHNA",t:["Religione","Indiana","Arancioni","Visnu","Setta"]},
+  {w:"BRAILLE",t:["Cieco","Non vedente","Alfabeto","Scrittura","Lettura"]},
+  {w:"BRICOLAGE",t:["Fare da sé","Lavoro","Casa","Riparazioni","Falegnameria"]},
+  {w:"BRINDISI",t:["Città","Puglia","Calici","Cic cin","Augurale"]},
+  {w:"IMPRUDENTE",t:["Temerario","Sventato","Sbadato","Incauto","Azzardato"]},
+  {w:"BRACCO",t:["Cane","Poliziotto","Caccia","Annusare","Quadrupede"]},
+  {w:"BREZZA",t:["Vento","Mare","Terra","Debole","Leggero"]},
+  {w:"BRILLANTANTE",t:["Detersivo","Lavastoviglie","Luccicare","Pulire","Bicchieri"]},
+  {w:"ILLEGITTIMO",t:["Illegale","Ingiusto","Valido","Figlio","Illecito"]},
+  {w:"BRONCHITE",t:["Raffreddore","Tossire","Starnutire","Polmoni","Acuta"]},
+  {w:"POSTERO",t:["Futuro","Generazione","Dopo","Successivo","Ardua sentenza"]},
+  {w:"POST-IT",t:["3M","Memo","Adesivo","Foglietto","Rimovibile"]},
+  {w:"BUFFET",t:["Tavolo","Cibo","Ristorante","Mangiare","In piedi"]},
+  {w:"BUFERA",t:["Tempesta","Temporale","Tormenta","Pioggia","Uragano"]},
+  {w:"BULIMIA",t:["Ingrassare","Mangiare","Malattia","Cibo","Anoressia"]},
+  {w:"BUNGALOW",t:["Villino","Hotel","Capanna","Turista","Campeggio"]},
+  {w:"CAFONE",t:["Maleducato","Villano","Zotico","Comportarsi","Signorile"]},
+  {w:"BUTTAFUORI",t:["Cacciare","Entrata","Discoteche","Locali","Estrometterne"]},
+  {w:"CACAO",t:["Pianta","Cioccolato","Burro","Amaro","Dolce"]},
+  {w:"INFORCARE",t:["Forza","Strada","Prendere","Slalom","Paletto"]},
+  {w:"CAIO",t:["Tizio","Sempronio","Nome","Persona","Indeterminata"]},
+  {w:"CALAMARO",t:["Fritto","Mollusco","Mangiare","Liquido","Totano"]},
+  {w:"SISMA",t:["Scossa","Tellurica","Terremoto","Mercalli","Tremare"]},
+  {w:"CALCESTRUZZO",t:["Costruzione","Materiale","Cemento","Acqua","Ghiaia"]},
+  {w:"GIAMBURRASCA",t:["Monello","Giornalino","Collegio","Rita Pavone","Pappa col pomodoro"]},
+  {w:"CALMA",t:["Serenità","Tranquillo","Agitato","Sangue freddo","Quiete"]},
+  {w:"POP ART",t:["Pittura","Scultura","Americana","Consumo","Andy Warhol"]},
+  {w:"SLOT MACHINE",t:["Soldi","Moneta","Casino","Gioco","Gettone"]},
+  {w:"CALEIDOSCOPIO",t:["Tubo","Girare","Cilindro","Specchietto","Luce"]},
+  {w:"CALLIGRAFIA",t:["Bella","Brutta","Scrittura","Illeggibile","Scrivere"]},
+  {w:"CALUNNIA",t:["Infamia","Incolpare","Querelare","Reato","Diffamare"]},
+  {w:"PONENTE",t:["Levante","Riviera","Orizzonte","Tramonto","Occidente"]},
+  {w:"CAMERAMAN",t:["Cinepresa","Girare","Riprendere","Operatore","Televisivo"]},
+  {w:"RICOTTA",t:["Formaggio","Latte","Pecora","Salata","Mangiare"]},
+  {w:"CANAPA",t:["Tessuto","Fibra","Cappello","Indiana","Stoffa"]},
+  {w:"CAMELIE",t:["Signora","Fiore","Pianta","Bianco","Rosso"]},
+  {w:"CAMMELLO",t:["Gobba","Deserto","Animale","Dromedario","Bere"]},
+  {w:"MICROBO",t:["Batterio","Infezione","Contagio","Piccolo","Microrganismo"]},
+  {w:"RICONOSCERE",t:["Distinguere","Persona","Identificare","Ammettere","Figlio"]},
+  {w:"CANDEGGINA",t:["Lavare","Macchia","Sbiancare","Ace","Varecchina"]},
+  {w:"RESTITUIRE",t:["Rendere","Prestare","Maltollo","Favorire","Ridare"]},
+  {w:"CANDELOTTO",t:["Dinamite","Fumogeno","Lacrimogeno","Gas","Stadio"]},
+  {w:"CANDID CAMERA",t:["Nascosto","Televisione","Scherzo","Nanny Loi","Specchio Segreto"]},
+  {w:"CANOTTIERA",t:["Maglietta","Bianca","Salute","Lana","Cotone"]},
+  {w:"NAIF",t:["Quadro","Pittura","Ligabue","Arte","Ingenuo"]},
+  {w:"CIAMBELLA",t:["Dolce","Zucchero","Anello","Buco","Salvagente"]},
+  {w:"CICATRICE",t:["Ferita","Pelle","Traccia","Segno","Taglio"]},
+  {w:"NARICE",t:["Naso","Due","Odorare","Respirare","Starnutire"]},
+  {w:"SMENTIRE",t:["Contraddire","Sbugiardare","Dimostrare","Falso","Confessare"]},
+  {w:"CAPOLAVORO",t:["Opera","Migliore","Eccellente","Massimo","Perfetto"]},
+  {w:"CANONE",t:["Rai","Abbonamento","Pagare","Periodico","Equo"]},
+  {w:"TORTELLINO",t:["Bolognese","Prosciutto","Raviolo","Parmigiano","Brodo"]},
+  {w:"CICLOPE",t:["Occhio","Mostro","Mitologia","Polifemo","Ulisse"]},
+  {w:"MOUNTAIN BIKE",t:["Cambio","Telaio","Salite","Fuori strada","Sterrato"]},
+  {w:"MOVIOLA",t:["Rallentatore","Calcio","Rivedere","Domenica","Carlo Sassi"]},
+  {w:"PASSERELLA",t:["Sfilato","Moda","Teatro","Pedana","Ponte"]},
+  {w:"PATAGONIA",t:["America","Argentina","Regione","Vento","Bruce Chatwin"]},
+  {w:"MOTIVARE",t:["Spiegare","Giustificare","Causare","Incentivare","Stimolare"]},
+  {w:"CRISI",t:["Isterica","Nervi","Entrare","Superare","Depressione"]},
+  {w:"CROCIERA",t:["Nave","Vacanza","Mare","Costa","Velocità"]},
+  {w:"CURRY",t:["Spezia","Condimento","India","Riso","Pollo"]},
+  {w:"TENTACOLO",t:["Piovra","Polipo","Mollusco","Preda","Invertebrati"]},
+  {w:"DIVANO",t:["Sofà","Poltrona","Cuscino","Imbottito","Letto"]},
+  {w:"DADO",t:["Facce","Lanciare","Numeri","Cuba","Brodo"]},
+  {w:"CURRICULUM VITAE",t:["Carriera","Studi","Professionale","Dati personali","Lavoro"]},
+  {w:"TENEREZZA",t:["Dolcezza","Voglia di","Coccole","Morbidezza","Affetto"]},
+  {w:"TELESCOPIO",t:["Cannocchiale","Stelle","Astronomia","Luna","Cielo"]},
+  {w:"DIVORZIO",t:["Matrimonio","Separazione","Scioglimento","Referendum","All'italiana"]},
+  {w:"TENEBRA",t:["Oscurità","Buio","Nero","Profondo","Abisso"]},
+  {w:"DUAL BAND",t:["Cellulare","Telefonino","Frequenza","GSM","Segnale"]},
+  {w:"LUDOTECA",t:["Divertimento","Gioco","Ritrovò","Passatempo","Svago"]},
+  {w:"ELICOTTERO",t:["Volo","Elica","Pale","Fermo","Aereo"]},
+  {w:"SECESSIONE",t:["Divisione","Indipendenza","Regionalismo","Separazione","Guerra"]},
+  {w:"GENESI",t:["Bibbia","Origine","Principio","Inizio","Nascita"]},
+  {w:"EQUO",t:["Giusto","Onesto","Equilibrio","Compenso","Canone"]},
+  {w:"SCUOLA GUIDA",t:["Imparare","Foglio rosa","Patente","Esame","Automobile"]},
+  {w:"EMBARGO",t:["Blocco","Divieto","Economico","Commercio","Cuba"]},
+  {w:"EPOCA",t:["Era","Passato","Periodo","Tempo","Storia"]},
+  {w:"INSAZIABILE",t:["Fame","Mangiare","Goloso","Avido","Inappagabile"]},
+  {w:"POSSESSO",t:["Detenzione","Proprietà","Dominio","Disponibilità","Potere"]},
+  {w:"ERUZIONE",t:["Lava","Vulcano","Cratere","Vesuvio","Etna"]},
+  {w:"POLE POSITION",t:["Posizione","Prima Fila","Partenza","Automobilismo","Tempo"]},
+  {w:"ESTRADARE",t:["Consegnare","Colpevole","Stato","Internazionale","Procedere"]},
+  {w:"INTRANSIGENTE",t:["Severo","Inflessibile","Rigido","Compromesso","Elastico"]},
+  {w:"FACOLTÀ",t:["Potere","Libertà","Parola","Università","Beni"]},
+  {w:"SCHIACCIANOCI",t:["Rompere","Guscio","Aprire","Balletto","Ciaikowsky"]},
+  {w:"FANTACALCIO",t:["Gioco","Simulazione","Campionato","Lega","Gazzetta dello Sport"]},
+  {w:"FAR WEST",t:["America","Film","Sceriffo","Cowboy","Saloon"]},
+  {w:"LUCERTOLA",t:["Rettile","Verde","Piccolo","Coda","Pelle"]},
+  {w:"TENUTA",t:["Possesso","Capacità","Campagna","Caprona","Buona"]},
+  {w:"LUNA PARK",t:["Attrazioni","Giostra","Ottovolante","Montagne russe","Divertimenti"]},
+  {w:"SCHIACCIARE",t:["Premere","Comprimere","Basso","Piatto","Tennis"]},
+  {w:"TEQUILA",t:["Liquore","Messico","Alcolico","Bum bum","Agave"]},
+  {w:"FATTORIA",t:["Vecchia","Animali","Agricoltura","Campagna","Zio Tobia"]},
+  {w:"FELTRINO",t:["Sotto","Sedie","Tavolo","Mobile","Rigare"]},
+  {w:"FASCICOLO",t:["Documento","Pratica","Settimanale","Pubblicazione","Enciclopedia"]},
+  {w:"INSONNIA",t:["Difficoltà","Dormire","Sveglio","Notte","Svegliarsi"]},
+  {w:"FACHIRO",t:["Religione","India","Trance","Autoipnosi","Catalessi"]},
+  {w:"ESCURSIONE",t:["Viaggio","Gita","Ampiezza","Differenza","Termica"]},
+  {w:"FEUDO",t:["Medievale","Territorio","Concessione","Beneficio","Potere"]},
+  {w:"FILIGRANA",t:["Banconota","Francobollo","Marchio","Controluce","Autenticità"]},
+  {w:"FISARMONICA",t:["Strumento","Musica","Suonare","Soffietto","Tastiera"]},
+  {w:"FOCOLARE",t:["Camino","Calore","Casa","Famiglia","Angelo"]},
+  {w:"FOCACCIA",t:["Pane","Schiacciata","Liguria","Genovese","Forno"]},
+  {w:"SPICCOLO",t:["Moneta","Resto","Cambiare","Valore","Tenere"]},
+  {w:"FIASCO",t:["Recipiente","Vetro","Vino","Fischi","Fallimento"]},
+  {w:"FIRMA",t:["Autografo","Sottoscrivere","Nome","Raccogliere","Giornalista"]},
+  {w:"RIVALE",t:["Antagonista","Nemico","Concorrente","Gara","Competere"]},
+  {w:"SUMMIT",t:["Incontro","Politico","Vertice","Riunione","Presidenti"]},
+  {w:"ZECCA",t:["Acaro","Parassita","Coniare","Moneta","Nuovo"]},
+  {w:"FRANCOBOLLO",t:["Posta","Lettera","Cartolina","Affrancatura","Filatelia"]},
+  {w:"FORFAIT",t:["Compenso","Pagamento","Cifra","Ritiro","Rinuncia"]},
+  {w:"RISARCIMENTO",t:["Riparazione","Compenso","Danno","Assicurazione","Morale"]},
+  {w:"FORCHETTA",t:["Coltello","Cucchiaio","Posata","Mangiare","Buona"]},
+  {w:"KOALA",t:["Orsacchiotto","Marsupio","Australiano","Albero","Erbivoro"]},
+  {w:"KUNG FU",t:["Combattimento","Arte marziale","Cinese","Karate","Bruce Lee"]},
+  {w:"SCIACQUETTA",t:["Donna","Ragazza","Banale","Insignificante","Frivola"]},
+  {w:"MOLOTOV",t:["Bomba","Bottiglia","Lanciare","Esplosione","Benzina"]},
+  {w:"RISCHIO",t:["Pericolo","Danno","Correre","Conseguenza","Imprevisto"]},
+  {w:"FRASE",t:["Periodo","Espressione","Principale","Soggetto","Fatto"]},
+  {w:"FREE-LANCE",t:["Autonomo","Indipendente","Professionista","Consulente","Lavoratore"]},
+  {w:"FREQUENTARE",t:["Andare","Scuola","Università","Obbligo","Persona"]},
+  {w:"MOMENTANEO",t:["Passeggero","Breve","Effimero","Durevole","Attimo"]},
+  {w:"FRINGE BENEFIT",t:["Auto","Azienda","Telefono","Assicurazione","Compenso"]},
+  {w:"FRITTURA",t:["Cottura","Olio","Bollente","Pesce","Mista"]},
+  {w:"MONTGOMERY",t:["Generale","Cappotto","Giaccone","Cappuccio","Indossare"]},
+  {w:"FUCSIA",t:["Pianta","Fiore","Colore","Rosa","Viola"]},
+  {w:"FURTO",t:["Ladro","Rubare","Sottrarre","Reato","Scasso"]},
+  {w:"ZOOM",t:["Primo Piano","Vicino","Ingrandire","Cinepresa","Foto"]},
+  {w:"ONOMATOPOICO",t:["Parola","Suono","Significato","Riprodurre","D'Annunzio"]},
+  {w:"ON-LINE",t:["Collegato","Internet","Connesso","Telefono","Computer"]},
+  {w:"MONASTICO",t:["Giorno","Festeggiare","Santo","Ricorrenza","Auguri"]},
+  {w:"ZOPPICARE",t:["Camminare","Claudicare","Gamba","Piede","Instabile"]},
+  {w:"GERARCHIA",t:["Struttura","Potere","Organigramma","Subordinato","Supremazia"]},
+  {w:"GIAVELLOTTO",t:["Arma","Lancio","Asta","Sport","Atletica"]},
+  {w:"PREVIDENZA",t:["Prudenza","Assistenza","Sociale","Pensione","Assicurazione"]},
+  {w:"GAFFE",t:["Sbaglio","Battuta infelice","Intempestivo","Inopportuna","Errore"]},
+  {w:"PATTITO",t:["Deperito","Sfiorito","Sciupato","Tifoso","Appassionato"]},
+  {w:"PATATINA",t:["Fritta","Ketchup","Croccante","Sacchetto","Sgranocchiare"]},
+  {w:"SORCIO",t:["Ratto","Topo","Roditore","Verde","Renato Zero"]},
+  {w:"SOPRALLUOGO",t:["Indagine","Visita","Ispezione","Polizia","Delitto"]},
+  {w:"GOLDEN GOL",t:["Decisivo","Vittoria","Partita","Finale","Tempi supplementari"]},
+  {w:"GRAN PREMIO",t:["Corsa","Automobilismo","Motociclismo","Formula 1","Circuito"]},
+  {w:"GREGGIO",t:["Naturale","Metallo","Pietra","Petrolio","Ezio"]},
+  {w:"GOFFO",t:["Maldestro","Impacciato","Imbranato","Sgraziato","Movimento"]},
+  {w:"RUCOLA",t:["Erba","Verde","Insalata","Verdura","Aromatica"]},
+  {w:"PROGRESSO",t:["Miglioramento","Avanzamento","Evoluzione","Società","Tecnologia"]},
+  {w:"HARAKIRI",t:["Suicidio","Spada","Ventre","Giapponese","Samurai"]},
+  {w:"GRIMALDELLO",t:["Aprire","Scassinare","Serrature","Strumento","Attrezzo"]},
+  {w:"HALLOWEEN",t:["Festa","Notte","Fantasmi","Scherzi","Zucche"]},
+  {w:"MSG",t:["Telefonino","Tacs","Omnitel","Tim","Banda"]},
+  {w:"GURU",t:["Capo","Carismatico","India","Spirituale","Santone"]},
+  {w:"LAPALISSIANO",t:["Vero","Ovvio","Chiaro","Evidente","Inequivocabile"]},
+  {w:"MARZAPANE",t:["Dolce","Pasta","Mandorle","Zucchero","Forno"]},
+  {w:"INFORTUNIO",t:["Calciatore","Lavoro","Disgrazia","Errore","Sbaglio"]},
+  {w:"INOFFENSIVO",t:["Innocuo","Innocente","Buono","Benevolo","Non pericoloso"]},
+  {w:"T-SHIRT",t:["Fruit of the loom","Cotone","Girocollo","Maniche corte","Americana"]},
+  {w:"LARDO",t:["Grasso","Maiale","Palla","Gatto","Zampino"]},
+  {w:"SGUINZAGLIARE",t:["Cane","Sciogliere","Calcagna","Liberare","Ricercare"]},
+  {w:"SHIATSU",t:["Massaggio","Mani","Pressione","Orientale","Terapia"]},
+  {w:"LOFT",t:["Spazio","Magazzino","Alto","Abitazione","Ristrutturato"]},
+  {w:"VESSILLO",t:["Bandiera","Stoffa","Insegna","Simbolo","Stendardo"]},
+  {w:"SOGGEZIONE",t:["Dipendenza","Sudditanza","Subordinazione","Avere","Riguardo"]},
+  {w:"SOGGHIGNO",t:["Espressione","Viso","Maligno","Disprezzo","Ironico"]},
+  {w:"SIAMESE",t:["Fratello","Gemello","Unito","Felino","Gatto"]},
+  {w:"LOGORIO",t:["Deterioramento","Consumare","Usare","Utilizzare","Tempo"]},
+  {w:"MACHO",t:["Virile","Energumeno","Sexy","Uomo","Maschio"]},
+  {w:"NEW AGE",t:["Cultura","Musica","Natura","Uomo","Rustico"]},
+  {w:"SONAGLIO",t:["Berretto","Serpente","Campanellino","Tintinnare","Suonare"]},
+  {w:"NERAZZURRO",t:["Colore","Maglie","Strisce","Inter","Atalanta"]},
+  {w:"TASSO",t:["Animale","Interesse","Sconto","Torquato","Dormire"]},
+  {w:"METAL DETECTOR",t:["Aeroporti","Suonare","Ferro","Controllo","Valigie"]},
+  {w:"LUSTRO",t:["Anni","Cinque","Dare","Pulito","Lucente"]},
+  {w:"TAUTOLOGIA",t:["Ridondante","Parola","Significato","Ripetizione","Concetto"]},
+  {w:"MENSOLA",t:["Supporto","Asse","Legno","Appoggio","Ripiano"]},
+  {w:"ACCIDENTALE",t:["Casuale","Fortuito","Imprevisto","Sorte","Principale"]},
+  {w:"MIRTILLO",t:["Frutto","Bosco","Lampone","Mora","Marmellata"]},
+  {w:"GIN-TONIC",t:["Long drink","Acqua Tonica","Frizzante","Ginepro","Limone"]},
+  {w:"MISERERE",t:["Salmo","Zucchero","Latino","Pavarotti","Perdono"]},
+  {w:"SERRATURA",t:["Porta","Aprire","Chiudere","Chiave","Buco"]},
+  {w:"SERIAL KILLER",t:["Uccidere","Assassino","Omicidio","Criminale","Hannibal Lecter"]},
+  {w:"FAX",t:["Trasmissione","Documento","Fotocopia","Inviare","Ricevere"]},
+  {w:"LISCA",t:["Pesce","Spina","Pulire","Togliere","Colonna vertebrale"]},
+  {w:"HARD DISCOUNT",t:["Supermercato","Marca","Economica","Prezzi","Risparmio"]},
+  {w:"HOBBY",t:["Passatempo","Tempo libero","Svago","Sport","Lettura"]},
+  {w:"SERVOSTERZO",t:["Automobile","Macchina","Optional","Volante","Parcheggiare"]},
+  {w:"INDECENTE",t:["Osceno","Abito","Immorale","Sporco","Proposta"]},
+  {w:"LIVREA",t:["Divisa","Uniforme","Autista","Cameriere","Maggiordomo"]},
+  {w:"SENSITIVO",t:["Veggente","Percezione","Facoltà","Medium","Sentire"]},
+  {w:"LOCANDINA",t:["Manifesto","Cinema","Teatro","Spettacolo","Pubblicità"]},
+  {w:"INVOLTINO",t:["Carne","Ripieno","Arrotolato","Farcito","Primavera"]},
+  {w:"INDOLE",t:["Carattere","Temperamento","Inclinazione","Natura","Tendenza"]},
+  {w:"INFELICE",t:["Triste","Sventurato","Depresso","Avvilito","Momento"]},
+  {w:"CAFFEINA",t:["Sostanza","Eccitante","Alcaloide","Hag","Stimolante"]},
+  {w:"INTRIGO",t:["Macchinazione","Garbuglio","Segreto","Cacciarsi","Internazionale"]},
+  {w:"TRULLO",t:["Casa","Abitazione","Puglia","Alberobello","Pietra"]},
+  {w:"LAMBRETTA",t:["Motocicletta","Ruote","Vespa","Scooter","Fuori commercio"]},
+  {w:"ITACA",t:["Ulisse","Isola","Grecia","Odissea","Penelope"]},
+  {w:"JACUZZI",t:["Vasca","Idromassaggio","Bolle","Relax","Lusso"]},
+  {w:"KARMA",t:["India","Reincarnazione","Religione","Buddismo","Vita"]},
+  {w:"ASPIRAPOLVERE",t:["Elettrodomestico","Pulire","Pavimento","Sacco","Passare"]},
+  {w:"SPESSORE",t:["Dimensione","Profondità","Densità","Consistenza","Culturale"]},
+  {w:"LAMPEGGIARE",t:["Luci","Cielo","Fari","Abbaglianti","Segnalare"]},
+  {w:"UTOPIA",t:["Sogno","Immagine","Thomas Moore","Immaginazione","Modello"]},
+  {w:"KAMIKAZE",t:["Pilota","Giapponese","Suicida","Banzai","Guerra mondiale"]},
+  {w:"LAMBADA",t:["Ballo","Sudamericana","Sensuale","Sinuosa","Danza"]}
+
+
+const CARDS_EN = [
+  {w:"Car",t:["driver","ride","transport","fast","travel"]},
+  {w:"Duck",t:["bird","yellow","chicken","quack","food"]},
+  {w:"Dragonfly",t:["Red","Wings","Insect","Fly","dragon"]},
+  {w:"Snowflake",t:["cold","winter","flower","snow","fall"]},
+  {w:"Hungry",t:["feeling","eat","food","breakfast","meal"]},
+  {w:"Pillow",t:["head","sleep","soft","bed","blanket"]},
+  {w:"Dance",t:["Shoes","Romantic","Music","Sing","Town Square"]},
+  {w:"Proud",t:["feeling","Accomplish","Great","Boast","Humble"]},
+  {w:"Blanket",t:["Warm","Bed","Pillow","Soft","Cold"]},
+  {w:"Snail",t:["Round","Slow","River","Eat","Animal"]},
+  {w:"Shanghai",t:["Modern","Big","China","Expo","Famous"]},
+  {w:"Soccer",t:["Ball","world Cup","Black","Sport","Team"]},
+  {w:"Cheese",t:["Yellow","White","Pizza","Food","Italy"]},
+  {w:"Dinosaur",t:["Big","Animal","Extinct","Long Ago","Reptile"]},
+  {w:"Japan",t:["Country","Asia","Cherry Blossom","Sushi","Tokyo"]},
+  {w:"New York",t:["City","America","Big Apple","Statue of","Liberty"]},
+  {w:"Husband",t:["Wife","Ring","Marry","Man","Friend"]},
+  {w:"Michael Jackson",t:["Dance","Thriller","Strange","Famous","Singer"]},
+  {w:"Underwear",t:["Small","Clothing","Every Day","Secret","Under"]},
+  {w:"Girlfriend",t:["Boyfriend","Beautiful","Flowers","Date","Female"]},
+  {w:"Giraffe",t:["Tall","Africa","Neck","Long","Yellow"]},
+  {w:"Wok",t:["Cook","China","Iron","Dishes","Pot"]},
+  {w:"Camera",t:["Photos","Pictures","Snapshot","Travel","Memories"]},
+  {w:"Slippers",t:["Warm","Feet","Winter","House","Soft"]},
+  {w:"Comb",t:["Brush","Hair","Smooth","Small","Beautiful"]},
+  {w:"Hamburger",t:["America","Beef","Bread","McDonalds","Unhealthy"]},
+  {w:"Polar Bear",t:["cold","Winter","Alaska","White","Snow"]},
+  {w:"Penguin",t:["Bird","Fly","Animal","Black","White"]},
+  {w:"Glasses",t:["Eyes","See","Contacts","Wear","Face"]},
+  {w:"Popcorn",t:["Kernel","Butter","Sweet","Microwave","Snack Food"]},
+  {w:"Speech",t:["Give","Speak","Important","Audience","Nervous"]},
+  {w:"Furious",t:["Angry","Red Face","Hurt","Rage","Violent"]},
+  {w:"Jealousy",t:["Envy","Emotion","Compare","Green","Achieve"]},
+  {w:"Bench",t:["Sit","Wooden","Chair","Long","Park"]},
+  {w:"Chicken Leg",t:["Bird","Body","Eat","Food","KFC"]},
+  {w:"Toilet",t:["Washroom","WC","Pee","Poop","Bathroom"]},
+  {w:"Wish",t:["Want","Desire","Hope","Dream","Long For"]},
+  {w:"Exercise",t:["Run","Sports","Healthy","Daily","Morning"]},
+  {w:"Crown",t:["Head","Gold","King","Queen","Jewels"]},
+  {w:"Princess",t:["Prince","Queen","Daughter","Royal","Castle"]},
+  {w:"Internet",t:["Computer","Web","Surf","Net","Technology"]},
+  {w:"Ice Cream",t:["Cold","Summer","Sweet","Snack","Cone"]},
+  {w:"Jacket",t:["Coat","Warm","Clothes","Sleeves","Zipper"]},
+  {w:"Shower",t:["Rain","Clean","Water","Every Day","Bath"]},
+  {w:"Wind",t:["Blow","Autumn","Invisible","Trees","Kite"]},
+  {w:"Foreigner",t:["Teacher","Different","Outside","Country","Travel"]},
+  {w:"Church",t:["Sing","Building","Cross","God","Speaker"]},
+  {w:"Police",t:["Uniform","Safety","Peace","Protect","Siren"]},
+  {w:"Boots",t:["Winter","Shoes","Warm","Fashion","Snow"]},
+  {w:"Plane ticket",t:["Expensive","Flight","Travel","Paper","Seat"]},
+  {w:"Turkey",t:["bird","Holiday","thanksgiving","Big","Tired"]},
+  {w:"Freezer",t:["Cold","Refrigerator","Ice","Food","Kitchen"]},
+  {w:"Soy Sauce",t:["Chinese","Liquid","Brown","Cooking","Salty"]},
+  {w:"Yoga Teacher",t:["Exercise","Instructor","Master","Chinese","Help"]},
+  {w:"Straw",t:["Hollow","Horses","Farm","Drink","Suck"]},
+  {w:"Leaf",t:["Tree","Green","Fall","Plant","Page"]},
+  {w:"Noun",t:["Verb","Speech","Adjective","Person","Place"]},
+  {w:"Carry",t:["Hold","Pick Up","Move","Transport","Support"]},
+  {w:"Taxi",t:["Car","Public","Transport","Fare","City"]},
+  {w:"Blossom",t:["Flower","Young","Bud","Spring","Bloom"]},
+  {w:"Broom",t:["Sweep","Floor","Witch","Wooden","Dust"]},
+  {w:"Witch",t:["Broom","Green","Magic","Halloween","Powers"]},
+  {w:"Fork",t:["Spoon","Knife","Eat","Prongs","Divide"]},
+  {w:"Parade",t:["Line","Crowd","Floats","Gather","Holiday"]},
+  {w:"Fashion",t:["Clothes","Model","Girls","Look","Magazine"]},
+  {w:"Wedding Dress",t:["White","married","Clothes","Special","Girls"]},
+  {w:"Kung Fu Panda",t:["Movie","China","Noodles","Children","famous"]},
+  {w:"Marker",t:["Write","Draw","Colors","Children","Art"]},
+  {w:"Trash Can",t:["Rubbish","Barrel","Worthless","Ruin","Old"]},
+  {w:"Snowman",t:["Three","Children","Make","Winter","Outside"]},
+  {w:"Wings",t:["Bird","Chicken","Fly","Arms","Feathers"]},
+  {w:"Pilot",t:["Fly","Plane","Helicopter","Man","Travel"]},
+  {w:"Lawyer",t:["Argue","Defend","Law","Client","Crime"]},
+  {w:"Alligator",t:["Crocodile","Green","Animal","Teeth","Florida"]},
+  {w:"Hair Salon",t:["Style","Dye","Wash","Cut","Barber"]},
+  {w:"Picture Frame",t:["Photo","Memory","Wood","Glass","Home"]},
+  {w:"Purse",t:["Leather","Bag","Money","Woman","Carry"]},
+  {w:"Orange",t:["Color","Fruit","Juicy","Citrus","Red"]},
+  {w:"Makeup",t:["Face","Mascara","Lipstick","Girls","Beautiful"]},
+  {w:"Tutor",t:["Teach","One on One","Learn","Make Up","Review"]},
+  {w:"Worry",t:["Nervous","Anxiety","Stress","Scared","Trouble"]},
+  {w:"Moose",t:["Animal","Mammal","Forest","Antlers","Hunting"]},
+  {w:"Shampoo",t:["Conditioner","Lather","Wash","Hair","Shower"]},
+  {w:"Bridge",t:["Cross","River","Build","Over","Connect"]},
+  {w:"Nervous",t:["Anxious","Test","Difficulty","Pressure","Scared"]},
+  {w:"Camel",t:["Humps","Desert","Animal","Water","Cigarette"]},
+  {w:"Watch",t:["Look","Stare","Wrist","Time","Jewelry"]},
+  {w:"Brush",t:["Comb","Hair","Bristles","Wooden","Stroke"]},
+  {w:"License",t:["Driver","Car","Card","Permit","Allow"]},
+  {w:"Shout",t:["Yell","Loud","Speak","Angry","Danger"]},
+  {w:"Librarian",t:["Books","Library","School","Job","Quiet"]},
+  {w:"Liberty",t:["Freedom","Statue","Power","Choose","Decide"]},
+  {w:"Radio",t:["Listen","Music","AM","FM","News"]},
+  {w:"Unlock",t:["Key","Door","Box","Safe","Hole"]},
+  {w:"Pear",t:["Apple","Fruit","Shape","Tree","Juice"]},
+  {w:"Jumping",t:["Leap","Up","Down","Excited","Action"]},
+  {w:"Joy",t:["Happy","Celebrate","Excited","Pleasure","Feeling"]},
+  {w:"Monkey",t:["Swing","Banana","Zoo","Brown","Animal"]},
+  {w:"Firecracker",t:["Explode","Loud","Red","Light","Holiday"]},
+  {w:"Superman",t:["Fly","Hero","Bird","Plane","Clark Kent"]},
+  {w:"Sun",t:["Warm","Yellow","Light","Solar","Planet"]},
+  {w:"Shark",t:["Swim","Teeth","Dangerous","Ocean","Sea"]},
+  {w:"Window",t:["Curtain","Glass","Screen","Home","Door"]},
+  {w:"Desk",t:["Homework","Sit","Wooden","Classroom","Student"]},
+  {w:"Coffee",t:["Tea","Brown","Drink","Caffeine","Starbucks"]},
+  {w:"Candle",t:["Bright","Light","Wax","Burn","Wick"]},
+  {w:"Egg Roll",t:["Spring","Vegetable","Round","China","Food"]},
+  {w:"Santa",t:["Fat","Man","Christmas","Claus","Gifts"]},
+  {w:"Bells",t:["Ring","Silver","Hear","Metal","Gold"]},
+  {w:"Heart",t:["Shape","Beat","Broken","Body","Love"]},
+  {w:"Headache",t:["Pound","Beat","Medicine","Sick","Rush"]},
+  {w:"Discuss",t:["Talk","Debate","Ideas","Oppose","Share"]},
+  {w:"Debate",t:["Discuss","Sides","Talk","Oppose","Win"]},
+  {w:"Eraser",t:["Clean","Pencil","Fix","Mistake","Change"]},
+  {w:"Prisoner",t:["Jail","Convict","Murder","Crime","Bad"]},
+  {w:"Murder",t:["Kill","Prison","Jail","Law","Court"]},
+  {w:"Defend",t:["Lawyer","Judge","Stand Up For","Justify"]},
+  {w:"Deer",t:["Antlers","Hunting","Forest","Bambi","Animal"]},
+  {w:"Zoo",t:["Place","Animals","Tigers","Elephants","cage"]},
+  {w:"Crawl",t:["Fours","Baby","Toddler","Hands","Knees"]},
+  {w:"Bank",t:["Robbery","Money","Safe","Deposit","Invest"]},
+  {w:"Caterpillar",t:["Crawl","Insect","Legs","Tree","Butterfly"]},
+  {w:"Pregnant",t:["Baby","Fat","Belly","Life","9 Months"]},
+  {w:"Towel",t:["Dry","Dishes","Shower","Soft","Beach"]},
+  {w:"Promise",t:["Vow","Pledge","Expect","Reassure","Marry"]},
+  {w:"Ugly",t:["Duck","Beautiful","Hideous","Deformed","Butt"]},
+  {w:"Stupid",t:["Smart","Clever","Dull","Dumb","Intelligent"]},
+  {w:"Spoon",t:["Fork","Knife","Eating","Soup","metal"]},
+  {w:"Infant",t:["Baby","Cry","Child","Newborn","Young"]},
+  {w:"Paris France",t:["Romance","Shopping","Eiffel","Tower","French"]},
+  {w:"Exchange Student",t:["Travel","Study","Abroad","Experience","Foreign"]},
+  {w:"Gold",t:["Silver","Metal","Rich","Money","King"]},
+  {w:"London",t:["Big Ben","England","Europe","Capital","U.K."]},
+  {w:"Camping",t:["Tent","Outside","Fire","Roast","Sleep"]},
+  {w:"Theater",t:["Movie","Seats","Popcorn","Cinema","Drama"]},
+  {w:"Death",t:["Die","Old","Murder","Cause","Life"]},
+  {w:"Flag",t:["Wave","Fly","Old Glory","Pole","Fabric"]},
+  {w:"Describe",t:["Talk About","Words","Characteristic","Quality","Depict"]},
+  {w:"Fly",t:["Wings","Bird","Airplane","Insect","Bee"]},
+  {w:"Knee",t:["Bend","Joint","Leg","Move","Cap"]},
+  {w:"Web",t:["Internet","Spider","World","Wide","Net"]},
+  {w:"Toothbrush",t:["Teeth","Paste","Clean","Hygiene","Rub"]},
+  {w:"Worm",t:["Crawl","Animal","Wriggle","Slimy","Rain"]},
+  {w:"Machine",t:["Parts","Device","Metal","Power","Cog"]},
+  {w:"Spiderman",t:["Fly","Peter parker","Hero","Super"]},
+  {w:"Waitress",t:["Service","Restaurant","Food","Bring","Helper"]},
+  {w:"Wash",t:["Clean","Shower","Dishes","Hair","Laundry"]},
+  {w:"Biology",t:["Science","Subject","Life","School","Chemistry"]},
+  {w:"Chemistry",t:["Physics","Chemicals","School","Science","Subject"]},
+  {w:"History",t:["Politics","Past","Events","Finished","Happen"]},
+  {w:"Magazine",t:["Pages","Book","Entertain","News","Read"]},
+  {w:"Unfair",t:["Unjust","Fair","Equal","Just","Unreasonable"]},
+  {w:"CD",t:["Disc","Music","Listen","Play","Computer"]},
+  {w:"Immediately",t:["Fast","Now","Delay","Rapid","Soon"]},
+  {w:"Danger",t:["Safe","Harm","Injury","Protect","Avoid"]},
+  {w:"Ice",t:["Cold","Solid","Water","Freezer","Skate"]},
+  {w:"Salt",t:["White","Sweet","Popcorn","Cooking","Flavor"]},
+  {w:"Stand",t:["Sit","Floor","Feet","Up","Take"]},
+  {w:"Bull",t:["Ride","Red","Male","Horns","Charge"]},
+  {w:"Magic",t:["Wizard","Witch","Power","Trick","Show"]},
+  {w:"Peaceful",t:["Harmony","Calm","Quiet","Tranquil","Violent"]},
+  {w:"Normal",t:["Strange","Standard","Typical","Status Quo","Weird"]},
+  {w:"Original",t:["First","Unique","Special","Standard","Early"]},
+  {w:"Naughty",t:["Bad","Behavior","Good","Rude","Disobedient"]},
+  {w:"Rescue",t:["Save","Hero","Danger","Safe","Help"]},
+  {w:"Match",t:["Fire","Strike","Pair","Together","Equal"]},
+  {w:"Hippo",t:["Fat","Animal","Africa","Large","River"]},
+  {w:"Fairy Tale",t:["Prince","Princess","Magic","Queen","Story"]},
+  {w:"Literature",t:["Works","American","British","Books","Written"]},
+  {w:"Globe",t:["Earth","World","Model","Geography","Oceans"]},
+  {w:"Cookbook",t:["Food","How To","Kitchen","Manual","Guide"]},
+  {w:"Continent",t:["Ocean","Asia","Land","Seven","Earth"]},
+  {w:"Director",t:["Movie","Producer","In Charge","Supervise","Set"]},
+  {w:"Advice",t:["Guide","Wise","Recommend","What to do","Help"]}
+];
+
+// ============================================================
+// BOARD DEFINITION
+// ============================================================
+const BOARD = {
+  cells: 28, // 0..27, 27 = arrivo
+  specialCells: {
+    4:  {clock: true,  face: false},
+    6:  {clock: true,  face: true},
+    8:  {clock: false, face: true},
+    10: {clock: true,  face: false},
+    13: {clock: true,  face: true},
+    16: {clock: true,  face: false},
+    18: {clock: false, face: true},
+  },
+  violetStart: 21,
+  arrivo: 27
+};
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let G = {
+  lang: 'it',
+  baseTime: 60,
+  maxSkips: 1,
+  teams: [{name:'Squadra 1', pos:0, totalPoints:0}, {name:'Squadra 2', pos:0, totalPoints:0}],
+  currentTeam: 0,
+  turnCount: [0, 0],
+  firstToArrive: -1,
+  gameOver: false,
+  deck: [],
+  deckIndex: 0,
+
+  // per-turn state
+  turn: {
+    cardIndex: 0,
+    history: [],    // [{card, action}]
+    skipsUsed: 0,
+    timeLeft: 60,
+    timerRunning: false,
+    timerId: null,
+    effectTime: false,
+    effectFace: false,
+  }
+};
+
+// ============================================================
+// SCREENS
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+function showSetup() { showScreen('setup'); }
+
+function selectOption(btn) {
+  const group = btn.dataset.group;
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+// ============================================================
+// START GAME
+// ============================================================
+function startGame() {
+  const lang = document.querySelector('[data-group="lang"].selected').dataset.val;
+  const time = parseInt(document.querySelector('[data-group="time"].selected').dataset.val);
+  const skips = parseInt(document.querySelector('[data-group="skips"].selected').dataset.val);
+  const t1 = document.getElementById('team1-name').value.trim() || 'Squadra 1';
+  const t2 = document.getElementById('team2-name').value.trim() || 'Squadra 2';
+
+  G.lang = lang;
+  G.baseTime = time;
+  G.maxSkips = skips;
+  G.teams = [
+    {name: t1, pos: 0, totalPoints: 0},
+    {name: t2, pos: 0, totalPoints: 0}
+  ];
+  G.currentTeam = 0;
+  G.turnCount = [0, 0];
+  G.firstToArrive = -1;
+  G.gameOver = false;
+
+  // Shuffle deck
+  const rawCards = lang === 'it' ? CARDS_IT : CARDS_EN;
+  G.deck = shuffle([...rawCards]);
+  G.deckIndex = 0;
+
+  showBoard();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ============================================================
+// BOARD SCREEN
+// ============================================================
+function showBoard() {
+  updateBoardUI();
+  showScreen('board');
+}
+
+function updateBoardUI() {
+  // Score cards
+  for (let i = 0; i < 2; i++) {
+    document.getElementById('score-name-' + i).textContent = G.teams[i].name;
+    const pos = G.teams[i].pos;
+    document.getElementById('score-pos-' + i).textContent = pos >= BOARD.arrivo ? '🏆' : (pos === 0 ? 'START' : `C.${pos}`);
+    document.getElementById('score-total-' + i).textContent = G.teams[i].totalPoints + ' pt totali';
+    document.getElementById('score-card-' + i).classList.remove('active-team', 'winner-team');
+    if (i === G.currentTeam) document.getElementById('score-card-' + i).classList.add('active-team');
+  }
+
+  // Turn info
+  const team = G.teams[G.currentTeam];
+  document.getElementById('turn-team-name').textContent = team.name;
+
+  const sp = BOARD.specialCells[team.pos] || {};
+  const effectEl = document.getElementById('turn-effect-wrap');
+  effectEl.innerHTML = '';
+  if (sp.clock || sp.face) {
+    const badge = document.createElement('div');
+    badge.className = 'turn-effect-badge';
+    let txt = '';
+    if (sp.clock) txt += '⏱ Doppio tempo';
+    if (sp.clock && sp.face) txt += ' + ';
+    if (sp.face) txt += '👥 Solo 1 compagno';
+    badge.textContent = txt;
+    effectEl.appendChild(badge);
+  }
+
+  // Draw board
+  drawBoard();
+}
+
+// ============================================================
+// BOARD SVG
+// ============================================================
+function drawBoard() {
+  const svg = document.getElementById('board-svg');
+  svg.innerHTML = '';
+  const svgNS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs) {
+    const e = document.createElementNS(svgNS, tag);
+    Object.entries(attrs).forEach(([k,v]) => e.setAttribute(k,v));
+    return e;
+  }
+  function txt(content, attrs) { const e = el('text', attrs); e.textContent = content; return e; }
+
+  // ── GEOMETRY ──────────────────────────────────────────────
+  // Explicit cell→(col,row) map. 27 cells (0-26), no overlaps:
+  //   Top row    L→R : cells  0-8  = (col 0-8, row 0)        9 cells
+  //   Right col  T→B : cells  9-13 = (col 8, row 1-5)        5 cells
+  //   Bottom row R→L : cells 14-20 = (col 7-1, row 5)        7 cells  (col 8 = cell 13)
+  //   Corner SW        cell  21   = (col 0, row 5)            1 cell
+  //   Left col   B→T : cells 22-26 = (col 0, row 4-0)        5 cells  (row 5 = cell 21)
+  //   Total: 9+5+7+1+5 = 27 ✓
+
+  const CS = 36, GAP = 3, ST = CS + GAP; // step = 39
+  const OX = 4, OY = 4;
+  // Grid: cols 0-8 (9 cols), rows 0-5 (6 rows)
+  // viewBox width  = OX + 8*ST + CS + OX = 4 + 8*39 + 36 + 4 = 356
+  // viewBox height = OY + 5*ST + CS + OY = 4 + 5*39 + 36 + 4 = 239
+  const VW = OX + 8*ST + CS + OX;
+  const VH = OY + 5*ST + CS + OY;
+  svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+
+  const cellGrid = [];
+  for (let c=0;c<=8;c++) cellGrid.push({col:c,row:0});    // 0-8  top
+  for (let r=1;r<=5;r++) cellGrid.push({col:8,row:r});    // 9-13 right
+  for (let c=7;c>=1;c--) cellGrid.push({col:c,row:5});    // 14-20 bottom (skip col8)
+  cellGrid.push({col:0,row:5});                            // 21 SW corner
+  for (let r=4;r>=0;r--) cellGrid.push({col:0,row:r});    // 22-26 left (skip row5)
+  // 9+5+7+1+5 = 27 entries ✓
+
+  function cellPx(n) {
+    const {col,row} = cellGrid[n];
+    return {x: OX+col*ST, y: OY+row*ST};
+  }
+
+  // ── FLOW PATH (background highlight of the full route) ───
+  // Draw a thin rounded-rect path tracing the board outline
+  const pathPts = [];
+  for (let n=0;n<=26;n++) {
+    const {x,y} = cellPx(n);
+    pathPts.push(`${x+CS/2},${y+CS/2}`);
+  }
+  const pathEl = el('polyline',{
+    points: pathPts.join(' '),
+    fill:'none', stroke:'rgba(255,255,255,0.06)', 'stroke-width': String(CS+GAP),
+    'stroke-linejoin':'round','stroke-linecap':'round'
+  });
+  svg.appendChild(pathEl);
+
+  // ── CENTER ARRIVO ─────────────────────────────────────────
+  // Inner rectangle: cols 1-7, rows 1-4
+  const iX = OX+ST, iY = OY+ST;
+  const iW = 6*ST+CS-GAP;   // right edge of col7 minus left edge of col1
+  const iH = 3*ST+CS-GAP;   // bottom edge of row4 minus top edge of row1
+
+  svg.appendChild(el('rect',{x:iX,y:iY,width:iW,height:iH,rx:'10',
+    fill:'#1e0a33',stroke:'#9b59b6','stroke-width':'2'}));
+  svg.appendChild(txt('🏆',{x:iX+iW/2,y:iY+iH/2-15,
+    'text-anchor':'middle','dominant-baseline':'central','font-size':'20'}));
+  svg.appendChild(txt('ARRIVO',{x:iX+iW/2,y:iY+iH/2+6,
+    'text-anchor':'middle','dominant-baseline':'central',
+    'font-size':'16',fill:'#FFD700','font-family':'Bebas Neue,sans-serif','letter-spacing':'2'}));
+  svg.appendChild(txt('casella 27',{x:iX+iW/2,y:iY+iH/2+20,
+    'text-anchor':'middle','dominant-baseline':'central',
+    'font-size':'8',fill:'#9b59b6','font-family':'DM Sans,sans-serif'}));
+
+  // ── DIRECTIONAL ARROWS ────────────────────────────────────
+  // One arrow per side, placed in the inner margin (between cells and center rect)
+  const AC = 'rgba(255,255,255,0.28)';
+  function drawArrow(x1,y1,x2,y2) {
+    const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=dx/len,uy=dy/len,hs=5;
+    const ax=x2-ux*hs-uy*hs*0.6,ay=y2-uy*hs+ux*hs*0.6;
+    const bx=x2-ux*hs+uy*hs*0.6,by=y2-uy*hs-ux*hs*0.6;
+    svg.appendChild(el('line',{x1,y1,x2,y2,stroke:AC,'stroke-width':'1.5','stroke-linecap':'round'}));
+    svg.appendChild(el('polygon',{points:`${x2},${y2} ${ax},${ay} ${bx},${by}`,fill:AC}));
+  }
+  // midpoints of each side's inner margin
+  const mTop = iY - ST/2;
+  const mRight = iX+iW + ST/2;
+  const mBot = iY+iH + ST/2;
+  const mLeft = iX - ST/2;
+  // Top (L→R): between cells 0-8 and center
+  drawArrow(iX+20, mTop, iX+iW-20, mTop);
+  // Right (T→B): between cells 9-13 and center
+  drawArrow(mRight, iY+20, mRight, iY+iH-20);
+  // Bottom (R→L): between cells 14-20 and center
+  drawArrow(iX+iW-20, mBot, iX+20, mBot);
+  // Left (B→T): between cells 22-26 and center
+  drawArrow(mLeft, iY+iH-20, mLeft, iY+20);
+
+  // Corner turn indicators (small curved arrows at the 4 corners + the SW bend)
+  // NE corner: after cell 8, turns down → cell 9
+  // SE corner: after cell 13, turns left → cell 14
+  // SW corner: after cell 20, cell 21 is the corner, then turns up → cell 22
+  // NW corner: after cell 26, would go to arrivo (not shown)
+  const corners = [
+    // [from cell, to cell, label]
+    [8,  9,  '↘'],
+    [13, 14, '↙'],
+    [20, 21, '↙'],
+    [21, 22, '↑'],
+  ];
+  for (const [a,b,lbl] of corners) {
+    const pa = cellPx(a), pb = cellPx(b);
+    // Place label midway in the gap between cells
+    const mx = (pa.x+CS/2 + pb.x+CS/2)/2;
+    const my = (pa.y+CS/2 + pb.y+CS/2)/2;
+    svg.appendChild(txt(lbl,{x:mx,y:my,'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':'11',fill:'rgba(255,255,255,0.30)','font-family':'DM Sans,sans-serif'}));
+  }
+
+  // ── CELLS 0-26 ────────────────────────────────────────────
+  for (let n=0;n<=26;n++) {
+    const {x:px,y:py} = cellPx(n);
+    const sp = BOARD.specialCells[n] || {};
+    const isV  = n >= BOARD.violetStart;
+    const isSt = n === 0;
+
+    let fill='#0d200d', stroke='#27ae60', sw='1';
+    if (isSt)              { fill='#081508'; stroke='#2ecc71'; sw='2'; }
+    if (isV)               { fill='#1b0830'; stroke='#8e44ad'; sw='1.5'; }
+    if (sp.clock&&sp.face) { fill='#201000'; stroke='#e67e22'; sw='1.5'; }
+    else if (sp.clock)     { fill='#191200'; stroke='#f1c40f'; sw='1.5'; }
+    else if (sp.face)      { fill='#001020'; stroke='#2980b9'; sw='1.5'; }
+
+    const g = el('g',{});
+    g.appendChild(el('rect',{x:px,y:py,width:CS,height:CS,rx:'4',fill,stroke,'stroke-width':sw}));
+
+    const cx=px+CS/2, topY=py+CS*0.30, botY=py+CS*0.74, midY=py+CS*0.52;
+
+    if (isSt) {
+      g.appendChild(txt('ST',{x:cx,y:py+CS*0.27,'text-anchor':'middle','dominant-baseline':'central','font-size':'7',fill:'#2ecc71','font-family':'Bebas Neue,sans-serif'}));
+      g.appendChild(txt('0', {x:cx,y:botY,     'text-anchor':'middle','dominant-baseline':'central','font-size':'13',fill:'#4caf50','font-family':'Bebas Neue,sans-serif'}));
+    } else if (sp.clock||sp.face) {
+      const icon=(sp.clock&&sp.face)?'⏱👥':(sp.clock?'⏱':'👥');
+      const isz =(sp.clock&&sp.face)?'9':'13';
+      const nc  = sp.clock?'#f1c40f':'#3498db';
+      g.appendChild(txt(icon,{x:cx,y:topY,'text-anchor':'middle','dominant-baseline':'central','font-size':isz}));
+      g.appendChild(txt(String(n),{x:cx,y:botY,'text-anchor':'middle','dominant-baseline':'central','font-size':'11',fill:nc,'font-family':'Bebas Neue,sans-serif'}));
+    } else if (isV) {
+      g.appendChild(txt('≥3',{x:cx,y:topY,'text-anchor':'middle','dominant-baseline':'central','font-size':'9',fill:'#9b59b6'}));
+      g.appendChild(txt(String(n),{x:cx,y:botY,'text-anchor':'middle','dominant-baseline':'central','font-size':'11',fill:'#ce93d8','font-family':'Bebas Neue,sans-serif'}));
+    } else {
+      g.appendChild(txt(String(n),{x:cx,y:midY,'text-anchor':'middle','dominant-baseline':'central','font-size':'14',fill:'#4caf50','font-family':'Bebas Neue,sans-serif'}));
+    }
+    svg.appendChild(g);
+  }
+
+  // ── TEAM PAWNS ────────────────────────────────────────────
+  const pawns=['🔴','🔵'];
+  for (let ti=0;ti<2;ti++) {
+    const tp=G.teams[ti].pos;
+    if (tp>=BOARD.arrivo) {
+      svg.appendChild(txt(pawns[ti],{x:iX+iW/2+(ti===0?-13:13),y:iY+iH/2-6,
+        'text-anchor':'middle','font-size':'14','dominant-baseline':'central'}));
+      continue;
+    }
+    const {x:px,y:py}=cellPx(tp);
+    const off=[{x:2,y:2},{x:CS-17,y:2}][ti];
+    svg.appendChild(txt(pawns[ti],{x:px+off.x,y:py+off.y,'font-size':'13','dominant-baseline':'hanging'}));
+  }
+}
+
+// ============================================================
+// TURN
+// ============================================================
+function startTurn() {
+  const team = G.teams[G.currentTeam];
+  const sp = BOARD.specialCells[team.pos] || {};
+  const effectTime = !!sp.clock;
+  const effectFace = !!sp.face;
+  const timeAvail = effectTime ? G.baseTime * 2 : G.baseTime;
+
+  G.turn = {
+    cardIndex: G.deckIndex,
+    history: [],
+    skipsUsed: 0,
+    timeLeft: timeAvail,
+    timerRunning: false,
+    timerId: null,
+    effectTime,
+    effectFace,
+  };
+
+  document.getElementById('play-team-label').textContent = team.name;
+  updatePlayScore();
+  renderCard();
+  updateTimerDisplay();
+  document.getElementById('passo-btn').style.opacity = G.maxSkips > 0 ? '1' : '0.4';
+
+  showScreen('play');
+  startTimer();
+}
+
+function startTimer() {
+  if (G.turn.timerRunning) return;
+  G.turn.timerRunning = true;
+  G.turn.timerId = setInterval(() => {
+    if (!G.turn.timerRunning) return;
+    G.turn.timeLeft--;
+    updateTimerDisplay();
+    if (G.turn.timeLeft <= 0) {
+      clearInterval(G.turn.timerId);
+      G.turn.timerRunning = false;
+      endTurn();
+    }
+  }, 1000);
+}
+
+function togglePause() {
+  if (G.turn.timerRunning) {
+    clearInterval(G.turn.timerId);
+    G.turn.timerRunning = false;
+  } else {
+    startTimer();
+  }
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  const t = G.turn.timeLeft;
+  el.textContent = t;
+  el.className = 'timer-display';
+  if (!G.turn.timerRunning) el.classList.add('paused');
+  else if (t <= 10) el.classList.add('urgent');
+  else el.classList.add('ok');
+}
+
+function renderCard() {
+  const idx = G.turn.cardIndex % G.deck.length;
+  const card = G.deck[idx];
+  const area = document.getElementById('card-area');
+  area.innerHTML = `
+    <div class="taboo-card">
+      <div class="card-main-word">
+        <div class="card-main-word-text">${card.w}</div>
+      </div>
+      ${card.t.map(w => `<div class="taboo-word">${w}</div>`).join('')}
+      <div class="card-num">#${idx+1} / ${G.deck.length}</div>
+    </div>`;
+
+  // Update passo button
+  const passoBtnRemaining = G.maxSkips - G.turn.skipsUsed;
+  const pb = document.getElementById('passo-btn');
+  if (G.maxSkips === 0) {
+    pb.style.opacity = '0.3';
+    pb.disabled = true;
+  } else {
+    pb.style.opacity = passoBtnRemaining > 0 ? '1' : '0.3';
+    pb.disabled = passoBtnRemaining <= 0;
+  }
+}
+
+function updatePlayScore() {
+  const h = G.turn.history;
+  const pts = h.filter(x=>x.a==='avanti').length - h.filter(x=>x.a==='buzz').length;
+  const el = document.getElementById('play-score-mini');
+  el.innerHTML = pts >= 0
+    ? `<span>+${pts}</span>`
+    : `<span class="neg">${pts}</span>`;
+}
+
+function cardAction(action) {
+  const idx = G.turn.cardIndex % G.deck.length;
+  const card = G.deck[idx];
+
+  if (action === 'passo') {
+    if (G.turn.skipsUsed >= G.maxSkips) return;
+    G.turn.skipsUsed++;
+  }
+
+  G.turn.history.push({card, a: action, idx});
+  G.turn.cardIndex++;
+  renderCard();
+  updatePlayScore();
+}
+
+function undoLast() {
+  if (G.turn.history.length === 0) return;
+  const last = G.turn.history.pop();
+  if (last.a === 'passo') G.turn.skipsUsed--;
+  G.turn.cardIndex--;
+  renderCard();
+  updatePlayScore();
+}
+
+function endTurnEarly() {
+  clearInterval(G.turn.timerId);
+  G.turn.timerRunning = false;
+  G.turn.timeLeft = 0;
+  endTurn();
+}
+
+function endTurn() {
+  clearInterval(G.turn.timerId);
+  G.turn.timerRunning = false;
+  G.deckIndex = G.turn.cardIndex % G.deck.length;
+
+  const hist = G.turn.history;
+  const indovinate = hist.filter(x=>x.a==='avanti').length;
+  const buzz = hist.filter(x=>x.a==='buzz').length;
+  const passo = hist.filter(x=>x.a==='passo').length;
+  const pts = indovinate - buzz;
+
+  const team = G.teams[G.currentTeam];
+  const oldPos = team.pos;
+  const isViolet = oldPos >= BOARD.violetStart;
+
+  let movement = 0;
+  if (isViolet) {
+    if (pts >= 3) movement = pts;
+    else if (pts < 0) movement = pts;
+    // else movement = 0
+  } else {
+    movement = pts;
+  }
+
+  let newPos = Math.max(0, oldPos + movement);
+  team.pos = newPos;
+  team.totalPoints += pts;
+
+  // Update deck pointer (advance past used cards)
+  // Already done above
+
+  // Check win condition
+  if (newPos >= BOARD.arrivo && G.firstToArrive < 0) {
+    G.firstToArrive = G.currentTeam;
+  }
+
+  G.turnCount[G.currentTeam]++;
+
+  // Show result
+  showResult(indovinate, buzz, passo, pts, oldPos, newPos, movement, isViolet);
+}
+
+// ============================================================
+// RESULT SCREEN
+// ============================================================
+function showResult(indovinate, buzz, passo, pts, oldPos, newPos, movement, wasViolet) {
+  const team = G.teams[G.currentTeam];
+  document.getElementById('result-team-name').textContent = team.name;
+  document.getElementById('res-indovinate').textContent = indovinate;
+  document.getElementById('res-buzz').textContent = buzz;
+  document.getElementById('res-passo').textContent = passo;
+
+  // Movement box
+  const moveEl = document.getElementById('res-move-text');
+  const detEl  = document.getElementById('result-movement');
+  if (movement > 0) {
+    moveEl.textContent = `+${movement} caselle → casella ${newPos}`;
+    moveEl.style.color = 'var(--green)';
+    detEl.style.borderColor = 'var(--green)';
+  } else if (movement < 0) {
+    moveEl.textContent = `${movement} caselle → casella ${newPos}`;
+    moveEl.style.color = 'var(--red)';
+    detEl.style.borderColor = 'var(--red)';
+  } else {
+    moveEl.textContent = wasViolet && pts < 3 && pts >= 0
+      ? `Fermo! (zona viola: servono ≥3 punti)`
+      : `Fermo — 0 caselle`;
+    moveEl.style.color = 'var(--muted)';
+    detEl.style.borderColor = 'var(--border)';
+  }
+
+  const detail = document.getElementById('res-move-detail');
+  detail.textContent = wasViolet ? `Zona viola: +${pts} punti totali (servivano ≥3 per avanzare)` : `${pts} punti → ${movement} caselle`;
+
+  // Log
+  const logEl = document.getElementById('result-log');
+  logEl.innerHTML = '';
+  G.turn.history.forEach(h => {
+    const item = document.createElement('div');
+    item.className = 'result-log-item';
+    const icon = h.a==='avanti' ? '✅' : h.a==='buzz' ? '🚫' : '→';
+    const actionLabel = h.a==='avanti' ? 'Indovinata' : h.a==='buzz' ? 'Tabù detto' : 'Passo';
+    item.innerHTML = `<span class="log-icon">${icon}</span><span class="log-word">${h.card.w}</span><span class="log-action">${actionLabel}</span>`;
+    logEl.appendChild(item);
+  });
+
+  showScreen('result');
+}
+
+function continueAfterResult() {
+  // Check game over
+  const shouldEnd = checkGameOver();
+  if (shouldEnd) {
+    showEnd();
+    return;
+  }
+
+  // Next team
+  G.currentTeam = 1 - G.currentTeam;
+  showBoard();
+}
+
+function checkGameOver() {
+  if (G.firstToArrive < 0) return false;
+
+  // The team that went first has arrived.
+  // We need the OTHER team to have had the same number of turns.
+  const first = G.firstToArrive;
+  const second = 1 - first;
+
+  if (G.turnCount[first] === G.turnCount[second] + 1) {
+    // Second team hasn't played their equalizing turn yet
+    return false;
+  }
+  if (G.turnCount[first] === G.turnCount[second]) {
+    // Both have played same number of turns — end game
+    return true;
+  }
+  return false;
+}
+
+// ============================================================
+// END SCREEN
+// ============================================================
+function showEnd() {
+  const t0 = G.teams[0], t1 = G.teams[1];
+  let winnerIdx;
+
+  // Both at or beyond arrivo: winner by total points
+  if (t0.pos >= BOARD.arrivo && t1.pos >= BOARD.arrivo) {
+    winnerIdx = t0.totalPoints >= t1.totalPoints ? 0 : 1;
+  } else if (t0.pos >= BOARD.arrivo) {
+    winnerIdx = 0;
+  } else if (t1.pos >= BOARD.arrivo) {
+    winnerIdx = 1;
+  } else {
+    // Nobody at arrivo - highest position, then total points
+    if (t0.pos !== t1.pos) winnerIdx = t0.pos > t1.pos ? 0 : 1;
+    else winnerIdx = t0.totalPoints >= t1.totalPoints ? 0 : 1;
+  }
+
+  const winner = G.teams[winnerIdx];
+  document.getElementById('end-winner-name').textContent = winner.name;
+  document.getElementById('end-winner-score').textContent = `${winner.totalPoints} punti totali · casella ${winner.pos}`;
+
+  for (let i = 0; i < 2; i++) {
+    const t = G.teams[i];
+    document.getElementById('end-name-' + i).textContent = t.name;
+    document.getElementById('end-num-' + i).textContent = t.totalPoints;
+    document.getElementById('end-pos-' + i).textContent = `casella ${t.pos}`;
+    document.getElementById('end-card-' + i).classList.toggle('winner', i === winnerIdx);
+  }
+
+  showScreen('end');
+}
+
+function playAgain() {
+  showScreen('intro');
+}
+</script>
+</body>
+</html>
