@@ -8,15 +8,17 @@
 </head>
 <body>
 
-  <header>
-    <div class="site-title">In <span>Missione</span></div>
-
-    <!-- SOTTOTITOLO HEADER: breve descrizione sotto il titolo, visibile su tutte le pagine.
-         Per attivarlo, rimuovi i simboli /* e */ intorno al tag <p>.
-         Esempio: <p class="site-desc">Luogo virtuale un po' vecchio stile.</p> -->
-    <!-- <p class="site-desc">La tua descrizione qui</p> -->
-
-    <nav>
+  <!-- HERO: immagine a tutto schermo con titolo e nav sovrapposti -->
+  <header class="hero-header">
+    <img src="hero.jpg" alt="Aeroplano d'epoca su Roma">
+    <div class="hero-overlay">
+      <div class="hero-line"></div>
+      <div class="site-title">In <span>Missione</span></div>
+      <!-- SOTTOTITOLO HERO: una riga sotto il titolo, opzionale.
+           Esempio: <p class="hero-desc">Luogo virtuale un po' vecchio stile.</p> -->
+      <!-- <p class="hero-desc">La tua descrizione qui</p> -->
+    </div>
+    <nav class="hero-nav">
       <a href="index.html" class="active">Home</a>
       <a href="frammenti/index.html">Frammenti</a>
       <a href="viaggi/index.html">Viaggi</a>
@@ -26,13 +28,6 @@
   </header>
 
   <main>
-
-    <div class="intro">
-      <!-- FRASE DI BENVENUTO: la frase grande al centro della homepage.
-           Per attivarla, rimuovi i trattini dai commenti e scrivi la tua frase.
-           Esempio: <h2>Scrivo per fissare le cose, per non perderle.</h2> -->
-      <!-- <h2>La tua frase qui</h2> -->
-    </div>
 
     <div class="sections-grid">
       <a href="frammenti/index.html" class="section-card">

@@ -25,7 +25,7 @@ body {
   min-height: 100vh;
 }
 
-/* HEADER */
+/* HEADER NORMALE (usato nelle pagine interne) */
 header {
   border-bottom: 1px solid var(--border);
   padding: 2.5rem 2rem 1.5rem;
@@ -40,6 +40,91 @@ header::before {
   height: 2px;
   background: var(--accent);
   margin: 0 auto 1.5rem;
+}
+
+/* HERO HEADER (solo homepage) */
+header.hero-header {
+  border-bottom: none;
+  padding: 0;
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+}
+
+header.hero-header::before { display: none; }
+
+header.hero-header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  filter: brightness(1) sepia(0%);
+  display: block;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-line {
+  width: 50px;
+  height: 2px;
+  background: var(--accent-light);
+  margin-bottom: 1.2rem;
+}
+
+header.hero-header .site-title {
+  color: #f5f0e8;
+  text-shadow: 0 0 20px rgba(0,0,0,0.9), 0 0 40px rgba(0,0,0,0.7), 0 0 80px rgba(0,0,0,0.5);
+}
+
+header.hero-header .site-title span {
+  color: #e8a87c;
+}
+
+.hero-desc {
+  font-family: 'Lora', Georgia, serif;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: rgba(245,240,232,0.75);
+  margin-top: 0.6rem;
+}
+
+.hero-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  background: rgba(20,14,8,0.08);
+}
+
+.hero-nav a {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.9);
+  text-decoration: none;
+  padding: 0.75rem 1.2rem;
+  border-right: 1px solid rgba(255,255,255,0.12);
+  transition: color 0.2s;
+  text-shadow: 0 0 12px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.7);
+}
+
+.hero-nav a:first-child { border-left: 1px solid rgba(255,255,255,0.12); }
+.hero-nav a:hover, .hero-nav a.active { color: #e8a87c; }
+
+@media (max-width: 640px) {
+  header.hero-header { height: 320px; }
+  .hero-nav a { padding: 0.75rem 0.7rem; font-size: 0.65rem; }
 }
 
 .site-title {
