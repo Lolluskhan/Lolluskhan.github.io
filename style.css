@@ -393,6 +393,65 @@ main {
   font-size: 0.9rem;
 }
 
+/* NEWSLETTER FOOTER */
+.newsletter-footer {
+  text-align: center;
+  padding: 1.2rem 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.newsletter-footer a {
+  display: inline-block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding: 0.4rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.newsletter-footer a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* NEWSLETTER HOMEPAGE */
+.newsletter-home {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+
+.newsletter-home p {
+  font-style: italic;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.newsletter-home a {
+  display: inline-block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #faf7f2;
+  background: var(--accent);
+  text-decoration: none;
+  padding: 0.7rem 2rem;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+
+.newsletter-home a:hover {
+  background: var(--accent-light);
+}
+
 /* FOOTER */
 footer {
   text-align: center;
