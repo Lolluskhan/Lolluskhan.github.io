@@ -1018,7 +1018,7 @@ const CARDS_IT = [
   {w:"TALISMANO",t:["Felicità","Portafortuna","Amuleto","Magia","Toccasana"]},
   {w:"TALK SHOW",t:["Programma","Televisivo","Ospiti","Maurizio Costanzo","Anchor man"]},
   {w:"ANTEPRIMA",t:["Visione","Anticipazione","Film","Esclusiva","Proiezione"]},
-  {w:"TUBETTO",t:["Idraulico","Dentrificio","Catodico","Saldare","Scarico"]},
+  {w:"TUBETTO",t:["Idraulico","Dentifricio","Catodico","Saldare","Scarico"]},
   {w:"METAFORA",t:["Analogia","Retorica","Paragone","Allegoria","Il Postino"]},
   {w:"LOGARITMO",t:["Matematica","Aritmetica","Numero","Esponente","Decimale"]},
   {w:"LP",t:["Disco","Vinile","CD","Musica","Trentatre giri"]},
@@ -1165,7 +1165,7 @@ const CARDS_IT = [
   {w:"ANTENNA",t:["Parabola","Satellite","Tetto","Otto","Centralizzata"]},
   {w:"SINCERO",t:["Onesto","Vero","Leale","Falso","Bugiardo"]},
   {w:"SIMULTANEO",t:["Stesso","Contemporaneo","Tempo","Istante","Traduzione"]},
-  {w:"SINONIMIS",t:["Segno","Spia","Causa","Malato","Significato"]},
+  {w:"SINTOMO",t:["Segno","Spia","Causa","Malato","Significato"]},
   {w:"VIDEOMOLLEGGIO",t:["Blockbuster","Prestare","Film","Riportare","Vedere"]},
   {w:"SMART CARD",t:["Pay TV","Decodificatore","Programmi","Scheda","Canale"]},
   {w:"MULETTO",t:["Asino","Carrello","Ruote","Macchina","Sollevare"]},
@@ -1213,7 +1213,7 @@ const CARDS_IT = [
   {w:"STRUZZO",t:["Grosso","Uccello","Testa","Sabbia","Stomaco"]},
   {w:"TECHNO",t:["Musica","Ballo","Discoteca","Rave","Ecstasy"]},
   {w:"SUPERGIGANTE",t:["Discesa libera","Slalom","Sci","Neve","Specialità"]},
-  {w:"SCIVAIAVA",t:["Telefono","Parlare","Senza","Cornetta","Amplificare"]},
+  {w:"VIVAVOCE",t:["Telefono","Parlare","Senza","Cornetta","Amplificare"]},
   {w:"SUPPORTO",t:["Presumere","Ritenere","Pensare","Immaginare","Innocenza"]},
   {w:"PIT STOP",t:["Pausa","Box","Rifornimento","Fermata","Automobilismo"]},
   {w:"CANTILENA",t:["Canzone","Nenia","Ninna Nanna","Filastrocca","Ripetitivo"]},
@@ -2317,7 +2317,8 @@ function endTurnEarly() {
 function endTurn() {
   clearInterval(G.turn.timerId);
   G.turn.timerRunning = false;
-  G.deckIndex = G.turn.cardIndex % G.deck.length;
+  // Advance past the card that was on screen when the turn ended (not played)
+  G.deckIndex = (G.turn.cardIndex + 1) % G.deck.length;
 
   const hist = G.turn.history;
   const indovinate = hist.filter(x=>x.a==='avanti').length;
