@@ -1,58 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
   <url>
     <loc>https://lolluskhan.github.io/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-
   <url>
     <loc>https://lolluskhan.github.io/frammenti/index.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://lolluskhan.github.io/viaggi/index.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://lolluskhan.github.io/racconti/index.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
   <url>
     <loc>https://lolluskhan.github.io/giochi/index.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-
   <url>
     <loc>https://lolluskhan.github.io/giochi/lupo-mannaro.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
   <url>
     <loc>https://lolluskhan.github.io/giochi/taboo.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
-  <url>
-    <loc>https://lolluskhan.github.io/viaggi/impressioni-su-istanbul-e-il-bosforo.html</loc>
-    <changefreq>never</changefreq>
-    <priority>0.7</priority>
-  </url>
-
   <url>
     <loc>https://lolluskhan.github.io/frammenti/pokemon-droni-e-la-nostra-infanzia.html</loc>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
   </url>
-
+  <url>
+    <loc>https://lolluskhan.github.io/viaggi/impressioni-su-istanbul-e-il-bosforo.html</loc>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>
