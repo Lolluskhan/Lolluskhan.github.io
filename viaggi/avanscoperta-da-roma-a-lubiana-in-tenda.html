@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="Lorenzo Pulci">
+<meta name="description" content="Avanscoperta: da Roma a Lubiana in tenda — un viaggio di Lorenzo Pulci raccontato su In Missione.">
+<title>Avanscoperta: da Roma a Lubiana in tenda — In Missione</title>
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<link rel="apple-touch-icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --bg-card: #faf7f2;
+  --ink: #2c2416;
+  --ink-light: #6b5d4a;
+  --ink-muted: #9e8e7a;
+  --accent: #8b3a1e;
+  --accent-light: #c4622d;
+  --border: #d9cfc0;
+  --shadow: rgba(44,36,22,0.08);
+  --paper: #fdf9f3;
+  --sea: #d8e8f0;
+  --land-main: #ede8de;
+  --land-neighbor: #e4ddd1;
+  --land-stroke: #c4baa8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { font-size:18px; }
+body {
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%23f5f0e8'/%3E%3Crect width='1' height='1' fill='%23ede8de' opacity='0.6'/%3E%3C/svg%3E");
+  color: var(--ink);
+  font-family: 'Lora', Georgia, serif;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+header { border-bottom:1px solid var(--border); padding:2.5rem 2rem 1.5rem; text-align:center; }
+header::before { content:''; display:block; width:60px; height:2px; background:var(--accent); margin:0 auto 1.5rem; }
+.site-title { font-family:'Playfair Display',Georgia,serif; font-size:2.8rem; font-weight:600; letter-spacing:-0.01em; color:var(--ink); }
+.site-title span { color:var(--accent); }
+.site-desc { font-family:'Lora',Georgia,serif; font-style:italic; font-size:0.85rem; color:var(--ink-muted); margin-top:0.6rem; }
+nav { display:flex; justify-content:center; margin-top:1.5rem; border-top:1px solid var(--border); padding-top:1rem; }
+nav a { font-family:'Playfair Display',Georgia,serif; font-size:0.82rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-light); text-decoration:none; padding:0.3rem 1.4rem; border-right:1px solid var(--border); transition:color 0.2s; }
+nav a:first-child { border-left:1px solid var(--border); }
+nav a:hover, nav a.active { color:var(--accent); }
+main { max-width:960px; margin:0 auto; padding:3rem 2rem 4rem; }
+.article-header { text-align:center; padding-bottom:2rem; margin-bottom:2.5rem; border-bottom:1px solid var(--border); }
+.article-cat { font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:1rem; display:block; }
+.article-title { font-family:'Playfair Display',Georgia,serif; font-size:2.2rem; font-weight:600; line-height:1.2; color:var(--ink); margin-bottom:0.6rem; }
+.article-subtitle { font-family:'Lora',Georgia,serif; font-style:italic; font-size:1rem; color:var(--ink-muted); margin-bottom:0.5rem; }
+.article-date { font-size:0.75rem; color:var(--ink-muted); font-style:italic; }
+.intro-text { max-width:620px; margin:0 auto 2rem; font-size:0.9rem; color:var(--ink-light); font-style:italic; text-align:center; line-height:1.8; }
+
+/* TACCUINO */
+#taccuino { display:none; background:var(--paper); border:1px solid var(--border); border-top:3px solid var(--accent); padding:2rem 2rem 2.5rem; margin-bottom:1.5rem; box-shadow:0 4px 20px var(--shadow); animation:slideIn 0.25s ease; }
+#taccuino.open { display:block; }
+@keyframes slideIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+.taccuino-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid var(--border); }
+.taccuino-stop-num { font-family:'Playfair Display',Georgia,serif; font-size:3rem; font-weight:600; color:var(--border); line-height:1; min-width:4rem; }
+.taccuino-stop-info { flex:1; padding-left:1rem; }
+.taccuino-label { font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent); margin-bottom:0.3rem; }
+.taccuino-name { font-family:'Playfair Display',Georgia,serif; font-size:1.5rem; font-weight:600; color:var(--ink); margin-bottom:0.2rem; }
+.taccuino-place { font-style:italic; font-size:0.82rem; color:var(--ink-muted); }
+.taccuino-close { background:none; border:none; cursor:pointer; font-size:1.4rem; color:var(--ink-muted); line-height:1; padding:0.2rem; transition:color 0.2s; }
+.taccuino-close:hover { color:var(--accent); }
+.taccuino-body { display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start; }
+.taccuino-body-single { grid-template-columns:1fr; }
+.taccuino-text { font-size:0.9rem; line-height:1.8; color:var(--ink); }
+.taccuino-text p { margin-bottom:1rem; }
+.taccuino-text p:first-of-type::first-letter { font-family:'Playfair Display',Georgia,serif; font-size:2.8rem; font-weight:600; float:left; line-height:0.85; margin-right:0.1em; margin-top:0.1em; color:var(--accent); }
+.taccuino-sketches { display:flex; flex-direction:column; gap:0.8rem; }
+.sketch-row { display:flex; gap:0.6rem; flex-wrap:wrap; align-items:flex-start; }
+.sketch-item img { display:block; max-width:100%; height:auto; }
+.taccuino-nav { display:flex; justify-content:space-between; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); }
+.taccuino-nav button { background:none; border:1px solid var(--border); font-family:'Playfair Display',Georgia,serif; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-muted); padding:0.4rem 1.2rem; cursor:pointer; transition:color 0.2s, border-color 0.2s; }
+.taccuino-nav button:hover:not(:disabled) { color:var(--accent); border-color:var(--accent); }
+.taccuino-nav button:disabled { opacity:0.3; cursor:default; }
+
+/* MAP */
+.map-container { position:relative; border:1px solid var(--border); overflow:hidden; touch-action:pan-y; }
+#travel-map { display:block; width:100%; height:auto; }
+.map-hint { text-align:center; font-size:0.72rem; font-style:italic; color:var(--ink-muted); padding:0.5rem 1rem; border:1px solid var(--border); border-top:none; background:var(--bg-card); }
+
+/* SVG map styles */
+.land-main     { fill:var(--land-main);     stroke:var(--land-stroke); stroke-width:0.7; }
+.land-neighbor { fill:var(--land-neighbor); stroke:var(--land-stroke); stroke-width:0.4; }
+
+/* Route: lighter, curved via JS quadratic bezier, with arrowheads */
+.route-seg  { fill:none; stroke:var(--accent); stroke-width:1; stroke-dasharray:5 6; opacity:0.45; }
+.route-arr  { fill:var(--accent); opacity:0.55; }  /* arrowhead triangles */
+.route-ret  { fill:none; stroke:var(--accent); stroke-width:0.8; stroke-dasharray:3 5; opacity:0.28; }
+
+.stop-pin { cursor:pointer; }
+.stop-pin .p-ring    { fill:var(--bg-card); stroke:var(--ink-muted); stroke-width:1; transition:fill 0.15s, stroke 0.15s; }
+.stop-pin .p-dot     { fill:var(--accent); }
+.stop-pin .p-ring-dt { fill:var(--bg-card); stroke:var(--accent); stroke-width:0.8; opacity:0.7; transition:fill 0.15s; }
+.stop-pin .p-dot-dt  { fill:var(--accent); opacity:0.6; }
+.stop-pin:hover .p-ring,    .stop-pin.active .p-ring    { fill:var(--accent); stroke:var(--accent); }
+.stop-pin:hover .p-dot,     .stop-pin.active .p-dot     { fill:var(--bg-card); }
+.stop-pin:hover .p-ring-dt, .stop-pin.active .p-ring-dt { fill:var(--accent); opacity:1; }
+.stop-pin:hover .p-dot-dt,  .stop-pin.active .p-dot-dt  { fill:var(--bg-card); }
+.pin-label    { font-family:'Playfair Display',Georgia,serif; font-size:8px; fill:var(--ink); font-weight:600; letter-spacing:0.02em; cursor:pointer; }
+.pin-label-dt { font-family:'Lora',Georgia,serif; font-size:7px; fill:var(--accent-light); font-style:italic; letter-spacing:0.02em; opacity:0.8; cursor:pointer; }
+.stop-pin:hover .pin-label,    .stop-pin.active .pin-label    { fill:var(--accent); text-decoration:underline; }
+.stop-pin:hover .pin-label-dt, .stop-pin.active .pin-label-dt { opacity:1; fill:var(--accent); }
+.geo-label  { font-family:'Playfair Display',Georgia,serif; font-size:8px; fill:var(--ink-muted); letter-spacing:0.14em; text-transform:uppercase; cursor:pointer; opacity:0.55; }
+.sea-label  { font-family:'Lora',Georgia,serif; font-size:8px; fill:#5a8faa; letter-spacing:0.1em; font-style:italic; cursor:pointer; opacity:0.8; }
+
+footer { text-align:center; padding:2rem; border-top:1px solid var(--border); font-size:0.72rem; color:var(--ink-muted); font-style:italic; }
+footer::after { content:''; display:block; width:30px; height:1px; background:var(--accent); margin:1rem auto 0; }
+.newsletter-footer { text-align:center; padding:1.2rem 2rem; border-top:1px solid var(--border); }
+.newsletter-footer a { display:inline-block; font-family:'Playfair Display',Georgia,serif; font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-muted); text-decoration:none; padding:0.4rem 1.2rem; border:1px solid var(--border); border-radius:2px; transition:color 0.2s, border-color 0.2s; }
+.newsletter-footer a:hover { color:var(--accent); border-color:var(--accent); }
+.back-link { display:inline-block; font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-muted); text-decoration:none; margin-bottom:2rem; transition:color 0.2s; }
+.back-link:hover { color:var(--accent); }
+.back-link::before { content:"← "; }
+
+@media (max-width:640px) {
+  .site-title { font-size:2rem; }
+  main { padding:2rem 1.2rem; }
+  .article-title { font-size:1.6rem; }
+  .taccuino-body { grid-template-columns:1fr; }
+  nav { overflow-x:auto; justify-content:flex-start; scrollbar-width:none; }
+  nav::-webkit-scrollbar { display:none; }
+  nav a { padding:0.3rem 1rem; font-size:0.72rem; white-space:nowrap; flex-shrink:0; }
+}
+
+/* DAYS SECTION */
+.days-section {
+  margin-top: 3rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2.5rem;
+}
+.days-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.days-header-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.days-header-label {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.day-block {
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 2.5rem;
+}
+.day-block:last-child {
+  border-bottom: none;
+}
+
+.day-header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.day-num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--border);
+  line-height: 1;
+  min-width: 2.2rem;
+}
+.day-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.day-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .day-body { grid-template-columns: 1fr; }
+  .day-img { order: -1; }
+}
+
+/* Left: stops list */
+.day-stops {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+/* Dashed vertical line connecting stops */
+.day-stops::before {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 12px;
+  bottom: 28px;
+  width: 1px;
+  border-left: 1.5px dashed var(--border);
+  z-index: 0;
+}
+
+.day-stop-item {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 0;
+}
+
+.day-stop-item::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1.5px solid var(--ink-muted);
+  z-index: 1;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.day-stop-item.clickable {
+  cursor: pointer;
+}
+.day-stop-item.clickable:hover::before {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.day-stop-item.clickable:hover .day-stop-name {
+  color: var(--accent);
+}
+
+.day-stop-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 0.45rem 0 0.1rem;
+  display: block;
+  line-height: 1.3;
+  transition: color 0.15s;
+}
+
+/* Accordion content */
+.day-stop-content {
+  display: none;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--ink-light);
+  font-style: italic;
+  padding: 0.3rem 0 0.6rem;
+}
+.day-stop-item.open .day-stop-content {
+  display: block;
+}
+.day-stop-item.open::before {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Notte row */
+.day-notte {
+  position: relative;
+  padding-left: 24px;
+  margin-top: 0.2rem;
+}
+.day-notte::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1.5px solid var(--accent);
+  z-index: 1;
+}
+.day-notte-label {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 0.75rem;
+  font-style: italic;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+  display: block;
+  padding-top: 0.4rem;
+  line-height: 1.4;
+}
+.day-notte-label strong {
+  font-weight: 500;
+  color: var(--ink-light);
+  font-style: normal;
+}
+
+/* Right: thumbnail */
+.day-img {
+  overflow: hidden;
+  position: relative;
+}
+.day-img img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: contrast(1.05) brightness(1.02);
+}
+.day-img-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.day-static-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--ink-light);
+  padding: 0.6rem 0 0.4rem 24px;
+}
+.day-static-text::before {
+  content: '';
+}
+.day-img-caption-ext {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="site-title">In <span>Missione</span></div>
+  <div class="site-desc">cronache di un'estate in movimento</div>
+  <nav>
+    <a href="https://lolluskhan.github.io/index.html">Home</a>
+    <a href="https://lolluskhan.github.io/frammenti/index.html">Frammenti</a>
+    <a href="https://lolluskhan.github.io/viaggi/index.html" class="active">Viaggi</a>
+    <a href="https://lolluskhan.github.io/racconti/index.html">Racconti</a>
+    <a href="https://lolluskhan.github.io/giochi/index.html">Giochi</a>
+  </nav>
+</header>
+
+<main>
+  <a href="https://lolluskhan.github.io/viaggi/index.html" class="back-link">Viaggi</a>
+  <div class="article-header">
+    <span class="article-cat">Viaggi</span>
+    <h1 class="article-title">Avanscoperta: da Roma a Lubiana in tenda</h1>
+    <div class="article-subtitle">Roma · Dolomiti · Trieste · Slovenia · Croazia · Emilia</div>
+    <div class="article-date">Estate 2024</div>
+  </div>
+  <p class="intro-text">
+    Un'estate disegnata su carta prima ancora di partire. Sette pagine di taccuino,
+    centinaia di chilometri, quattro paesi. Clicca su ogni tappa per aprire il diario di bordo.
+  </p>
+
+  <div id="taccuino">
+    <div class="taccuino-header">
+      <div class="taccuino-stop-num" id="t-num">01</div>
+      <div class="taccuino-stop-info">
+        <div class="taccuino-label">Tappa</div>
+        <div class="taccuino-name" id="t-name">Roma</div>
+        <div class="taccuino-place" id="t-place">Lazio, Italia</div>
+      </div>
+      <button class="taccuino-close" onclick="closeTaccuino()">×</button>
+    </div>
+    <div class="taccuino-body taccuino-body-single">
+      <div class="taccuino-text" id="t-text"></div>
+    </div>
+    <div class="taccuino-nav">
+      <button id="btn-prev" onclick="navigateStop(-1)">← Precedente</button>
+      <button id="btn-next" onclick="navigateStop(1)">Successiva →</button>
+    </div>
+  </div>
+
+  <div class="map-container">
+    <svg id="travel-map" viewBox="0 0 660 780" xmlns="http://www.w3.org/2000/svg">
+      <rect width="660" height="780" fill="#d8e8f0"/>
+      <g id="g-countries"></g>
+      <g id="g-labels"></g>
+      <g id="g-route"></g>
+      <g id="g-pins"></g>
+    </svg>
+  </div>
+  <div class="map-hint">Clicca su una tappa per aprire il diario di bordo</div>
+
+  <!-- DAYS MENU -->
+  <div class="days-section">
+    <div class="days-header">
+      <div class="days-header-line"></div>
+      <span class="days-header-label">Diario di bordo</span>
+      <div class="days-header-line"></div>
+    </div>
+    <div id="days-container"></div>
+  </div>
+
+</main>
+
+<div class="newsletter-footer">
+  <a href="https://docs.google.com/forms/d/e/1FAIpQLSe3G2FS-W3zI1GXiiSRekM2X8tKb7njVlQ4VgkjXPY2OQXmsw/viewform">Iscriviti alla newsletter</a>
+</div>
+<footer><!-- La tua firma qui --></footer>
+</script>
+<script data-goatcounter="https://lolluskhan.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
+
+<script>
+const GEO_B64 = "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";
+const BELLAMONTE_LAT = 46.3100;
+const BELLAMONTE_LON = 11.6608;
+const IMGS = {
+  "roma_money": "avanscoperta-imgs/c-roma_money.png",
+  "roma_sun": "avanscoperta-imgs/c-roma_sun.png",
+  "roma_meditation": "avanscoperta-imgs/c-roma_meditation.png",
+  "stifone_label": "avanscoperta-imgs/c-stifone_label.png",
+  "narni_storm": "avanscoperta-imgs/c-narni_storm.png",
+  "trasimeno_tent": "avanscoperta-imgs/c-trasimeno_tent.png",
+  "bus_driving": "avanscoperta-imgs/c-bus_driving.png",
+  "moena_tent": "avanscoperta-imgs/c-moena_tent.png",
+  "mountains_cow": "avanscoperta-imgs/c-mountains_cow.png",
+  "sleeping_bag": "avanscoperta-imgs/c-sleeping_bag.png",
+  "people_group": "avanscoperta-imgs/c-people_group.png",
+  "flowers": "avanscoperta-imgs/c-flowers.png",
+  "snack": "avanscoperta-imgs/c-snack.png",
+  "page3_snake": "avanscoperta-imgs/c-page3_snake.png",
+  "page3_landscape": "avanscoperta-imgs/c-page3_landscape.png",
+  "page3_windscreen": "avanscoperta-imgs/c-page3_windscreen.png",
+  "page3_camera": "avanscoperta-imgs/c-page3_camera.png",
+  "page3_camper": "avanscoperta-imgs/c-page3_camper.png",
+  "page3_concert": "avanscoperta-imgs/c-page3_concert.png",
+  "page3_cyclist": "avanscoperta-imgs/c-page3_cyclist.png",
+  "page3_trieste_city": "avanscoperta-imgs/c-page3_trieste_city.png",
+  "page3_people_bottom": "avanscoperta-imgs/c-page3_people_bottom.png",
+  "miramare_castle": "avanscoperta-imgs/c-miramare_castle.png",
+  "rainy_tent": "avanscoperta-imgs/c-rainy_tent.png",
+  "workshop": "avanscoperta-imgs/c-workshop.png",
+  "swimming": "avanscoperta-imgs/c-swimming.png",
+  "pizza": "avanscoperta-imgs/c-pizza.png",
+  "beer": "avanscoperta-imgs/c-beer.png",
+  "drinks": "avanscoperta-imgs/c-drinks.png",
+  "page5_car_leaving": "avanscoperta-imgs/c-page5_car_leaving.png",
+  "page5_sunflowers": "avanscoperta-imgs/c-page5_sunflowers.png",
+  "page5_lubiana_tower": "avanscoperta-imgs/c-page5_lubiana_tower.png",
+  "page5_castle": "avanscoperta-imgs/c-page5_castle.png",
+  "page5_camping_fire": "avanscoperta-imgs/c-page5_camping_fire.png",
+  "page5_stars": "avanscoperta-imgs/c-page5_stars.png",
+  "page5_tent_sleep": "avanscoperta-imgs/c-page5_tent_sleep.png",
+  "page6_hammock": "avanscoperta-imgs/c-page6_hammock.png",
+  "page6_map_person": "avanscoperta-imgs/c-page6_map_person.png",
+  "page6_sailboat": "avanscoperta-imgs/c-page6_sailboat.png",
+  "page6_tuna": "avanscoperta-imgs/c-page6_tuna.png",
+  "page6_rijeka": "avanscoperta-imgs/c-page6_rijeka.png",
+  "page6_street": "avanscoperta-imgs/c-page6_street.png",
+  "page6_sun": "avanscoperta-imgs/c-page6_sun.png",
+  "page7_two_towers": "avanscoperta-imgs/c-page7_two_towers.png",
+  "page7_tagliatelle": "avanscoperta-imgs/c-page7_tagliatelle.png",
+  "page7_tents": "avanscoperta-imgs/c-page7_tents.png",
+  "page7_tree_rest": "avanscoperta-imgs/c-page7_tree_rest.png",
+  "page7_roma_sign": "avanscoperta-imgs/c-page7_roma_sign.png",
+  "page7_hitchhike": "avanscoperta-imgs/c-page7_hitchhike.png"
+};
+
+const STOPS = [
+  { id:"roma",        num:"01", name:"Roma",                          place:"Lazio, Italia",                 lon:12.4964, lat:41.9028, lx:10,  ly:3.5, la:"start",
+    sketches:[["roma_money",100],["roma_sun",130],["roma_meditation",170]],
+    text:`<p>Partenza alle <strong>8:30</strong> di mattina, destreggiandoci fra la folla radunatasi a Tor Vergata per la seconda giornata del Giubileo dei Giovani.</p><p>Abbiamo preparato tende e bagagli, la nostra destinazione è il Lago Trasimeno, dove abbiamo in programma di spendere la prima notte prima di dirigerci verso Trieste.</p>` },
+  { id:"stifone",     num:"02", name:"Stifone",                        place:"Umbria, Italia",                lon:12.550,  lat:42.595,  lx:10,  ly:3.5, la:"start",
+    sketches:[["stifone_label",180]],
+    text:`<p>Piccolo paese lungo le Gole del Nera, è suggestivo perché pare semi deserto, ed è costruito sul fianco del fiume. L'acqua del Nera è famosa per il suo azzurro saturo e cristallino, ed è talmente limpida da lasciar vedere il fondale. Il paese si sviluppa lungo una piccola ansa del fiume, dunque poco a monte c'è una piccola insenatura dove è presente una vasca di acqua sorgiva, la <strong>Sorgente della Morica</strong>. Quest'ultima riscuote una discreta fama perché è balneabile e infatti, seppure al nostro arrivo fosse ancora abbastanza presto, delle ragazze e una famiglia stavano già sfidando la temperatura dell'acqua.</p>` },
+  { id:"narni",       num:"03", name:"Narni",                          place:"Umbria, Italia",                lon:12.521,  lat:42.522,  lx:-10, ly:-5,  la:"end",
+    sketches:[["narni_storm",200]],
+    text:`<p>In cielo splendeva ancora un Sole torrido quando siamo arrivati a Narni. Una suggestiva cittadina che sfoggia con orgoglio la sua origine medioevale. Si sviluppa sul fianco di un'alta collina, e gode del panorama dolce dell'Umbria meridionale.</p><p>Dopo aver parcheggiato, abbiamo attraversato la zona più antica. Lì i vicoli sono ancora stretti e di pietra, e sono esposti i vessilli di varie fazioni rivaleggianti nello spartirsi il territorio (non troppo esteso). In una visita precedente, la città si preparava ad un evento musicale giovanile che avrebbe avuto luogo la sera, e quindi in ogni angolo si sentivano i ragazzi esercitarsi, persino nelle chiese! In questa visita, siamo stati comunque invitati ad un evento culturale che si sarebbe tenuto da lì a qualche giorno. Ne deduco che, a scanso di improbabili coincidenze, Narni è una cittadina piuttosto vivace e tutt'altro che morta, data anche la sua limitata estensione.</p><p>Purtroppo la nostra era solo una sosta di viaggio e una volta saliti su a piedi fino alla Rocca, siamo tornati in auto per rimetterci in viaggio.</p>` },
+  { id:"trasimeno",   num:"04", name:"Camping Eden Park",              place:"Lago Trasimeno, Umbria",        lon:12.106,  lat:43.128,  lx:-10, ly:3.5, la:"end",
+    sketches:[["trasimeno_tent",170],["rainy_tent",130]],
+    text:`<p>Varcata la catena di Appennini che separa dal Sud il Lago Trasimeno, ci siamo ritrovati all'improvviso nel pieno di una tempesta tropicale. La pioggia era talmente forte che noi e altre macchine ci siamo dovuti fermare a bordo strada, nell'ottimistica speranza di un miglioramento delle condizioni. Dopo una decina di minuti pioveva ancora più forte e tuonava con rombi potenti, si vedeva fra la fitta pioggia un castello su una collina (o meglio, le sue rovine), che pareva essere colpito da più fulmini ripetute volte a distanza di qualche minuto l'una dall'altra.</p><p>L'infausta idea di fermarci ad una tavola calda, oltre averci inzuppati, non ci ha fornito altro che la triste prospettiva di più di un'ora di attesa del nostro turno per mangiare. Abbiamo attinto alle nostre scorte di cibo, ma una volta arrivati al campeggio ci siamo accorti che l'acquazzone non mostrava alcun segno di ritirata: montare le tende così era impossibile.</p><p>Dopo una breve discussione, ho contattato dei miei amici che erano in quei giorni in campeggio in Trentino, chiedendo se avessero spazio nella loro piazzola. Alla risposta affermativa ci siamo subito rimessi in viaggio. Erano ormai le quindici, e un lungo viaggio ci attendeva.</p>` },
+  { id:"autogrill",   num:"04a",name:"Autogrill",                       place:"Autostrada A1, Italia",         lon:11.18,   lat:43.95,   lx:10,  ly:3.5, la:"start", waypoint:true,
+    sketches:[],
+    text:`<p>Testo da inserire. La sosta all'autogrill sull'autostrada.</p>` },
+  { id:"clubdelsole", num:"05", name:"Club del Sole Val di Fiemme",    place:"Bellamonte di Predazzo, Trentino", lon:BELLAMONTE_LON, lat:BELLAMONTE_LAT, lx:-10, ly:8,  la:"end",
+    sketches:[["mountains_cow",200],["sleeping_bag",160],["people_group",160]],
+    text:`<p>Siamo arrivati in Trentino al tramonto, in un bel campeggio a <strong>Bellamonte di Predazzo</strong>, presso Moena, a oltre <strong>1373 m slm</strong>. Montare le tende al buio è stata un'impresa (la mia tenda era nuova), ma ce la siamo sbrigata con l'aiuto degli altri. Dopo una cena condivisa ai fornelli piuttosto tarda, e il racconto ai miei amici della giornata, siamo andati a dormire.</p>` },
+  { id:"passorolle",  num:"05a",name:"Passo Rolle",                    place:"Dolomiti, Trentino · escursione", lon:11.7851, lat:46.2964, lx:10,  ly:-4,  la:"start", daytrip:true, base:"clubdelsole",
+    sketches:[["page3_landscape",180],["mountains_cow",160]],
+    text:`<p>La prima notte è stata terribile. La temperatura è scesa a quattro gradi con un discreto vento, e il nostro equipaggiamento era da lago, non da montagna. Mi sono arrangiato mettendo il mio sacco a pelo dentro un altro sacco a pelo che per fortuna mi ero portato, indossando il pile e rannicchiandomi sotto le mie valige. Alle prime luci dell'aurora ho ringraziato l'Altissimo e mi sono addormentato.</p><p>La sveglia poco prima delle nove in campeggio è obbligatoria, dato che quando picchia il Sole la tenda diventa una serra, così mi sono alzato arzillo come si può immaginare e, abbracciato il tè caldo a colazione, mi sono vestito per la scampagnata.</p><p>Da Passo Rolle abbiamo preso un sentiero circolare che ci ha portato fino ai piedi di un massiccio di dolomiti molto aguzze, incrociando molte mucche che si godevano l'aria pulita.</p>` },
+  { id:"malgaces",    num:"05b",name:"Malga Ces",                      place:"San Martino di Castrozza · escursione", lon:11.773674, lat:46.270658, lx:10, ly:5, la:"start", daytrip:true, base:"clubdelsole",
+    sketches:[["flowers",160],["snack",120]],
+    text:`<p>Dopo una meritata dormita, ci siamo diretti verso l'ultima scampagnata condivisa con i miei amici lì in Trentino: partendo dalla Malga Ces ci siamo incamminati lungo una salita piuttosto ripida e faticosa, che ci ha portati in circa un'ora a due laghetti in quota molto pittoreschi. Ad un rifugio presso i laghetti abbiamo mangiato un bel piatto di polenta e salsicce che ci ha ricaricati, e abbiamo salutato i nostri amici: avevamo una prenotazione per Trieste quella sera, che già avevamo spostato di un giorno.</p><p>Sul sentiero di ritorno abbiamo incontrato due vipere di notevoli dimensioni, che abbiamo interpretato come un segno. Su idea del mio compagno di viaggio abbiamo preparato un biglietto di saluto ai nostri amici, che avevano parcheggiato l'automobile un po' troppo vicina alla Malga Ces. Su un foglio poggiato sul tergicristalli, in stampatello: <em>«I signori della vettura targata GF----- per sosta in zona riservata al ristorante sono pregati di contattare il seguente numero per la verifica della consumazione: 333-------»</em>.</p>` },
+  { id:"moena",       num:"06", name:"Moena",                          place:"Val di Fassa, Trentino",        lon:11.656,  lat:46.373,  lx:-10, ly:-4,  la:"end",
+    sketches:[["moena_tent",140],["page3_landscape",160],["snack",110]],
+    text:`<p>Nel pomeriggio siamo passati nella città di Moena, località famosa per il suo formaggio, il <em>Puzzone</em>, e noto centro turistico. La città ospita anche un grande negozio di articoli in legno, molti fatti in loco, dove ho preso qualche souvenir.</p><p>Uscire dalla città in macchina è stato arduo, per via di diverse zone a traffico limitato e sentieri molto stretti. Una vigilessa ci ha invitati a tornare indietro perché fino alle 18:00 il transito per una piazza era proibito. Erano le 17:58, abbiamo fatto un rapido giro per far scorrere i minuti e poi siamo passati.</p><p>Durante la preparazione della cena, consapevole dei miei errori mi sono adoperato per isolare meglio la tenda dal freddo che risaliva da terra, e dal vento. Il primo giorno era stata montata al buio e ho avuto modo di migliorare molto le prospettive per la notte.</p>` },
+  { id:"obelisco",    num:"07", name:"Campeggio Obelisco",             place:"Opicina, Trieste",              lon:13.78423,lat:45.67966, lx:10,  ly:-4,  la:"start",
+    sketches:[["page3_windscreen",170],["page3_camper",150],["page3_cyclist",110]],
+    text:`<p>A metà del viaggio per Trieste, mentre gonfiavamo le gomme abbiamo ricevuto la chiamata dai nostri amici piuttosto agitati che, nonostante affermassero di aver compreso sin da subito lo scherzo, prima di chiamare si erano comunque assicurati con un'abbondante merenda alla Malga Ces.</p><p>Alle diciotto eravamo al campeggio presso Trieste, anche se chiamarlo campeggio è alquanto lusinghiero. Ci si arriva dopo una lunga e impervia salita su un rilievo dell'altopiano carsico, passando cartelli di benvenuto arrugginiti e carcasse sospette di motorini. Una signora con un forte accento slavo, dopo aver liquidato con fare brusco qualche ragazzo che chiamava per informazioni, ci ha indicato la nostra piazzola su pietrisco, con la raccomandazione di disporre la tenda in modo da occupare meno spazio possibile. I tre bagni, di cui due turchi, seppur abbastanza puliti, ci hanno spinto a ridurre a due notti la nostra sosta, dalle tre previste.</p><p>Per fortuna la nostra piazzola si è presto riempita di giovani, fra cui Chesper (da noi subito detto Gaspare), un tedesco che era lì di passaggio mentre tornava a Berlino in bici dopo aver fatto da spettatore (non era ben chiaro) al Tour de France.</p><p>Il campeggio, seppure modesto nei servizi, si trovava su una collina a nord di Trieste, e aveva una notevole vista sulla città al tramonto, sul porto e sul mare.</p>` },
+  { id:"trieste",     num:"08", name:"Trieste",                        place:"Friuli Venezia Giulia, Italia", lon:13.777,  lat:45.649,  lx:10,  ly:8,  la:"start",
+    sketches:[["page3_trieste_city",150],["page3_concert",150],["page3_snake",110]],
+    text:`<p>Dopo la visita al castello, su indicazione delle nostre compagne di gita tedesche ci siamo diretti al lungomare di Trieste e nei pressi della Fontana di Barcola abbiamo trovato un piccolo spazio sui massi dove scendere a mare e fare il bagno.</p><p>È stato rinfrescante, dopo la calda giornata.</p><p>Per sera siamo tornati a mangiare in centro città, dove abbiamo ceduto ad una pizzeria piuttosto turistica lungo il corso, ma eravamo stremati dal Sole e dal mare.</p><p>Abbiamo lì salutato le nostre amiche: all'arrivo avevamo cancellato infatti la terza notte a Trieste e l'indomani avremmo dovuto lasciare il campeggio.</p>` },
+  { id:"miramare",    num:"09", name:"Miramare",                       place:"Trieste · escursione",          lon:13.715,  lat:45.702,  lx:-10, ly:-4, la:"end",   daytrip:true, base:"trieste",
+    sketches:[["miramare_castle",180],["swimming",160],["pizza",110],["beer",70]],
+    text:`<p>Una leggera pioggerella estiva ha conciliato il sonno della prima notte a Trieste, la mattina splendeva un bel sole.</p><p>La sera prima ci eravamo accordati con delle ragazze tedesche per visitare il Castello Miramare, e così abbiamo fatto, dopo aver fatto colazione in centro città.</p><p>Il castello è fiabesco, piccolo, intimo, e affaccia sull'Adriatico guardando verso Ovest, a largo del Golfo di Trieste. Con un po' di fantasia si vedrebbe Venezia.</p><p>I giardini sono infiniti e risalgono tutta la montagna. Ci sono sentieri ben curati con piccoli cortili all'italiana, mentre più in alto si entra in un bosco di lecci e pini neri, che fa da scudo per la Bora invernale. Sarebbe stato un contorno perfetto per la storia d'amore che non ha mai contenuto: ideato da Massimiliano d'Asburgo per sua moglie Carlotta del Belgio, prima che la politica e il fato portarono lui a morire come Imperatore del Messico, e lei alla perdita del senno.</p><p>Mentre ci aggiravamo per i giardini, varcando una soglia un po' nascosta ci siamo ritrovati al Centro Internazionale di Fisica Teorica dove era organizzata una conferenza e, dato che la fisica è un ambito che interessa sia me che il mio compagno di viaggio, abbiamo intrapreso una conversazione con qualche ricercatore d'oltralpe e d'oltremare.</p>` },
+  { id:"vode",        num:"10", name:"Camper Stop and Service - Vode", place:"Slovenia", lon:14.666954179196011, lat:46.14335955016932, lx:10,  ly:-5,  la:"start",
+    sketches:[["page5_car_leaving",150],["page5_sunflowers",140]],
+    text:`<p>Smontate le tende con calma, abbiamo caricato tutto in macchina e riconsegnato le chiavi. Davanti al bel panorama su Trieste, dunque, ci siamo messi a discutere sul da farsi. Abbiamo convenuto che fosse troppo presto per tornare, e che la scelta migliore fosse varcare il confine ed entrare in Slovenia.</p><p>Abbiamo così richiesto il bollo per l'autostrada e siamo partiti verso Lubiana. Lungo la via abbiamo contattato un campeggio presso Vode, un piccolo villaggio nel bosco poco fuori da Lubiana, che ha dato disponibilità ad accogliere le nostre due tende.</p><p>Fra tutti, il campeggio di Vode è stato forse il più bello: era in pratica un prato a maggese, senza divisione in piazzole, ma con tutti i servizi nuovi, puliti ed efficaci. I proprietari possedevano anche dei terreni coltivati nelle vicinanze, e alla reception vendevano verdure dell'orto e derivati vari. C'era una bella terrazza comune, che affacciava sul pratone ed era annunciata da alti girasoli in salute, da alcuni cavoli, fiori vari e da piccole luci calde. Su di essa c'erano alcune sedute intrecciate di fibra e appese al soffitto. Tutto attorno al pratone per tre lati il bosco fitto e nero, e per il quarto il paese, che consisteva in qualche casetta ammucchiata, oltre a quella dei proprietari. In lontananza le ultime Alpi Slovene.</p>` },
+  { id:"lubiana",     num:"11", name:"Lubiana",                        place:"Ljubljana, Slovenia",           lon:14.505,  lat:46.051,  lx:10,  ly:7,   la:"start",
+    sketches:[["page5_lubiana_tower",140],["page5_castle",150],["page6_hammock",120],["page5_camping_fire",120]],
+    text:`<p>Siamo arrivati a metà pomeriggio a Lubiana. Abbiamo avuto qualche difficoltà con il parcheggio, ma parcheggiare lontano ci ha permesso di attraversare anche quartieri più lontani dal centro.</p><p>Mi è parsa una città molto elegante e sicura, verde, come tutta la Slovenia che avevamo visto. Prima di arrivare al centro storico siamo passati per la Piazza della Repubblica (Trg republike), la vera eredità culturale del passato comunista della città: il palazzo dell'Assemblea Nazionale è una struttura in cemento armato che presenta bassorilievi modernisti di scene di lavoro (a petto nudo, chiaramente), mentre dall'altra parte della piazza svettava piuttosto sinistro un grattacielo grigio, ora sede della <em>Agenzia per la cooperazione fra i regolatori nazionali dell'energia</em>. Mi è rimasto impresso per l'enorme orologio digitale posto alla sua sommità, che aveva qualche settore malfunzionante e dava impressioni da scenario post apocalittico.</p><p>La Jugoslavia finisce pressoché qui: il centro città è una fine commistione di architettura austriaca e locale, con tetti color salmone acceso, spioventi alla maniera slava, ponti in ferro battuto e pietra che attraversano la Ljubljanica, il fiume della città, e palazzine da facciate ottocentesche. Dà ancora l'impressione di essere un grande paese, e forse più raccolto di città italiane come Verona, di cui è poco più grande, ma il tono cosmopolita da capitale le è connaturato dalla geografia.</p><p>Il celebre castello l'abbiamo visto, ahimè, solo dal basso della collina su cui è costruito, dato che l'orario non ci consentiva una più accurata visita, prima di tornare al campeggio per cena.</p>` },
+  { id:"fiume",       num:"12", name:"Fiume",                          place:"Rijeka, Croazia",               lon:14.442,  lat:45.327,  lx:10,  ly:3.5, la:"start",
+    sketches:[["page6_sailboat",150],["page6_street",140],["page6_rijeka",130],["page6_tuna",90]],
+    text:`<p>Siamo arrivati a Fiume per l'ora di pranzo, il Sole spaccava le pietre e gli intonaci che non erano già stati rovinati dal tempo e dall'incuria. Era chiaro che un tempo la città dovesse essere stata elegante e vivace, come Trieste o altre città di porto, ma quella condizione sembrava relegata ad un passato celato da guerre, odio, forzato oblio. Restano le palme, il bel Teatro Nazionale Croato (innanzi al quale abbiamo mangiato il nostro tonno in scatola), l'elegante lungomare che però si estende fra due file di abitazioni, celando e mostrando il mare.</p><p>Il nome di Fiume è sostituito dall'odierno Rijeka (che vuol dire sempre <em>fiume</em>) nella maggior parte dei toponimi, e riappare timido nei nomi dei ristoranti, in qualche murale.</p><p>In una chiesa veniva raccontato un miracolo su tre lastre diverse, incise in Croato, in Tedesco e in Italiano. Persino in questo caso, il nome di Fiume veniva goffamente coperto con un biglietto colorato a penna e appiccicato sulla lastra con lo scotch.</p><p>Nonostante il poco tempo siamo riusciti a fare un giro abbastanza ampio del centro città, passando davanti ai monumenti da cui fomentando i suoi si infervorava D'Annunzio, prima di essere cannoneggiato dalla stessa marina italiana. Ma la fantasia ha avuto difficoltà ad immaginarsi la storia passare attorno a sé.</p><p>Dopo la lunga camminata su e giù per le vie, esausti, abbiamo fischiettato qualche canzone patriottica prima di prendere la macchina e tornare a Vode, per l'ultima cena slovena.</p>` },
+  { id:"vode_r",      num:"10", name:"Camper Stop and Service - Vode", place:"Slovenia · ritorno",         lon:14.666954179196011, lat:46.14335955016932, lx:-14, ly:5,  la:"end",
+    sketches:[["page6_map_person",150],["page6_sun",110],["page5_stars",140]],
+    text:`<p>Testo da inserire. Il ritorno a Vode da Fiume.</p>` },
+  { id:"vode2", num:"10", name:"Camper Stop and Service - Vode (2)", place:"Slovenia · mattina giorno 6", lon:14.666954179196011, lat:46.14335955016932, lx:10, ly:-5, la:"start",
+    sketches:[],
+    text:`<p>La mattina del sesto giorno di viaggio ci siamo svegliati con calma, e ci siamo goduti il bel panorama offerto dal campeggio, mentre cercavamo di capire il da farsi. Dopo una languida discussione sulla terrazza, fra le varie opzioni possibili ha prevalso l’idea della visita patriottica a Fiume. Ci siamo preparati con calma per quella che sarebbe stata la tappa estrema del nostro viaggio, prima del ritorno.</p>` },
+  { id:"padova",      num:"13", name:"Padova",                         place:"Veneto, Italia",                lon:11.877,  lat:45.406,  lx:-10, ly:3.5, la:"end",
+    sketches:[["page7_tree_rest",150],["page7_hitchhike",140]],
+    text:`<p>Settimo giorno, le provviste scarseggiavano, il nostro orgoglio ci impediva di esternare la stanchezza fisica. Inoltre, i giorni concordati per il viaggio stavano terminando, così abbiamo deciso di intraprendere la via del ritorno.</p><p>Dal campeggio abbiamo guidato senza soste fino a Padova, dove abbiamo mangiato dei panini in un piccolo parco verde presso la Cappella degli Scrovegni, contendendoci ogni pezzo di tonno con delle vespe affamate all'ombra di una grande quercia.</p>` },
+  { id:"setta",       num:"14", name:"Camping Riva del Setta",         place:"Appennino, Emilia-Romagna",     lon:11.150,  lat:44.150,  lx:-10, ly:3.5, la:"end",
+    sketches:[["page7_tents",170],["bus_driving",150]],
+    text:`<p>Il nostro ultimo campeggio lo abbiamo trovato ad una quarantina di minuti da Bologna, accanto al torrente Setta, ma soprattutto non distante dalla A1 Panoramica. Un campeggio piuttosto anonimo, nonostante i campi da tennis, forse un po' vecchio e squallido, ma certamente migliore di quello di Trieste.</p>` },
+  { id:"bologna",     num:"15", name:"Bologna",                        place:"Emilia-Romagna, Italia",        lon:11.343,  lat:44.495,  lx:10,  ly:3.5, la:"start",
+    sketches:[["page7_two_towers",130],["page7_tagliatelle",120]],
+    text:`<p>L'ultima sera l'abbiamo passata a Bologna, la città dei portici. E non potevamo scegliere una città migliore per mangiare finalmente di nuovo al ristorante. Le due torri un po' sghembe, e le innumerevoli altre mozzate ci sussurravano «Bentornati», il buon cibo completava la frase.</p><p>In Piazza Maggiore c'era un cinema all'aperto, molto partecipato. Nella nostra passeggiata dopo la cena siamo rimasti lì per un po' a lasciar scorrere fotogrammi di un film italiano di gusto discutibile, prima di riprendere la camminata. Scriverò di Bologna in una sede separata: ha di certo un'atmosfera tutta sua (che non riesco ad apprezzare fino in fondo), ma in quella sera di inizio Agosto l'afa dominava sulla magia. L'ultima notte del nostro viaggio si conclude così, per i campi e i vicoli dell'Emilia, tardi nella notte. Tornati in tenda, ripensando al viaggio ma distrutti, il sonno è arrivato rapido come mai prima.</p>` },
+  { id:"roma_fin",    num:"01", name:"Roma",                           place:"Lazio, Italia · fine viaggio",  lon:12.4964, lat:41.9028,  lx:10,  ly:3.5, la:"start",
+    sketches:[["page7_roma_sign",160]],
+    text:`<p>Testo da inserire. Il ritorno a Roma, la fine dell'avanscoperta.</p>` }
+];
+
+// ── PROJECTION ───────────────────────────────────────────────────────────────
+const PROJ = (() => {
+  const RAD = Math.PI/180, W=660, H=780;
+  const LON_MIN=6.5, LON_MAX=18.5, LAT_MIN=41.2, LAT_MAX=48.0;
+  function mY(lat){ return Math.log(Math.tan(Math.PI/4 + lat*RAD/2)); }
+  const cLon=(LON_MIN+LON_MAX)/2, cLat=(LAT_MIN+LAT_MAX)/2;
+  const scale = Math.min(W/((LON_MAX-LON_MIN)*RAD), H/(mY(LAT_MAX)-mY(LAT_MIN))) * 0.95;
+  const tx=W/2, ty=H/2;
+  function project(lon,lat){ return [tx+scale*(lon-cLon)*RAD, ty-scale*(mY(lat)-mY(cLat))]; }
+  function pathFromGeometry(geom){
+    function ring(coords){ return 'M'+coords.map(([ln,lt])=>{ const[x,y]=project(ln,lt); return x.toFixed(1)+','+y.toFixed(1); }).join('L')+'Z'; }
+    if(geom.type==='Polygon') return geom.coordinates.map(ring).join(' ');
+    if(geom.type==='MultiPolygon') return geom.coordinates.map(p=>p.map(ring).join(' ')).join(' ');
+    return '';
+  }
+  return { project, pathFromGeometry };
+})();
+
+const MAIN = new Set(['Italy','Slovenia','Croatia']);
+
+async function loadGeo(){
+  const bin=atob(GEO_B64), bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  const ds=new DecompressionStream('gzip'), w=ds.writable.getWriter();
+  w.write(bytes); w.close();
+  const chunks=[], reader=ds.readable.getReader();
+  while(true){ const{done,value}=await reader.read(); if(done)break; chunks.push(value); }
+  const total=chunks.reduce((a,c)=>a+c.length,0), buf=new Uint8Array(total); let off=0;
+  for(const c of chunks){ buf.set(c,off); off+=c.length; }
+  return JSON.parse(new TextDecoder().decode(buf));
+}
+
+function renderCountries(geo){
+  const g=document.getElementById('g-countries');
+  geo.features.forEach(feat=>{
+    const d=PROJ.pathFromGeometry(feat.geometry); if(!d) return;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',d);
+    path.setAttribute('class', MAIN.has(feat.properties.name)?'land-main':'land-neighbor');
+    g.appendChild(path);
+  });
+}
+
+function renderLabels(){
+  const g=document.getElementById('g-labels');
+  const add=(text,lon,lat,cls,rot,anchor)=>{
+    const [x,y]=PROJ.project(lon,lat);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',x.toFixed(1)); t.setAttribute('y',y.toFixed(1));
+    t.setAttribute('class',cls); t.setAttribute('text-anchor',anchor||'middle');
+    if(rot) t.setAttribute('transform',`rotate(${rot},${x.toFixed(1)},${y.toFixed(1)})`);
+    t.textContent=text; g.appendChild(t);
+  };
+  add('ITALIA',   12.8,43.8,'geo-label');
+  add('SLOVENIA', 14.6,46.35,'geo-label');
+  add('CROAZIA',  15.6,44.8,'geo-label');
+  add('AUSTRIA',  13.2,47.4,'geo-label');
+  add('SVIZZERA',  8.0,46.9,'geo-label');
+  add('UNGHERIA', 18.2,47.0,'geo-label',0,'end');
+  add('Mar Adriatico',14.8,43.2,'sea-label',-15);
+  add('Mar Tirreno',  10.4,41.8,'sea-label',-68);
+}
+
+// ── ROUTE ────────────────────────────────────────────────────────────────────
+function renderRoute(){
+  const g=document.getElementById('g-route');
+  const NS='http://www.w3.org/2000/svg';
+
+  // Draw arrowhead polygon at t along quadratic bezier P0->CP->P1
+  function arrowAt(p0, cp, p1, t){
+    const bx=(1-t)*(1-t)*p0[0]+2*(1-t)*t*cp[0]+t*t*p1[0];
+    const by=(1-t)*(1-t)*p0[1]+2*(1-t)*t*cp[1]+t*t*p1[1];
+    const tx2=2*(1-t)*(cp[0]-p0[0])+2*t*(p1[0]-cp[0]);
+    const ty2=2*(1-t)*(cp[1]-p0[1])+2*t*(p1[1]-cp[1]);
+    const len=Math.sqrt(tx2*tx2+ty2*ty2)||1;
+    const ux=tx2/len, uy=ty2/len, px=-uy, py=ux, s=4;
+    const tip  =[bx+ux*s*1.6, by+uy*s*1.6];
+    const left =[bx-ux*s+px*s, by-uy*s+py*s];
+    const right=[bx-ux*s-px*s, by-uy*s-py*s];
+    const poly=document.createElementNS(NS,'polygon');
+    poly.setAttribute('points',`${tip[0].toFixed(1)},${tip[1].toFixed(1)} ${left[0].toFixed(1)},${left[1].toFixed(1)} ${right[0].toFixed(1)},${right[1].toFixed(1)}`);
+    poly.setAttribute('fill','#8b3a1e'); poly.setAttribute('opacity','0.55');
+    g.appendChild(poly);
+  }
+
+  // seg: draw one quadratic bezier segment
+  // style: 'long' (heavy dash + arrow), 'short' (light dash, no arrow), 'return' (very light)
+  function seg(p1, p2, style, cpOverride){
+    const mx=(p1[0]+p2[0])/2, my=(p1[1]+p2[1])/2;
+    const dx=p2[0]-p1[0], dy=p2[1]-p1[1];
+    const len=Math.sqrt(dx*dx+dy*dy)||1;
+    const wobble=len*0.025;
+    const cp = cpOverride || [mx - dy/len*wobble, my + dx/len*wobble];
+    const path=document.createElementNS(NS,'path');
+    path.setAttribute('d',`M${p1[0].toFixed(1)},${p1[1].toFixed(1)} Q${cp[0].toFixed(1)},${cp[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`);
+    if(style==='long'){
+      path.setAttribute('stroke','#8b3a1e');
+      path.setAttribute('stroke-width','1.2');
+      path.setAttribute('stroke-dasharray','6 5');
+      path.setAttribute('opacity','0.55');
+    } else if(style==='short'){
+      path.setAttribute('stroke','#8b3a1e');
+      path.setAttribute('stroke-width','0.8');
+      path.setAttribute('stroke-dasharray','3 5');
+      path.setAttribute('opacity','0.3');
+    } else { // 'return'
+      path.setAttribute('stroke','#8b3a1e');
+      path.setAttribute('stroke-width','0.7');
+      path.setAttribute('stroke-dasharray','2 5');
+      path.setAttribute('opacity','0.22');
+    }
+    path.setAttribute('fill','none');
+    g.appendChild(path);
+    if(style==='long') arrowAt(p1, cp, p2, 0.52);
+  }
+
+  const P={}; STOPS.forEach(s=>{ P[s.id]=PROJ.project(s.lon,s.lat); });
+
+  // ── LONG segments (heavy dash + arrow at midpoint) ────────────────────────
+  seg(P['roma'],       P['stifone'],    'long');                        // Roma -> Stifone
+  seg(P['narni'],      P['trasimeno'],  'long');                        // Narni -> Camping Eden
+  seg(P['trasimeno'],  P['clubdelsole'],'long', [258, 385]);            // Eden -> Club del Sole (curved past Bologna/Padova)
+  seg(P['clubdelsole'],P['obelisco'],   'long', [342, 261]);            // Club del Sole -> Obelisco (slight curve north)
+  seg(P['obelisco'],   P['vode'],       'long');                        // Obelisco -> Camping Spik
+  seg(P['vode'],       P['padova'],     'long');                        // Camping Spik -> Padova
+  seg(P['padova'],     P['bologna'],    'long');                        // Padova -> Bologna
+  seg(P['bologna'],    P['roma'],       'long');                        // Bologna -> Roma
+
+  // ── SHORT segments (light dash, no arrow) ────────────────────────────────
+  seg(P['stifone'],    P['narni'],      'short');                       // Stifone -> Narni
+  seg(P['clubdelsole'],P['moena'],      'short');                       // Club del Sole -> Moena
+  seg(P['vode'],       P['lubiana'],    'short');                       // Spik -> Lubiana
+  seg(P['lubiana'],    P['fiume'],      'short');                       // Lubiana -> Fiume
+  seg(P['padova'],     P['setta'],      'short');                       // Padova -> Setta
+  seg(P['setta'],      P['bologna'],    'short');                       // Setta -> Bologna
+
+  // ── RETURN arc: Fiume -> Vode/Spik ──────────────────────────────────────
+  const fi=P['fiume'], vo=P['vode'];
+  const rcx=(fi[0]+vo[0])/2+22, rcy=(fi[1]+vo[1])/2;
+  seg(fi, vo, 'return', [rcx, rcy]);
+
+  // ── Autogrill waypoint dot on Trasimeno->ClubSole curve at t≈0.38 ────────
+  const ag_p0=[309.4,496.7], ag_cp=[258,385], ag_p1=[286.2,262.6], ag_t=0.38;
+  const ag_x=(1-ag_t)**2*ag_p0[0]+2*ag_t*(1-ag_t)*ag_cp[0]+ag_t**2*ag_p1[0];
+  const ag_y=(1-ag_t)**2*ag_p0[1]+2*ag_t*(1-ag_t)*ag_cp[1]+ag_t**2*ag_p1[1];
+  const agDot=document.createElementNS(NS,'circle');
+  agDot.setAttribute('cx',ag_x.toFixed(1)); agDot.setAttribute('cy',ag_y.toFixed(1));
+  agDot.setAttribute('r','2.5'); agDot.setAttribute('fill','#8b3a1e');
+  agDot.setAttribute('opacity','0.45'); agDot.setAttribute('stroke','#fdf9f3');
+  agDot.setAttribute('stroke-width','0.8');
+  g.appendChild(agDot);
+  const agLbl=document.createElementNS(NS,'text');
+  agLbl.setAttribute('x',(ag_x+6).toFixed(1)); agLbl.setAttribute('y',(ag_y+3).toFixed(1));
+  agLbl.setAttribute('class','pin-label-dt'); agLbl.textContent='Autogrill';
+  g.appendChild(agLbl);
+}
+
+
+// ── PINS ──────────────────────────────────────────────────────────────────────
+function renderPins(){
+  const g=document.getElementById('g-pins');
+  const NS='http://www.w3.org/2000/svg';
+  // Visually deduplicate: vode_r and roma_fin share coords with vode/roma
+  const skip=new Set(['vode_r','roma_fin','autogrill','vode2']);
+  STOPS.forEach((s,idx)=>{
+    if(skip.has(s.id)) return;
+    const [cx,cy]=PROJ.project(s.lon,s.lat);
+    const gr=document.createElementNS(NS,'g');
+    gr.setAttribute('class','stop-pin');
+    gr.setAttribute('data-idx',idx);
+    gr.setAttribute('tabindex','0');
+    gr.addEventListener('click',()=>openStop(idx));
+    gr.addEventListener('keydown',e=>{ if(e.key==='Enter') openStop(idx); });
+
+    if(s.daytrip) {
+      // Spoke line from base stop
+      const base = STOPS.find(b=>b.id===s.base);
+      if(base) {
+        const [bx,by] = PROJ.project(base.lon,base.lat);
+        const spoke=document.createElementNS(NS,'line');
+        spoke.setAttribute('x1',bx.toFixed(1)); spoke.setAttribute('y1',by.toFixed(1));
+        spoke.setAttribute('x2',cx.toFixed(1)); spoke.setAttribute('y2',cy.toFixed(1));
+        spoke.setAttribute('stroke','#8b3a1e'); spoke.setAttribute('stroke-width','0.8');
+        spoke.setAttribute('stroke-dasharray','2 3'); spoke.setAttribute('opacity','0.5');
+        document.getElementById('g-route').appendChild(spoke);
+      }
+    }
+    const ring=document.createElementNS(NS,'circle');
+    ring.setAttribute('class', s.daytrip ? 'p-ring-dt' : 'p-ring');
+    ring.setAttribute('cx',cx.toFixed(1)); ring.setAttribute('cy',cy.toFixed(1));
+    ring.setAttribute('r', s.daytrip ? '3.5' : '5.5');
+
+    const dot=document.createElementNS(NS,'circle');
+    dot.setAttribute('class', s.daytrip ? 'p-dot-dt' : 'p-dot');
+    dot.setAttribute('cx',cx.toFixed(1)); dot.setAttribute('cy',cy.toFixed(1));
+    dot.setAttribute('r', s.daytrip ? '1.5' : '2');
+
+    const lbl=document.createElementNS(NS,'text');
+    lbl.setAttribute('class', s.daytrip ? 'pin-label-dt' : 'pin-label');
+    lbl.setAttribute('x',(cx+s.lx).toFixed(1));
+    lbl.setAttribute('y',(cy+(s.ly||3.5)).toFixed(1));
+    lbl.setAttribute('text-anchor',s.la);
+    lbl.textContent=s.name;
+
+    // Invisible wider hit area for label
+    const hit=document.createElementNS(NS,'rect');
+    const lx=parseFloat(lbl.getAttribute('x'));
+    const ly2=parseFloat(lbl.getAttribute('y'));
+    const isEnd = s.la==='end';
+    const estW = s.name.length * 5.5;
+    hit.setAttribute('x', isEnd ? lx-estW : lx);
+    hit.setAttribute('y', ly2-8);
+    hit.setAttribute('width', estW);
+    hit.setAttribute('height', 11);
+    hit.setAttribute('fill', 'transparent');
+    hit.setAttribute('style','cursor:pointer');
+    gr.appendChild(ring); gr.appendChild(dot); gr.appendChild(hit); gr.appendChild(lbl);
+    g.appendChild(gr);
+  });
+}
+
+// ── TACCUINO ─────────────────────────────────────────────────────────────────
+let currentIdx=null;
+
+function openStop(idx){
+  currentIdx=idx;
+  const s=STOPS[idx];
+  document.getElementById('t-num').textContent=s.num;
+  document.getElementById('t-name').textContent=s.name;
+  document.getElementById('t-place').textContent=s.place;
+  document.getElementById('t-text').innerHTML=s.text;
+  // sketches removed from preview
+  document.getElementById('btn-prev').disabled=idx===0;
+  document.getElementById('btn-next').disabled=idx===STOPS.length-1;
+  document.querySelectorAll('.stop-pin').forEach(g=>g.classList.remove('active'));
+  const active=document.querySelector(`.stop-pin[data-idx="${idx}"]`);
+  if(active) active.classList.add('active');
+  const t=document.getElementById('taccuino');
+  t.classList.add('open');
+  t.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeTaccuino(){
+  document.getElementById('taccuino').classList.remove('open');
+  document.querySelectorAll('.stop-pin').forEach(g=>g.classList.remove('active'));
+  currentIdx=null;
+}
+
+function navigateStop(dir){
+  if(currentIdx===null) return;
+  const next=currentIdx+dir;
+  if(next>=0&&next<STOPS.length) openStop(next);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadGeo().then(geo=>{
+  renderCountries(geo);
+  renderLabels();
+  renderRoute();
+  renderPins();
+}).catch(err=>console.error('Map error:',err));
+
+// Foto pagine: pag1_trasp.png = giorno 1, pag2_trasp.png = giorno 2, ecc.
+const THUMBS = {
+  1: 'avanscoperta-imgs/pag1_trasp.png',
+  2: 'avanscoperta-imgs/pag2_trasp.png',
+  3: 'avanscoperta-imgs/pag3_trasp.png',
+  4: 'avanscoperta-imgs/pag4_trasp.png',
+  5: 'avanscoperta-imgs/pag5_trasp.png',
+  6: 'avanscoperta-imgs/pag6_trasp.png',
+  7: 'avanscoperta-imgs/pag7_trasp.png',
+  8: 'avanscoperta-imgs/pag8_trasp.png'
+};
+
+const DAYS = [{"num": 1, "title": "La partenza", "img": 1, "stops": [{"id": "roma", "label": "Roma"}, {"id": "stifone", "label": "Stifone"}, {"id": "narni", "label": "Narni"}, {"id": "trasimeno", "label": "Camping Eden Park"}, {"id": "clubdelsole", "label": "Club del Sole Val di Fiemme"}], "notte": "Club del Sole Val di Fiemme"}, {"num": 2, "title": "Le Dolomiti", "img": 2, "stops": [{"id": "passorolle", "label": "Passo Rolle"}, {"id": "moena", "label": "Moena"}], "notte": "Club del Sole Val di Fiemme"}, {"num": 3, "title": "Verso Trieste", "img": 3, "stops": [{"id": "malgaces", "label": "Malga Ces"}, {"id": "obelisco", "label": "Campeggio Obelisco"}, {"id": "trieste", "label": "Trieste"}], "notte": "Campeggio Obelisco"}, {"num": 4, "title": "Trieste e il mare", "img": 4, "stops": [{"id": "miramare", "label": "Miramare"}, {"id": "trieste", "label": "Trieste"}], "notte": "Campeggio Obelisco"}, {"num": 5, "title": "Slovenia", "img": 5, "stops": [{"id": "vode", "label": "Camper Stop and Service - Vode"}, {"id": "lubiana", "label": "Lubiana"}], "notte": "Camper Stop and Service - Vode"}, {"num": 6, "title": "Fiume", "img": 6, "stops": [{"id": "vode2", "label": "Camper Stop and Service - Vode (2)"}, {"id": "fiume", "label": "Fiume"}], "notte": "Camper Stop and Service - Vode"}, {"num": 7, "title": "Il ritorno", "img": 7, "stops": [{"id": "padova", "label": "Padova"}, {"id": "setta", "label": "Camping Riva del Setta"}, {"id": "bologna", "label": "Bologna"}], "notte": "Camping Riva del Setta"}, {"num": 8, "title": "Roma", "img": null, "stops": [], "notte": null, "staticText": "Partenza presto e ritorno a Casa!"}];
+
+
+// ── DAYS MENU ─────────────────────────────────────────────────────────────
+function renderDays() {
+  const container = document.getElementById('days-container');
+
+  DAYS.forEach(day => {
+    const block = document.createElement('div');
+    block.className = 'day-block';
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'day-header';
+    header.innerHTML = `
+      <span class="day-num">${String(day.num).padStart(2,'0')}</span>
+      <span class="day-title">${day.title}</span>`;
+    block.appendChild(header);
+
+    // Body
+    const body = document.createElement('div');
+    body.className = 'day-body';
+
+    // LEFT: stops list
+    const stopsCol = document.createElement('div');
+    stopsCol.className = 'day-stops';
+
+    if (day.staticText) {
+      const staticEl = document.createElement('div');
+      staticEl.className = 'day-static-text';
+      staticEl.textContent = day.staticText;
+      stopsCol.appendChild(staticEl);
+    } else {
+      day.stops.forEach(stop => {
+        const item = document.createElement('div');
+        item.className = 'day-stop-item clickable';
+
+        const name = document.createElement('span');
+        name.className = 'day-stop-name';
+        name.textContent = stop.label;
+
+        const content = document.createElement('div');
+        content.className = 'day-stop-content';
+        const stopData = STOPS.find(s => s.id === stop.id);
+        content.innerHTML = stopData ? stopData.text : '<p>Testo da inserire.</p>';
+
+        item.appendChild(name);
+        item.appendChild(content);
+
+        item.addEventListener('click', () => {
+          const wasOpen = item.classList.contains('open');
+          stopsCol.querySelectorAll('.day-stop-item.open').forEach(el => el.classList.remove('open'));
+          if (!wasOpen) {
+            item.classList.add('open');
+            if (stopData) {
+              const idx = STOPS.indexOf(stopData);
+              document.querySelectorAll('.stop-pin').forEach(g => g.classList.remove('active'));
+              const activePin = document.querySelector(`.stop-pin[data-idx="${idx}"]`);
+              if (activePin) activePin.classList.add('active');
+            }
+          }
+        });
+
+        stopsCol.appendChild(item);
+      });
+    }
+
+    // Notte row
+    if (day.notte) {
+      const notte = document.createElement('div');
+      notte.className = 'day-notte';
+      notte.innerHTML = `<span class="day-notte-label">Notte: <strong>${day.notte}</strong></span>`;
+      stopsCol.appendChild(notte);
+    }
+
+    body.appendChild(stopsCol);
+
+    // RIGHT: thumbnail + caption below
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'day-img-wrap';
+    const imgCol = document.createElement('div');
+    imgCol.className = 'day-img';
+    const img = document.createElement('img');
+    img.src = THUMBS[day.img];
+    img.loading = 'lazy';
+    img.alt = `Giorno ${day.num}`;
+    imgCol.appendChild(img);
+    imgWrap.appendChild(imgCol);
+    const caption = document.createElement('div');
+    caption.className = 'day-img-caption-ext';
+    caption.textContent = `Giorno ${day.num}`;
+    imgWrap.appendChild(caption);
+    body.appendChild(imgWrap);
+
+    block.appendChild(body);
+    container.appendChild(block);
+  });
+}
+
+renderDays();
+
+</script>
+</body>
+</html>
