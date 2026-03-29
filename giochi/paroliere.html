@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Paroliere</title>
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #1a1209;
+    --felt: #1e3a2a;
+    --felt-light: #2a4f3a;
+    --wood: #6b3a1f;
+    --wood-light: #8b5a2b;
+    --cream: #f5ead0;
+    --cream-dark: #e8d5b0;
+    --gold: #c9a84c;
+    --gold-light: #e6c87a;
+    --red: #c0392b;
+    --tile-bg: #f0e0b0;
+    --tile-shadow: #8b6914;
+    --tile-selected: #ffe082;
+    --text-dark: #2c1810;
+    --timer-ok: #2e7d32;
+    --timer-warn: #f57f17;
+    --timer-danger: #c62828;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Lora', serif;
+    background: var(--bg);
+    min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 16px; overflow-x: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0;
+  }
+  .container { position: relative; z-index: 1; width: 100%; max-width: 420px; }
+  .screen { display: none; flex-direction: column; align-items: center; gap: 18px; }
+  .screen.active { display: flex; }
+
+  /* TITLE */
+  .game-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 12vw, 4rem); font-weight: 900;
+    color: var(--gold); text-align: center;
+    text-shadow: 0 2px 0 #7a5a10, 0 4px 12px rgba(0,0,0,0.6);
+    letter-spacing: 0.04em; line-height: 1;
+  }
+  .subtitle { font-style: italic; color: var(--cream-dark); font-size: 0.95rem; text-align: center; opacity: 0.8; }
+
+  /* PANEL */
+  .panel {
+    background: var(--felt); border: 3px solid var(--gold); border-radius: 16px;
+    padding: 20px 18px; width: 100%;
+    box-shadow: 0 0 0 1px #7a5a10, 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .setup-label { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1rem; margin-bottom: 10px; text-align: center; }
+
+  /* BUTTONS */
+  .gold-btn {
+    background: linear-gradient(135deg, var(--gold), #a07820);
+    border: none; color: var(--text-dark);
+    font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700;
+    padding: 15px 32px; border-radius: 12px; cursor: pointer; width: 100%;
+    box-shadow: 0 4px 0 #5a4010, 0 6px 20px rgba(0,0,0,0.4);
+    transition: transform 0.1s, box-shadow 0.1s; letter-spacing: 0.05em;
+  }
+  .gold-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #5a4010; }
+  .ghost-btn {
+    background: transparent; border: 2px solid var(--gold); color: var(--gold);
+    font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700;
+    padding: 13px 32px; border-radius: 12px; cursor: pointer; width: 100%;
+    transition: background 0.15s;
+  }
+  .ghost-btn:active { background: rgba(201,168,76,0.15); }
+  .back-link {
+    color: var(--cream-dark); font-style: italic; font-size: 0.85rem; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px; opacity: 0.7;
+    background: none; border: none; transition: opacity 0.15s;
+  }
+  .back-link:hover { opacity: 1; }
+
+  /* TIME / PLAYERS */
+  .time-options { display: flex; gap: 10px; justify-content: center; margin-top: 4px; }
+  .time-btn {
+    background: var(--wood); border: 2px solid var(--gold); color: var(--cream-dark);
+    font-family: 'Lora', serif; font-size: 0.9rem; padding: 8px 14px;
+    border-radius: 8px; cursor: pointer; transition: all 0.15s; flex: 1;
+  }
+  .time-btn.selected { background: var(--gold); color: var(--text-dark); font-weight: 600; }
+  .players-row { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .players-row button {
+    background: var(--wood); border: 2px solid var(--gold); color: var(--cream);
+    font-size: 1.3rem; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
+    font-family: 'Playfair Display', serif;
+  }
+  .count-display { font-family: 'Playfair Display', serif; font-size: 2.2rem; color: var(--cream); min-width: 2ch; text-align: center; }
+
+  /* CODE */
+  .code-box { background: var(--bg); border: 2px solid var(--gold); border-radius: 10px; padding: 16px; text-align: center; width: 100%; }
+  .code-label { color: var(--cream-dark); font-size: 0.8rem; font-style: italic; margin-bottom: 6px; }
+  .code-value { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--gold); letter-spacing: 0.15em; word-break: break-all; }
+  .code-hint { color: var(--cream-dark); font-size: 0.75rem; font-style: italic; margin-top: 6px; opacity: 0.7; }
+  .code-input {
+    background: var(--bg); border: 2px solid var(--gold); border-radius: 10px;
+    color: var(--cream); font-family: 'Playfair Display', serif; font-size: 1.4rem;
+    text-align: center; letter-spacing: 0.15em; padding: 12px; width: 100%;
+    text-transform: uppercase; outline: none;
+  }
+  .code-input::placeholder { color: rgba(201,168,76,0.3); font-size: 0.9rem; letter-spacing: 0.05em; }
+  .code-input:focus { border-color: var(--gold-light); }
+  .code-error { color: #e57373; font-size: 0.85rem; font-style: italic; text-align: center; min-height: 1.2em; }
+
+  /* GAME */
+  .game-header { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .current-player-tag {
+    font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--gold);
+    background: rgba(201,168,76,0.12); border: 1px solid var(--gold);
+    padding: 4px 12px; border-radius: 20px; white-space: nowrap;
+  }
+  .timer-wrap { text-align: center; flex: 1; }
+  .timer-display { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900; color: var(--timer-ok); transition: color 0.3s; line-height: 1; }
+  .timer-display.warn { color: var(--timer-warn); }
+  .timer-display.danger { color: var(--timer-danger); animation: pulse 0.5s infinite alternate; }
+  @keyframes pulse { from{opacity:1}to{opacity:0.5} }
+  .word-count-tag { font-size: 0.8rem; color: var(--cream-dark); font-style: italic; white-space: nowrap; }
+
+  /* GRID */
+  .grid-wrap {
+    position: relative; background: var(--felt-light); border: 3px solid var(--gold);
+    border-radius: 14px; padding: 12px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.3); width: 100%;
+  }
+  #svg-lines { position: absolute; top:0;left:0;width:100%;height:100%; pointer-events:none; z-index:1; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; position: relative; z-index: 2; }
+  .tile {
+    aspect-ratio: 1; background: var(--tile-bg); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 7vw, 2rem); font-weight: 700;
+    color: var(--text-dark); cursor: pointer; user-select: none; position: relative;
+    box-shadow: 0 4px 0 var(--tile-shadow), 0 2px 6px rgba(0,0,0,0.3);
+    transition: transform 0.1s, background 0.15s; -webkit-user-select: none; touch-action: none;
+  }
+  .tile.vowel { border-bottom: 3px solid rgba(80,140,200,0.6); }
+  .tile.selected { background: var(--tile-selected); transform: translateY(-3px); box-shadow: 0 6px 0 #a07000, 0 4px 12px rgba(0,0,0,0.4); z-index: 3; }
+
+  .current-word-display {
+    min-height: 2.2rem; font-family: 'Playfair Display', serif; font-size: 1.6rem;
+    color: var(--cream); text-align: center; letter-spacing: 0.1em; text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
+  .word-actions { display: flex; gap: 10px; width: 100%; }
+  .action-btn { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid; font-family: 'Lora', serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: transform 0.1s, opacity 0.15s; }
+  .action-btn:active { transform: scale(0.97); }
+  .btn-add { background: var(--felt-light); border-color: var(--gold); color: var(--gold); }
+  .btn-add:disabled { opacity: 0.3; }
+  .btn-end { background: rgba(192,57,43,0.15); border-color: var(--red); color: #e57373; flex: 0 0 auto; padding: 12px 14px; font-size: 0.8rem; }
+  .btn-clear { background: transparent; border-color: rgba(201,168,76,0.4); color: var(--cream-dark); flex: 0 0 auto; padding: 12px 14px; }
+  .words-found { width: 100%; max-height: 90px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0; }
+  .word-chip {
+    background: rgba(201,168,76,0.15); border: 1px solid var(--gold); color: var(--cream-dark);
+    font-size: 0.8rem; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .word-chip.duplicate { background: rgba(192,57,43,0.2); border-color: var(--red); color: #e57373; animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)} }
+
+  /* REVIEW */
+  .review-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--gold); text-align: center; }
+  .review-sub { color: var(--cream-dark); font-style: italic; font-size: 0.85rem; text-align: center; }
+  .review-list { width: 100%; display: flex; flex-wrap: wrap; gap: 8px; max-height: 240px; overflow-y: auto; padding: 4px 0; }
+  .review-chip {
+    background: rgba(201,168,76,0.15); border: 2px solid var(--gold); color: var(--cream);
+    font-size: 0.9rem; padding: 7px 14px; border-radius: 20px; text-transform: uppercase;
+    letter-spacing: 0.05em; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px; user-select: none;
+  }
+  .review-chip .pts { font-size: 0.7rem; color: var(--gold-light); }
+  .review-chip.removed { background: rgba(192,57,43,0.12); border-color: #c0392b; color: #e57373; text-decoration: line-through; opacity: 0.55; }
+  .review-chip.removed .pts { color: #e57373; }
+  .review-empty { color: var(--cream-dark); font-style: italic; font-size: 0.9rem; text-align: center; padding: 16px 0; width: 100%; }
+  .review-total { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold); text-align: center; }
+
+  /* SCORES */
+  .scores-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--gold); text-align: center; }
+  .score-table { width: 100%; border-collapse: collapse; }
+  .score-table th { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 0.85rem; text-align: left; padding: 6px 8px; border-bottom: 1px solid rgba(201,168,76,0.3); }
+  .score-table td { color: var(--cream); font-size: 0.9rem; padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .score-table .pts { text-align: right; font-family: 'Playfair Display', serif; font-size: 1.1rem; }
+  .round-info { color: var(--cream-dark); font-style: italic; font-size: 0.85rem; text-align: center; }
+
+  /* RESULT */
+  .trophy { font-size: 4rem; text-align: center; }
+  .winner-name { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--gold); text-align: center; }
+  .winner-sub { color: var(--cream-dark); font-style: italic; text-align: center; }
+
+  /* DIVIDER */
+  .divider { width:100%; height:1px; background: linear-gradient(to right, transparent, var(--gold), transparent); opacity: 0.4; }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--wood-light); border: 1px solid var(--gold); color: var(--cream);
+    font-size: 0.9rem; padding: 10px 20px; border-radius: 30px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5); transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 100; white-space: nowrap; pointer-events: none;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  .words-found::-webkit-scrollbar, .review-list::-webkit-scrollbar { width: 4px; }
+  .words-found::-webkit-scrollbar-thumb, .review-list::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+  /* CONFIRM DIALOG */
+  .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:200; align-items:center; justify-content:center; padding:24px; }
+  .overlay.active { display:flex; }
+  .dialog { background: var(--felt); border: 3px solid var(--gold); border-radius: 16px; padding: 28px 22px; max-width: 340px; width:100%; display:flex; flex-direction:column; gap:16px; }
+  .dialog-title { font-family:'Playfair Display',serif; font-size:1.3rem; color:var(--gold); text-align:center; }
+  .dialog-sub { color:var(--cream-dark); font-size:0.9rem; text-align:center; font-style:italic; }
+  .dialog-btns { display:flex; gap:10px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="game-title">Paroliere</div>
+    <div class="subtitle">Il classico gioco delle parole</div>
+    <button class="gold-btn" id="btn-genera">🎲 Genera Partita</button>
+    <button class="ghost-btn" id="btn-carica-show">📲 Carica Partita</button>
+  </div>
+
+  <!-- GENERA (host setup) -->
+  <div class="screen" id="screen-genera">
+    <div class="game-title" style="font-size:2rem">Nuova Partita</div>
+    <div class="panel" style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <div class="setup-label">Tempo per turno</div>
+        <div class="time-options">
+          <button class="time-btn" data-val="120">2 min</button>
+          <button class="time-btn selected" data-val="180">3 min</button>
+          <button class="time-btn" data-val="240">4 min</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div>
+        <div class="setup-label">Numero di mani</div>
+        <div class="players-row">
+          <button id="dec-rounds">−</button>
+          <div class="count-display" id="rounds-display">3</div>
+          <button id="inc-rounds">+</button>
+        </div>
+      </div>
+    </div>
+    <button class="gold-btn" id="btn-do-genera">Genera tabellone →</button>
+    <button class="back-link" onclick="goTo('screen-home')">← Torna al menu</button>
+  </div>
+
+  <!-- CODICE (host shows code) -->
+  <div class="screen" id="screen-codice">
+    <div class="game-title" style="font-size:2rem">Partita Pronta!</div>
+    <div class="subtitle">Condividi questo codice con tutti i giocatori</div>
+    <div class="code-box">
+      <div class="code-label">Codice partita</div>
+      <div class="code-value" id="code-display">——</div>
+      <div class="code-hint">Ogni giocatore inserisce questo codice su "Carica Partita", poi tutti premono INIZIA! insieme</div>
+    </div>
+    <button class="gold-btn" id="btn-host-inizia">🚀 INIZIA!</button>
+    <button class="back-link" onclick="goTo('screen-genera')">← Cambia impostazioni</button>
+  </div>
+
+  <!-- CARICA (guest) -->
+  <div class="screen" id="screen-carica">
+    <div class="game-title" style="font-size:2rem">Carica Partita</div>
+    <div class="subtitle">Inserisci il codice ricevuto dall'host</div>
+    <input class="code-input" id="code-input" type="text" maxlength="6" placeholder="Inserisci il codice" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="code-error" id="code-error"></div>
+    <button class="gold-btn" id="btn-carica-go">Carica →</button>
+    <button class="back-link" onclick="goTo('screen-home')">← Torna al menu</button>
+  </div>
+
+  <!-- READY (guest loaded) -->
+  <div class="screen" id="screen-ready">
+    <div style="font-size:3rem;text-align:center">✅</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold);text-align:center">Tabellone caricato!</div>
+    <div style="color:var(--cream-dark);font-style:italic;text-align:center;font-size:0.9rem">Aspetta che tutti siano pronti, poi premi INIZIA!</div>
+    <div class="code-box">
+      <div class="code-label">Codice partita</div>
+      <div class="code-value" id="ready-code-display">——</div>
+    </div>
+    <button class="gold-btn" id="btn-guest-inizia">🚀 INIZIA!</button>
+    <button class="back-link" onclick="goTo('screen-carica')">← Cambia codice</button>
+  </div>
+
+  <!-- GAME -->
+  <div class="screen" id="screen-game">
+    <div class="game-header">
+      <div class="current-player-tag" id="game-hand-tag">Mano 1</div>
+      <div class="timer-wrap">
+        <div class="timer-display" id="timer-display">3:00</div>
+      </div>
+      <div class="word-count-tag" id="word-count-tag">0 parole</div>
+    </div>
+    <div class="current-word-display" id="current-word-display">—</div>
+    <div class="grid-wrap">
+      <svg id="svg-lines"></svg>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="word-actions">
+      <button class="action-btn btn-add" id="btn-add" disabled>✓ Aggiungi</button>
+      <button class="action-btn btn-clear" id="btn-clear">✕</button>
+      <button class="action-btn btn-end" id="btn-end-turn">⏹ Fine</button>
+    </div>
+    <div class="panel" style="padding:10px 14px;">
+      <div class="words-found" id="words-found"></div>
+    </div>
+  </div>
+
+  <!-- REVIEW -->
+  <div class="screen" id="screen-review">
+    <div class="review-title" id="review-title">Le tue parole</div>
+    <div class="review-sub">Tocca una parola per rimuoverla se non è valida</div>
+    <div class="panel" style="padding:14px 16px;">
+      <div class="review-list" id="review-list"></div>
+    </div>
+    <div class="review-total" id="review-total">+0 punti</div>
+    <button class="gold-btn" id="btn-review-confirm">Conferma →</button>
+    <button class="back-link" id="btn-review-back">← Torna al tabellone (annulla fine turno)</button>
+  </div>
+
+  <!-- SCORES -->
+  <div class="screen" id="screen-scores">
+    <div class="scores-title">Punteggi</div>
+    <div class="round-info" id="round-info"></div>
+    <div class="panel">
+      <table class="score-table" id="score-table"></table>
+    </div>
+    <button class="gold-btn" id="next-round-btn">Prossima mano →</button>
+    <button class="back-link" id="btn-scores-back">← Torna alla revisione</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="trophy">🏆</div>
+    <div class="game-title" style="font-size:2rem">Partita finita!</div>
+    <div class="winner-name" id="winner-name"></div>
+    <div class="winner-sub" id="winner-sub"></div>
+    <div class="panel">
+      <table class="score-table" id="final-score-table"></table>
+    </div>
+    <button class="gold-btn" id="play-again-btn">Nuova partita</button>
+  </div>
+
+</div>
+
+<!-- CONFIRM END TURN DIALOG -->
+<div class="overlay" id="overlay-endturn">
+  <div class="dialog">
+    <div class="dialog-title">Fine turno?</div>
+    <div class="dialog-sub">Hai ancora <span id="dialog-time-left"></span>. Vuoi davvero terminare il turno?</div>
+    <div class="dialog-btns">
+      <button class="ghost-btn" id="btn-dialog-no" style="font-size:0.95rem;padding:11px">Continua</button>
+      <button class="gold-btn" id="btn-dialog-yes" style="font-size:0.95rem;padding:11px">Fine turno</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// COSTANTI
+// ══════════════════════════════════════════
+const VOWELS = new Set(['A','E','I','O','U']);
+const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+// I 16 dadi reali del Paroliere italiano ('QU' = tessera singola)
+const DICE = [
+  ['I','M','S','R','O','A'],
+  ['G','N','O','L','E','U'],
+  ['P','D','C','M','E','A'],
+  ['V','G','T','N','I','E'],
+  ['D','A','N','E','V','Z'],
+  ['N','U','E','O','C','T'],
+  ['A','O','O','B','M','QU'],
+  ['D','O','N','E','T','S'],
+  ['A','T','I','R','L','B'],
+  ['F','A','R','C','O','I'],
+  ['L','T','P','S','U','E'],
+  ['L','S','R','C','E','A'],
+  ['F','S','H','E','I','E'],
+  ['O','A','A','I','T','E'],
+  ['I','R','U','E','L','O'],
+  ['I','R','E','N','S','H'],
+];
+
+const SCORE_MAP = {3:1,4:1,5:2,6:3,7:5};
+function wordScore(w){ const l=w.length; if(l<3)return 0; if(l>=8)return 11; return SCORE_MAP[l]||0; }
+
+// ══════════════════════════════════════════
+// STATO GLOBALE
+// ══════════════════════════════════════════
+let turnSeconds=180, totalRounds=3, currentRound=1;
+let gameSeed=0, gameCode='';
+let allGrids=[];             // tutti i tabelloni pre-generati dal seed
+let cumulativeScore=0;
+let myWords=[], removedWords=new Set();
+let selectedIndices=[], currentWord='';
+let timerInterval=null, timeLeft=0;
+let isDragging=false;
+let lastConfirmedPts=0;
+
+// ══════════════════════════════════════════
+// UTILITY
+// ══════════════════════════════════════════
+function $(id){ return document.getElementById(id); }
+function goTo(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); window.scrollTo(0,0); }
+function showToast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1800); }
+function pad(n){ return String(n).padStart(2,'0'); }
+function formatTime(s){ return `${Math.floor(s/60)}:${pad(s%60)}`; }
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+
+// ══════════════════════════════════════════
+// GENERAZIONE GRIGLIA — dadi reali del Paroliere
+// Lancia ciascun dado, mescola le 16 caselle.
+// Riprova se il risultato ha meno di 5 vocali o 5 consonanti.
+// ══════════════════════════════════════════
+function rollDice(){
+  // Ogni dado viene "lanciato": si sceglie una faccia a caso
+  const rolled = DICE.map(die => die[Math.floor(Math.random() * die.length)]);
+  return shuffle(rolled);
+}
+
+function isVowelTile(t){ return VOWELS.has(t) && t !== 'QU'; }
+
+// generateValidGrid non più usata direttamente: generateAllGrids usa il PRNG
+
+// ══════════════════════════════════════════
+// PRNG DETERMINISTICO (Mulberry32)
+// Dato lo stesso seed produce sempre la stessa sequenza.
+// ══════════════════════════════════════════
+function makePRNG(seed){
+  let s = seed >>> 0;
+  return function(){
+    s += 0x6D2B79F5;
+    let t = Math.imul(s ^ s>>>15, 1 | s);
+    t ^= t + Math.imul(t ^ t>>>7, 61 | t);
+    return ((t ^ t>>>14) >>> 0) / 4294967296;
+  };
+}
+
+// Seed da stringa: somma pesata dei char code
+function seedFromString(str){
+  let h = 0x12345678;
+  for(let i=0;i<str.length;i++) h = Math.imul(h ^ str.charCodeAt(i), 0x9e3779b9);
+  return h >>> 0;
+}
+
+// Shuffle deterministico con PRNG dato
+function seededShuffle(arr, rng){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(rng() * (i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+// ══════════════════════════════════════════
+// CODIFICA/DECODIFICA
+// Formato codice (4 char):
+//   char 0  : time index 0/1/2 (base36)
+//   char 1  : totalRounds-1    (base36)
+//   char 2-5: seed a 4 cifre base36 (36^4 = 1.679.616 combinazioni)
+// Seed → PRNG → sequenza di tabelloni deterministica
+// ══════════════════════════════════════════
+function buildCode(ts, nr, seed){
+  const tC = (ts===120?0:ts===180?1:2).toString(36).toUpperCase();
+  const rC = (nr-1).toString(36).toUpperCase();
+  const sC = (seed % (36*36*36*36)).toString(36).toUpperCase().padStart(4,'0');
+  return (tC + rC + sC).toUpperCase();
+}
+
+function codeToGame(code){
+  code = code.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length !== 6) return null;
+  try{
+    const ti = parseInt(code[0],36);
+    const nr = parseInt(code[1],36)+1;
+    const seed = parseInt(code.slice(2),36);
+    if(isNaN(ti)||ti>2) return null;
+    if(isNaN(nr)||nr<1||nr>9) return null;
+    if(isNaN(seed)) return null;
+    const ts = [120,180,240][ti];
+    return {turnSeconds:ts, totalRounds:nr, seed};
+  }catch(e){ return null; }
+}
+
+// Genera tutti i tabelloni della partita dal seed
+function generateAllGrids(seed, nr){
+  const rng = makePRNG(seed);
+  const grids = [];
+  for(let m=0;m<nr;m++){
+    let grid;
+    let attempts = 0;
+    do {
+      // Lancia ogni dado con il PRNG
+      const rolled = DICE.map(die => die[Math.floor(rng() * die.length)]);
+      grid = seededShuffle(rolled, rng);
+      attempts++;
+    } while(attempts < 20 && !isValidGrid(grid));
+    grids.push(grid);
+  }
+  return grids;
+}
+
+function isValidGrid(grid){
+  const v = grid.filter(t => isVowelTile(t)).length;
+  return v >= 5 && (16-v) >= 5;
+}
+
+// ══════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════
+$('btn-genera').onclick = () => goTo('screen-genera');
+$('btn-carica-show').onclick = () => { $('code-input').value=''; $('code-error').textContent=''; goTo('screen-carica'); };
+
+// ══════════════════════════════════════════
+// GENERA SCREEN
+// ══════════════════════════════════════════
+let roundCount=3;
+$('dec-rounds').onclick=()=>{ if(roundCount>1){roundCount--;$('rounds-display').textContent=roundCount;} };
+$('inc-rounds').onclick=()=>{ if(roundCount<9){roundCount++;$('rounds-display').textContent=roundCount;} };
+document.querySelectorAll('.time-btn').forEach(btn=>{
+  btn.onclick=()=>{ document.querySelectorAll('.time-btn').forEach(b=>b.classList.remove('selected')); btn.classList.add('selected'); turnSeconds=parseInt(btn.dataset.val); };
+});
+
+$('btn-do-genera').onclick=()=>{
+  totalRounds=roundCount;
+  gameSeed = Math.floor(Math.random() * (36*36*36*36));
+  gameCode = buildCode(turnSeconds, totalRounds, gameSeed);
+  allGrids = generateAllGrids(gameSeed, totalRounds);
+  cumulativeScore=0; currentRound=1;
+  $('code-display').textContent=gameCode;
+  goTo('screen-codice');
+};
+
+// ══════════════════════════════════════════
+// CODICE SCREEN (host)
+// ══════════════════════════════════════════
+$('btn-host-inizia').onclick=()=>startTurn();
+
+// ══════════════════════════════════════════
+// CARICA SCREEN (guest)
+// ══════════════════════════════════════════
+$('code-input').addEventListener('input',()=>{
+  $('code-error').textContent='';
+  $('code-input').value=$('code-input').value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+});
+$('btn-carica-go').onclick=()=>{
+  const result=codeToGame($('code-input').value);
+  if(!result){ $('code-error').textContent='Codice non valido. Controlla e riprova.'; return; }
+  turnSeconds=result.turnSeconds; totalRounds=result.totalRounds; gameSeed=result.seed;
+  gameCode=$('code-input').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  allGrids=generateAllGrids(gameSeed, totalRounds);
+  cumulativeScore=0; currentRound=1;
+  $('ready-code-display').textContent=gameCode;
+  goTo('screen-ready');
+};
+$('btn-guest-inizia').onclick=()=>startTurn();
+
+// ══════════════════════════════════════════
+// GAME TURN
+// ══════════════════════════════════════════
+function startTurn(){
+  myWords=[]; removedWords=new Set();
+  selectedIndices=[]; currentWord='';
+  const grid = allGrids[currentRound-1] || allGrids[0];
+  renderGrid(grid);
+  updateCurrentWord(); updateWordList();
+  $('game-hand-tag').textContent=`Mano ${currentRound} di ${totalRounds}`;
+  $('word-count-tag').textContent='0 parole';
+  timeLeft=turnSeconds;
+  updateTimerDisplay();
+  goTo('screen-game');
+  clearInterval(timerInterval);
+  timerInterval=setInterval(tick,1000);
+}
+
+function tick(){ timeLeft--; updateTimerDisplay(); if(timeLeft<=0){ clearInterval(timerInterval); goToReview(); } }
+
+function updateTimerDisplay(){
+  const d=$('timer-display');
+  d.textContent=formatTime(timeLeft);
+  d.className='timer-display';
+  if(timeLeft<=30)d.classList.add('danger');
+  else if(timeLeft<=60)d.classList.add('warn');
+}
+
+// END TURN BUTTON (manual)
+$('btn-end-turn').onclick=()=>{
+  if(timeLeft>0){
+    $('dialog-time-left').textContent=formatTime(timeLeft);
+    $('overlay-endturn').classList.add('active');
+  } else { goToReview(); }
+};
+$('btn-dialog-no').onclick=()=>$('overlay-endturn').classList.remove('active');
+$('btn-dialog-yes').onclick=()=>{ $('overlay-endturn').classList.remove('active'); clearInterval(timerInterval); goToReview(); };
+
+// ══════════════════════════════════════════
+// GRID RENDER & INTERACTION
+// ══════════════════════════════════════════
+function isVowelTile(t){ return VOWELS.has(t) && t !== 'QU'; }
+
+function renderGrid(tiles){
+  const g=$('grid'); g.innerHTML='';
+  tiles.forEach((tile,i)=>{
+    const t=document.createElement('div');
+    t.className='tile'+(isVowelTile(tile)?' vowel':'');
+    if(tile==='QU') t.style.fontSize='clamp(0.9rem,4.5vw,1.25rem)';
+    t.textContent=tile; t.dataset.index=i;
+    g.appendChild(t);
+  });
+  setupTileInteraction(); drawLines();
+}
+
+function setupTileInteraction(){
+  const tiles=document.querySelectorAll('.tile');
+  const getTile=(x,y)=>document.elementsFromPoint(x,y).find(el=>el.classList.contains('tile'));
+  tiles.forEach(tile=>{
+    tile.addEventListener('touchstart',e=>{e.preventDefault();isDragging=true;trySelect(+tile.dataset.index);},{passive:false});
+  });
+  document.addEventListener('touchmove',e=>{
+    if(!isDragging)return; e.preventDefault();
+    const tile=getTile(e.touches[0].clientX,e.touches[0].clientY);
+    if(tile)trySelect(+tile.dataset.index);
+  },{passive:false});
+  document.addEventListener('touchend',()=>{isDragging=false;});
+  tiles.forEach(tile=>{
+    tile.addEventListener('mousedown',e=>{isDragging=true;trySelect(+tile.dataset.index);});
+    tile.addEventListener('mouseenter',e=>{if(isDragging)trySelect(+tile.dataset.index);});
+  });
+  document.addEventListener('mouseup',()=>{isDragging=false;});
+}
+
+function isAdjacent(a,b){
+  const ar=Math.floor(a/4),ac=a%4,br=Math.floor(b/4),bc=b%4;
+  return Math.abs(ar-br)<=1&&Math.abs(ac-bc)<=1&&a!==b;
+}
+function trySelect(idx){
+  if(selectedIndices.includes(idx)){
+    selectedIndices=selectedIndices.slice(0,selectedIndices.indexOf(idx)+1);
+    updateSelectionUI(); return;
+  }
+  if(selectedIndices.length===0||isAdjacent(selectedIndices[selectedIndices.length-1],idx)){
+    selectedIndices.push(idx); updateSelectionUI();
+  }
+}
+function updateSelectionUI(){
+  document.querySelectorAll('.tile').forEach((t,i)=>t.classList.toggle('selected',selectedIndices.includes(i)));
+  currentWord=selectedIndices.map(i=>allGrids[currentRound-1][i]).join('');
+  updateCurrentWord(); drawLines();
+}
+function updateCurrentWord(){
+  $('current-word-display').textContent=currentWord||'—';
+  $('btn-add').disabled=currentWord.length<3;
+}
+function drawLines(){
+  const svg=$('svg-lines'); svg.innerHTML='';
+  if(selectedIndices.length<2)return;
+  const tiles=document.querySelectorAll('.tile');
+  const rect=svg.getBoundingClientRect();
+  for(let i=0;i<selectedIndices.length-1;i++){
+    const a=tiles[selectedIndices[i]].getBoundingClientRect();
+    const b=tiles[selectedIndices[i+1]].getBoundingClientRect();
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',a.left+a.width/2-rect.left); line.setAttribute('y1',a.top+a.height/2-rect.top);
+    line.setAttribute('x2',b.left+b.width/2-rect.left); line.setAttribute('y2',b.top+b.height/2-rect.top);
+    line.setAttribute('stroke','rgba(201,168,76,0.65)'); line.setAttribute('stroke-width','3'); line.setAttribute('stroke-linecap','round');
+    svg.appendChild(line);
+  }
+}
+
+// ══════════════════════════════════════════
+// ADD / CLEAR
+// ══════════════════════════════════════════
+$('btn-add').onclick=addWord;
+$('btn-clear').onclick=clearSelection;
+function addWord(){
+  if(currentWord.length<3)return;
+  if(myWords.includes(currentWord)){
+    showToast('Parola già trovata!');
+    document.querySelectorAll('.word-chip').forEach(c=>{if(c.textContent===currentWord){c.classList.add('duplicate');setTimeout(()=>c.classList.remove('duplicate'),600);}});
+    clearSelection(); return;
+  }
+  myWords.push(currentWord);
+  updateWordList();
+  $('word-count-tag').textContent=`${myWords.length} parol${myWords.length===1?'a':'e'}`;
+  showToast(`+${wordScore(currentWord)} pt — ${currentWord}`);
+  clearSelection();
+}
+function clearSelection(){ selectedIndices=[]; currentWord=''; updateSelectionUI(); updateCurrentWord(); }
+function updateWordList(){
+  const wf=$('words-found'); wf.innerHTML='';
+  myWords.forEach(w=>{ const c=document.createElement('div'); c.className='word-chip'; c.textContent=w; wf.appendChild(c); });
+  wf.scrollTop=wf.scrollHeight;
+}
+
+// ══════════════════════════════════════════
+// REVIEW
+// ══════════════════════════════════════════
+function goToReview(){
+  clearInterval(timerInterval);
+  removedWords=new Set();
+  $('review-title').textContent=`Mano ${currentRound} — Le tue parole`;
+  renderReview();
+  goTo('screen-review');
+}
+function renderReview(){
+  const list=$('review-list'); list.innerHTML='';
+  if(myWords.length===0){
+    list.innerHTML='<div class="review-empty">Nessuna parola trovata in questa mano.</div>';
+    $('review-total').textContent='+0 punti';
+    return;
+  }
+  myWords.forEach(w=>{
+    const chip=document.createElement('div');
+    chip.className='review-chip'+(removedWords.has(w)?' removed':'');
+    chip.innerHTML=`${w} <span class="pts">${wordScore(w)}pt</span>`;
+    chip.onclick=()=>{ if(removedWords.has(w))removedWords.delete(w); else removedWords.add(w); renderReview(); };
+    list.appendChild(chip);
+  });
+  const total=myWords.filter(w=>!removedWords.has(w)).reduce((s,w)=>s+wordScore(w),0);
+  $('review-total').textContent=`+${total} punti confermati`;
+}
+function reviewTotal(){ return myWords.filter(w=>!removedWords.has(w)).reduce((s,w)=>s+wordScore(w),0); }
+
+$('btn-review-back').onclick=()=>{
+  // Torna al tabellone — se il timer era scaduto dai 10 secondi bonus
+  clearInterval(timerInterval);
+  if(timeLeft<=0) timeLeft=10;
+  const grid = allGrids[currentRound-1] || allGrids[0];
+  renderGrid(grid);
+  updateCurrentWord(); updateWordList();
+  $('game-hand-tag').textContent=`Mano ${currentRound} di ${totalRounds}`;
+  $('word-count-tag').textContent=`${myWords.length} parol${myWords.length===1?'a':'e'}`;
+  updateTimerDisplay();
+  goTo('screen-game');
+  timerInterval=setInterval(tick,1000);
+};
+
+$('btn-review-confirm').onclick=()=>{
+  const pts=reviewTotal();
+  lastConfirmedPts=pts;
+  cumulativeScore+=pts;
+  showScoresScreen(pts);
+};
+
+// ══════════════════════════════════════════
+// SCORES
+// ══════════════════════════════════════════
+function showScoresScreen(pts){
+  const isLast=currentRound>=totalRounds;
+  const wCount=myWords.filter(w=>!removedWords.has(w)).length;
+  $('round-info').textContent=`Mano ${currentRound} di ${totalRounds} — ${wCount} parol${wCount===1?'a':'e'} valide`;
+  const table=$('score-table');
+  table.innerHTML=`<tr><th>Mano</th><th style="text-align:right">Questa mano</th><th style="text-align:right">Totale</th></tr>`;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>Mano ${currentRound}</td><td class="pts">+${pts}</td><td class="pts">${cumulativeScore}</td>`;
+  table.appendChild(tr);
+  $('next-round-btn').textContent=isLast?'Vedi risultato finale 🏆':`Vai alla mano ${currentRound+1} →`;
+  goTo('screen-scores');
+}
+$('btn-scores-back').onclick=()=>{
+  // Torna alla revisione, annullando i punti appena sommati
+  cumulativeScore-=lastConfirmedPts;
+  renderReview();
+  goTo('screen-review');
+};
+$('next-round-btn').onclick=()=>{
+  if(currentRound>=totalRounds){ showResult(); return; }
+  currentRound++;
+  startTurn();
+};
+
+// ══════════════════════════════════════════
+// RESULT
+// ══════════════════════════════════════════
+function showResult(){
+  $('winner-name').textContent=`${cumulativeScore} punti`;
+  $('winner-sub').textContent=`in ${totalRounds} mani — ottimo lavoro! 🎉`;
+  const table=$('final-score-table');
+  table.innerHTML=`<tr><th>Partita conclusa</th><th style="text-align:right">Totale</th></tr>`;
+  const tr=document.createElement('tr');
+  tr.classList.add('leader');
+  tr.innerHTML=`<td>Il tuo punteggio finale 👑</td><td class="pts">${cumulativeScore}</td>`;
+  table.appendChild(tr);
+  goTo('screen-result');
+}
+$('play-again-btn').onclick=()=>goTo('screen-home');
+</script>
+<script data-goatcounter="https://lolluskhan.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
