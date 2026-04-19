@@ -36,6 +36,11 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://lolluskhan.github.io/frammenti/apologia-dello-steampunk.html</loc>
+    <changefreq>never</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://lolluskhan.github.io/frammenti/pokemon-droni-e-la-nostra-infanzia.html</loc>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
