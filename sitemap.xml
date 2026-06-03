@@ -21,12 +21,22 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://lolluskhan.github.io/fisica/index.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://lolluskhan.github.io/giochi/index.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://lolluskhan.github.io/giochi/lupo-mannaro.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://lolluskhan.github.io/giochi/paroliere.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -42,16 +52,6 @@
   </url>
   <url>
     <loc>https://lolluskhan.github.io/frammenti/pokemon-droni-e-la-nostra-infanzia.html</loc>
-    <changefreq>never</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lolluskhan.github.io/viaggi/la-grande-diga-di-aswan.html</loc>
-    <changefreq>never</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://lolluskhan.github.io/viaggi/avanscoperta-da-roma-a-lubiana-in-tenda.html</loc>
     <changefreq>never</changefreq>
     <priority>0.7</priority>
   </url>
